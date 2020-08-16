@@ -18,6 +18,7 @@
 #ifndef MOTOR_MYML_H
 #define MOTOR_MYML_H
 
+#include <cassert>
 #include <fmt/format.h>
 #include <memory>
 #include <optional>
@@ -51,7 +52,14 @@ struct Node {
   void merge(const Node& other) noexcept;
   void resolveInherits() noexcept;
 
-  // TODO: access subnodes by path?
+  Node& operator[](std::string_view key) {
+    assert(content.find(key) != content.end());
+    return *content[key];
+  }
+
+  bool contains(std::string_view key) {
+    return content.find(key) != content.end();
+  }
 };
 
 std::optional<std::shared_ptr<Node>> parse(std::string_view filename,

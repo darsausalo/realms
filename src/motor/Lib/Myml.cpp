@@ -7,7 +7,7 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE.md', which is part of the Motor Source Code.
 
-    Myml.h
+    Myml.cpp
     Mini-YAML parser.
 
 ===============================================================================
@@ -51,10 +51,6 @@ std::optional<std::shared_ptr<Node>> parse(std::string_view filename,
           return {};
         }
 
-        lineStart = std::min<int>(lineStart + 1, source.length());
-        spdlog::info("line: {}",
-                     std::string_view(&source[lineStart], i - lineStart));
-
         if (valueStart != -1 && commentStart != -1) {
           valueStop = commentStart - 1;
         }
@@ -75,9 +71,7 @@ std::optional<std::shared_ptr<Node>> parse(std::string_view filename,
               std::string_view(&source[commentStart + 1], i - commentStart - 1);
           comment.remove_prefix(
               std::min(comment.find_first_not_of(" "), comment.size()));
-          spdlog::info("comment: '{}'", comment);
         }
-        spdlog::info("l: {}, key: '{}', value: '{}'", level, key, value);
 
         std::shared_ptr<Node> cur = levels.top();
         if (cur->content.find(key) != cur->content.end()) {
@@ -145,7 +139,7 @@ void Node::merge(const Node& other) noexcept {
   for (auto& it : other.content) {
     auto myIt = content.find(it.first);
     if (myIt == content.end()) {
-      myIt->second = it.second;
+      content.emplace(it.first, it.second);
     } else {
       myIt->second->merge(*it.second);
     }
