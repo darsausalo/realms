@@ -1,0 +1,28 @@
+# Intellij directories
+.idea
+cmake-build-*
+
+## make
+CMakeFiles
+*/CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+makefile
+build*
+prebuilt
+/bin
+
+## windows build process
+.vs
+/deps
+/MSVC*
+
+# VSCode
+/.vscode
+
+# git commit
+/src/GitSHA1.cpp
+
+# vim swp files
+*.swp
