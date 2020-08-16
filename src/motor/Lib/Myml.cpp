@@ -1,11 +1,11 @@
 /*
 ===============================================================================
 
-    Motor Source Code
-    Copyright (C) 2013-2016 Denis Potapov, Auriga Games.
+    Frontier Source Code
+    Copyright (C) 2020 Denis Potapov, Auriga Games.
 
     This file is subject to the terms and conditions defined in
-    file 'LICENSE.md', which is part of the Motor Source Code.
+    file 'LICENSE', which is part of the Frontier Source Code.
 
     Myml.cpp
     Mini-YAML parser.
