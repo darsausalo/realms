@@ -29,7 +29,6 @@
 namespace motor::myml {
 
 struct Node;
-
 using NodeMap = std::unordered_map<std::string_view, std::shared_ptr<Node>>;
 
 struct Location {
@@ -67,8 +66,6 @@ std::optional<std::shared_ptr<Node>> parse(std::string_view filename,
 
 } // namespace motor::myml
 
-//=============================================================================
-
 namespace fmt {
 
 template<>
@@ -89,7 +86,5 @@ struct [[maybe_unused]] formatter<motor::myml::Location> {
 };
 
 } // namespace fmt
-
-//=============================================================================
 
 #endif //MOTOR_MYML_H
