@@ -16,5 +16,7 @@ set(FRONTIER_MAIN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(FRONTIER_MAIN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 set(FRONTIER_DEPLOY_DIR ${CMAKE_BINARY_DIR}/src/frontier)
 
+# TODO: fmtlib - external or spdlog bundled?
+
 add_subdirectory(src)
 add_subdirectory(test)

@@ -8,7 +8,8 @@
     file 'LICENSE', which is part of the Frontier Source Code.
 
     Shell.h
-    Game host shell - main context to operate between host and user-space.
+    Main context to operate between host and user-space
+    and game loop runner.
 
 ===============================================================================
 */
@@ -17,7 +18,11 @@
 #define MOTOR_SHELL_H
 
 #include <entt/core/type_info.hpp>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace motor {
@@ -26,10 +31,9 @@ class Shell {
 public:
   template<typename Type>
   [[nodiscard]] const Type* get() const {
-    auto it =
-        std::find_if(services.cbegin(), services.cend(), [](auto&& svc) {
-          return svc.type_id == entt::type_info<Type>::id();
-        });
+    auto it = std::find_if(services.cbegin(), services.cend(), [](auto&& svc) {
+      return svc.type_id == entt::type_info<Type>::id();
+    });
     return it == services.cend() ? nullptr
                                  : static_cast<const Type*>(it->value.get());
   }
@@ -38,6 +42,13 @@ public:
   [[nodiscard]] Type* get() {
     return const_cast<Type*>(std::as_const(*this).template get<Type>());
   }
+
+  std::optional<std::filesystem::path> findPath(std::string_view filename);
+
+  std::optional<std::ifstream> openRead(std::string_view filename);
+  std::optional<std::ofstream> openWrite(std::string_view filename);
+
+  std::optional<std::string> readText(std::string_view filename);
 
 #ifdef MOTOR_HOST
 
@@ -51,6 +62,8 @@ public:
     return static_cast<Type*>(services.back().value.get());
   }
 
+  static int run(int argc, char* argv[]);
+
 #endif
 
 private:
@@ -60,6 +73,18 @@ private:
   };
 
   std::vector<serviceData> services{};
+
+  std::string baseDir{};
+  std::string userDir{};
+  std::string pluginFilename{};
+  std::vector<std::filesystem::path> searchPaths;
+
+#if MOTOR_HOST
+
+  void init(int argc, char* argv[]);
+  int run();
+
+#endif
 };
 
 extern Shell* shell;

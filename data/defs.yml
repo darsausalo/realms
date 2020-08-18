@@ -1,0 +1,22 @@
+actor_base: # this is base class
+  tag1:
+  health:
+    max: 100
+  speed:
+    max: 200
+
+actor1:
+  ^inherits: actor_base # inherits from base
+  health:
+    max: 110
+  speed:
+    max: 210
+  tag2:
+
+actor2:
+  ^inherits@1: actor_base # inherits from base
+  ^inherits@2: actor1 # inherits from actor1
+  health:
+    max: 120
+  speed:
+    max: 220

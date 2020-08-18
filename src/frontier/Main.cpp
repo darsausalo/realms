@@ -13,8 +13,8 @@
 ===============================================================================
 */
 
+#include "motor/Core/Logger.h"
 #include "motor/Core/Shell.h"
-#include "motor/Lib/Logger.h"
 #include <cassert>
 #include <cr.h>
 
@@ -25,17 +25,16 @@ CR_EXPORT int cr_main(cr_plugin* ctx, cr_op operation) {
   case CR_LOAD:
     motor::shell = static_cast<motor::Shell*>(ctx->userdata);
     mlog::logger = motor::shell->get<spdlog::logger>();
-
-    mlog::info("plugin: loaded");
+    mlog::info("plugin loaded");
     return 0;
   case CR_UNLOAD:
-    mlog::info("plugin: unloaded");
+    mlog::info("plugin unloaded");
     return 0;
   case CR_CLOSE:
-    mlog::info("plugin: closed");
+    mlog::info("plugin closed");
     return 0;
   case CR_STEP:
-    mlog::info("plugin: step");
+    mlog::info("plugin step");
     return 0;
   }
 

@@ -2,7 +2,7 @@ file(GLOB_RECURSE FRONTIER_SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
 
 add_library(frontier MODULE
         ${FRONTIER_SOURCES}
-        ${FRONTIER_MAIN_SOURCE_DIR}/motor/Lib/Logger.cpp
+        ${FRONTIER_MAIN_SOURCE_DIR}/motor/Core/Logger.cpp
         ${FRONTIER_MAIN_SOURCE_DIR}/motor/Core/Shell.cpp)
 
 target_include_directories(frontier PUBLIC ${FRONTIER_MAIN_INCLUDE_DIR})
