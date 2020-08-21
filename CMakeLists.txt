@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 3.17)
-project(frontier CXX)
+project(frontier VERSION 0.0.1)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(VCPKG_TARGET_ARCHITECTURE x64)
-set(VCPKG_CRT_LINKAGE static)
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/deps.cmake")
 
-find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_path(CR_INCLUDE_DIRS "cr.h")
-find_package(entt CONFIG REQUIRED)
-
+set(FRONTIER_GAME_PLUGIN "game")
 set(FRONTIER_MAIN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(FRONTIER_MAIN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-set(FRONTIER_DEPLOY_DIR ${CMAKE_BINARY_DIR}/src/frontier)
+set(FRONTIER_DEPLOY_DIR ${CMAKE_BINARY_DIR}/bin)
 
-# TODO: fmtlib - external or spdlog bundled?
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${FRONTIER_DEPLOY_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${FRONTIER_DEPLOY_DIR})
 
 add_subdirectory(src)
+
+include(CTest)
+enable_testing()
+
 add_subdirectory(test)
