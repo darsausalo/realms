@@ -17,6 +17,7 @@
 #include <optional>
 #include <spdlog/spdlog.h>
 #include <stack>
+#include <entt/entt.hpp>
 
 namespace motor::myml {
 

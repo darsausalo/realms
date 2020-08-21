@@ -7,18 +7,19 @@
     This file is subject to the terms and conditions defined in
     file 'LICENSE', which is part of the Frontier Source Code.
 
-    Logger.cpp
+    Application.h
+    Common application loop.
 
 ===============================================================================
 */
 
-#include "motor/Core/Logger.h"
-#include "motor/Core/Shell.h"
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#ifndef MOTOR_APPLICATION_H
+#define MOTOR_APPLICATION_H
 
-namespace mlog {
+namespace motor::app {
 
-spdlog::logger* logger;
+int run(int argc, char* argv[]);
 
-} // namespace mlog
+} // namespace motor::app
+
+#endif // MOTOR_APPLICATION_H

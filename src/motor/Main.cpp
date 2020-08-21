@@ -13,8 +13,5 @@
 ===============================================================================
 */
 
-#include "motor/Core/Shell.h"
+#include "Core/ShellLocal.h"
 
-int main(int argc, char* argv[]) {
-  return motor::Shell::run(argc, argv);
-}

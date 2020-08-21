@@ -1,3 +1,6 @@
+# VsCode directories
+.vscode
+
 # Intellij directories
 .idea
 cmake-build-*

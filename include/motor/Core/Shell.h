@@ -17,77 +17,23 @@
 #ifndef MOTOR_SHELL_H
 #define MOTOR_SHELL_H
 
-#include <entt/core/type_info.hpp>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <optional>
-#include <vector>
+#include <entt/locator/locator.hpp>
+#include <string_view>
 
 namespace motor {
 
 class Shell {
 public:
-  template<typename Type>
-  [[nodiscard]] const Type* get() const {
-    auto it = std::find_if(services.cbegin(), services.cend(), [](auto&& svc) {
-      return svc.type_id == entt::type_info<Type>::id();
-    });
-    return it == services.cend() ? nullptr
-                                 : static_cast<const Type*>(it->value.get());
-  }
+  virtual ~Shell() = default;
 
-  template<typename Type>
-  [[nodiscard]] Type* get() {
-    return const_cast<Type*>(std::as_const(*this).template get<Type>());
-  }
+  virtual std::ifstream openReadText(std::string_view filename) = 0;
+  virtual std::ifstream openReadBinary(std::string_view filename) = 0;
 
-  std::optional<std::filesystem::path> findPath(std::string_view filename);
-
-  std::optional<std::ifstream> openRead(std::string_view filename);
-  std::optional<std::ofstream> openWrite(std::string_view filename);
-
-  std::optional<std::string> readText(std::string_view filename);
-
-#ifdef MOTOR_HOST
-
-  template<typename Type, typename... Args>
-  Type* set(Args&&... args) {
-    services.push_back(
-        serviceData{entt::type_info<Type>::id(),
-                    {new Type{std::forward<Args>(args)...}, [](void* instance) {
-                       delete static_cast<Type*>(instance);
-                     }}});
-    return static_cast<Type*>(services.back().value.get());
-  }
-
-  static int run(int argc, char* argv[]);
-
-#endif
-
-private:
-  struct serviceData {
-    entt::id_type type_id;
-    std::unique_ptr<void, void (*)(void*)> value;
-  };
-
-  std::vector<serviceData> services{};
-
-  std::string baseDir{};
-  std::string userDir{};
-  std::string pluginFilename{};
-  std::vector<std::filesystem::path> searchPaths;
-
-#if MOTOR_HOST
-
-  void init(int argc, char* argv[]);
-  int run();
-
-#endif
+  virtual std::ofstream openWriteText(std::string_view filename) = 0;
+  virtual std::ofstream openWriteBinary(std::string_view filename) = 0;
 };
 
-extern Shell* shell;
+using shell = entt::service_locator<Shell>;
 
 } // namespace motor
 

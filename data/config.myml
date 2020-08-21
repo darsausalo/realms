@@ -1,0 +1,8 @@
+window:
+  monitor: default
+  position:
+    x: -1
+    y: -1
+  size:
+    x: 1280
+    y: 768
