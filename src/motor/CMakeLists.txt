@@ -1,18 +1,22 @@
+add_subdirectory(plugins)
+
 file(GLOB_RECURSE MOTOR_SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.c)
 
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    list(FILTER MOTOR_SOURCES EXCLUDE REGEX "\\\\*_linux\\.c")
+else()
+    # TODO: support for Linux, OSX
+    message(SEND_ERROR "Not supported platform: " ${CMAKE_SYSTEM_NAME})
+endif()
+
 add_executable(frontier
-    ${MOTOR_SOURCES}
-    ${CMAKE_CURRENT_LIST_DIR}/host/host.cpp)
+    ${MOTOR_SOURCES})
 
 target_include_directories(frontier PRIVATE
-    ${FRONTIER_MAIN_INCLUDE_DIR})
+    ${FRONTIER_INCLUDE_DIR}
+    ${CMAKE_CURRENT_LIST_DIR})
 target_compile_definitions(frontier PRIVATE
     -DFRONTIER_GAME_PLUGIN="${FRONTIER_GAME_PLUGIN}"
-    -DFRONTIER_DEPLOY_DIR="${FRONTIER_DEPLOY_DIR}")
-
-if (MOTOR_NOINSTALL)
-    target_compile_definitions(frontier PRIVATE
-        -DMOTOR_NOINSTALL
-        -DMOTOR_DEFAULT_BASE_DIR="${FRONTIER_DEPLOY_DIR}/data"
-        -DMOTOR_DEFAULT_SAVE_DIR="${FRONTIER_DEPLOY_DIR}/save")
-endif()
+    -DFRONTIER_BINARY_DIR="${FRONTIER_BINARY_DIR}")
+target_link_libraries(frontier PRIVATE
+    plugins)

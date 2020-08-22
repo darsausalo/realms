@@ -1,12 +1,17 @@
 #include "motor.h"
 
-#include "motor/host/cr.h"
+void call_crash() {
+  int* x = NULL;
+  *x = 1;
+}
+
+void crash_test() { call_crash(); }
 
 CR_EXPORT int cr_main(struct cr_plugin* ctx, enum cr_op operation) {
   assert(ctx);
   switch (operation) {
   case CR_LOAD:
-    printf("loaded\n");
+    printf("loaded[1]\n");
     return 0;
   case CR_UNLOAD:
     printf("unloaded\n");
@@ -19,6 +24,7 @@ CR_EXPORT int cr_main(struct cr_plugin* ctx, enum cr_op operation) {
   static bool print_version = true;
   if (print_version) {
     printf("loaded version: %d\n", ctx->version);
+    // crash_test();
     print_version = false;
   }
   return 0;

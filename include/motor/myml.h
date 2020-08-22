@@ -1,8 +1,6 @@
 #ifndef MYML_H
 #define MYML_H
 
-#include <stdbool.h>
-
 typedef struct myml_value_t myml_value_t;
 typedef struct myml_table_t myml_table_t;
 

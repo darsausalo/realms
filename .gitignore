@@ -2,6 +2,9 @@
 .idea
 cmake-build-*
 
+# sublime text
+*.sublime-*
+
 ## make
 CMakeFiles
 */CMakeFiles
