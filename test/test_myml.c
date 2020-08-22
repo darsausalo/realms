@@ -1,5 +1,5 @@
-#include <minctest.h>
 #include "motor.h"
+#include <minctest.h>
 
 static const char* src1 = "entity_base:\n\
   health:\n\
@@ -57,6 +57,8 @@ void test_myml_parse() {
   lsequal("entity_base", myml_find_string(table, "entity2.inherits@1"));
   lsequal("entity1", myml_find_string(table, "entity2.inherits@2"));
   lsequal("300", myml_find_string(table, "entity2.speed.max"));
+
+  myml_free(table);
 }
 
 void test_myml_merge() {
@@ -68,6 +70,7 @@ void test_myml_merge() {
   lok(table2);
 
   myml_merge(table1, table2);
+  myml_free(table2);
 
   lsequal("100", myml_find_string(table1, "entity_base.health.max"));
   lsequal("101", myml_find_string(table1, "entity_base.speed.max"));
@@ -83,6 +86,8 @@ void test_myml_merge() {
   lsequal("111", myml_find_string(table1, "entity2.speed"));
   lok(myml_find_subtable(table1, "entity2.tag3"));
   lsequal("15", myml_find_string(table1, "entity2.armor.value"));
+
+  myml_free(table1);
 }
 
 void test_myml_take_inherit() {
@@ -94,6 +99,7 @@ void test_myml_take_inherit() {
   lok(table2);
 
   myml_merge(table1, table2);
+  myml_free(table2);
 
   myml_error_t error = myml_take_inherit(table1);
 
@@ -122,6 +128,8 @@ void test_myml_take_inherit() {
   lok(myml_find_subtable(table1, "entity2.tag3"));
   lok(myml_find_subtable(table1, "entity2.tag4"));
   lsequal("215", myml_find_string(table1, "entity2.health.max"));
+
+  myml_free(table1);
 }
 
 int main(int argc, char** argv) {

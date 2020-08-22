@@ -183,7 +183,7 @@ static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = key;
+    value->key = myml_strdup(key);
   }
   value->type = MVT_STRING;
   value->string = string;
@@ -198,7 +198,7 @@ myml_value_t* myml_set_string(myml_table_t* table, const char* key,
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = key;
+    value->key = myml_strdup(key);
   }
   value->type = MVT_STRING;
   value->string = myml_strndup(string, len);
@@ -213,7 +213,7 @@ myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = key;
+    value->key = myml_strdup(key);
   }
   value->type = MVT_TABLE;
   value->table = subtable;
@@ -352,17 +352,14 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
     myml_value_t* dst_value = myml_get_value(dst, src_value->key);
     if (dst_value) {
       dst_value->type = src_value->type;
-      dst_value->key = src_value->key;
+      dst_value->key = myml_strdup(src_value->key);
       if (src_value->type == MVT_STRING) {
-        dst_value->string = src_value->string;
+        dst_value->string = myml_strdup(src_value->string);
         dst_value->line = src_value->line;
         dst_value->column = src_value->column;
       } else {
-        if (!dst_value->table) {
-          dst_value->table = src_value->table;
-        } else if (src_value->table) {
-          myml_merge(dst_value->table, src_value->table);
-        }
+        if (!dst_value->table) { dst_value->table = myml_alloc(); }
+        myml_merge(dst_value->table, src_value->table);
       }
       continue;
     }
@@ -370,7 +367,8 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
       dst_value = myml_set_string(dst, src_value->key, src_value->string,
                                   strlen(src_value->string));
     } else {
-      dst_value = myml_set_subtable(dst, src_value->key, src_value->table);
+      dst_value = myml_set_subtable(dst, src_value->key, myml_alloc());
+      myml_merge(dst_value->table, src_value->table);
     }
     dst_value->line = src_value->line;
     dst_value->column = src_value->column;
@@ -379,6 +377,15 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
 
 static void myml_remove_at(myml_table_t* table, int index) {
   if (table->size == 0) return;
+
+  myml_value_t* value = &table->values[index];
+
+  free((void*) (uintptr_t) value->key);
+  if (value->type == MVT_STRING) {
+    free((void*) (uintptr_t) value->string);
+  } else {
+    myml_free(value->table);
+  }
 
   table->values[index] = table->values[table->size - 1];
   table->size--;
@@ -402,8 +409,9 @@ static void myml_merge_base(myml_table_t* table, myml_table_t* base) {
       }
     } else {
       if (!value) {
-        myml_set_subtable(table, base_value->key, base_value->table);
-      } else if (value->type == MVT_TABLE) {
+        value = myml_set_subtable(table, base_value->key, myml_alloc());
+      }
+      if (value->type == MVT_TABLE) {
         myml_merge_base(value->table, base_value->table);
       }
     }
