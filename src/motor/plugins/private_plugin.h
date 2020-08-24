@@ -1,6 +1,11 @@
 #ifndef MOTOR_PRIVATE_PLUGIN_H
 #define MOTOR_PRIVATE_PLUGIN_H
 
+// TODO: replace by log_*
+#define CR_TRACE log_trace("%s", __FUNCTION__);
+#define CR_LOG(...) log_debug(__VA_ARGS__)
+#define CR_ERROR(...) log_error(__VA_ARGS__)
+
 //
 // Global OS specific defines/customizations
 //

@@ -11,7 +11,7 @@ CR_EXPORT int cr_main(struct cr_plugin* ctx, enum cr_op operation) {
   assert(ctx);
   switch (operation) {
   case CR_LOAD:
-    printf("loaded[1]\n");
+    printf("loaded[2]\n");
     return 0;
   case CR_UNLOAD:
     printf("unloaded\n");
