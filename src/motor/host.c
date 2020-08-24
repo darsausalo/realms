@@ -10,40 +10,40 @@ void printmemstat(const char* msg, void* arg) { printf("%s", msg); }
 
 
 int main(int argc, char* argv[]) {
-  log_set_level(LOG_TRACE);
-  log_info("initalize: mi version: %d", mi_version());
+    log_set_level(LOG_TRACE);
+    log_info("initalize: mi version: %d", mi_version());
 
-  mi_stats_reset();
+    mi_stats_reset();
 
-  sys_register_crash_handler(FRONTIER_BINARY_DIR);
+    sys_register_crash_handler(FRONTIER_BINARY_DIR);
 
-  hostApi_t api;
+    hostApi_t api;
 
-  api.GetText = Host_GetText;
+    api.GetText = Host_GetText;
 
-  cr_plugin ctx;
-  ctx.userdata = &api;
-  // the host application should initalize a plugin with a context, a plugin
-  // filename without extension and the full path to the plugin
-  if (!cr_plugin_open(&ctx, plugin)) {
-    log_fatal("game plugin not found");
-    mi_stats_print_out(printmemstat, NULL);
-    return -1;
-  }
+    cr_plugin ctx;
+    ctx.userdata = &api;
+    // the host application should initalize a plugin with a context, a plugin
+    // filename without extension and the full path to the plugin
+    if (!cr_plugin_open(&ctx, plugin)) {
+        log_fatal("game plugin not found");
+        mi_stats_print_out(printmemstat, NULL);
+        return -1;
+    }
 
-  // call the plugin update function with the plugin context to execute it
-  // at any frequency matters to you
-  while (true) {
-    cr_plugin_update(&ctx, true);
-    fflush(stdout);
-    fflush(stderr);
-  }
+    // call the plugin update function with the plugin context to execute it
+    // at any frequency matters to you
+    while (true) {
+        cr_plugin_update(&ctx, true);
+        fflush(stdout);
+        fflush(stderr);
+    }
 
-  // at the end do not forget to cleanup the plugin context, as it needs to
-  // allocate some memory to track internal and plugin states
-  cr_plugin_close(&ctx);
+    // at the end do not forget to cleanup the plugin context, as it needs to
+    // allocate some memory to track internal and plugin states
+    cr_plugin_close(&ctx);
 
-  // mi_stats_print_out(printmemstat, NULL);
+    // mi_stats_print_out(printmemstat, NULL);
 
-  return 0;
+    return 0;
 }

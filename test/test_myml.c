@@ -38,126 +38,134 @@ entity2:\n\
 ";
 
 void test_myml_parse() {
-  myml_parse_result_t result = myml_parse(src1);
-  myml_table_t* table = result.table;
-  lok(table);
-  lok(myml_get_subtable(table, "entity_base"));
-  lok(myml_get_subtable(table, "entity_base"));
-  lok(myml_get_subtable(table, "entity1"));
-  lok(myml_get_subtable(table, "entity2"));
+    myml_table_t* table = myml_alloc();
+    myml_error_t  parse_error = myml_parse(table, src1);
 
-  lsequal("100", myml_find_string(table, "entity_base.health.max"));
-  lsequal("101", myml_find_string(table, "entity_base.speed.max"));
-  lsequal("11", myml_find_string(table, "entity_base.speed.accel"));
+    lok(!parse_error.message);
+    lok(myml_get_subtable(table, "entity_base"));
+    lok(myml_get_subtable(table, "entity_base"));
+    lok(myml_get_subtable(table, "entity1"));
+    lok(myml_get_subtable(table, "entity2"));
 
-  lsequal("entity_base", myml_find_string(table, "entity1.inherits"));
-  lsequal("200", myml_find_string(table, "entity1.health.max"));
-  lsequal("x1", myml_find_string(table, "entity1.tst1"));
+    lsequal("100", myml_find_string(table, "entity_base.health.max"));
+    lsequal("101", myml_find_string(table, "entity_base.speed.max"));
+    lsequal("11", myml_find_string(table, "entity_base.speed.accel"));
 
-  lsequal("entity_base", myml_find_string(table, "entity2.inherits@1"));
-  lsequal("entity1", myml_find_string(table, "entity2.inherits@2"));
-  lsequal("300", myml_find_string(table, "entity2.speed.max"));
+    lsequal("entity_base", myml_find_string(table, "entity1.inherits"));
+    lsequal("200", myml_find_string(table, "entity1.health.max"));
+    lsequal("x1", myml_find_string(table, "entity1.tst1"));
 
-  myml_free(table);
+    lsequal("entity_base", myml_find_string(table, "entity2.inherits@1"));
+    lsequal("entity1", myml_find_string(table, "entity2.inherits@2"));
+    lsequal("300", myml_find_string(table, "entity2.speed.max"));
+
+    myml_free(table);
 }
 
 void test_myml_merge() {
-  myml_table_t* table1 = myml_parse(src1).table;
-  lok(table1);
-  lok(!myml_find_subtable(table1, "entity_base.tag4"));
+    myml_table_t* table1 = myml_alloc();
+    myml_error_t  parse_error = myml_parse(table1, src1);
 
-  myml_table_t* table2 = myml_parse(src2).table;
-  lok(table2);
+    lok(!parse_error.message);
+    lok(!myml_find_subtable(table1, "entity_base.tag4"));
 
-  myml_merge(table1, table2);
-  myml_free(table2);
+    myml_table_t* table2 = myml_alloc();
+    parse_error = myml_parse(table2, src2);
+    lok(!parse_error.message);
 
-  lsequal("100", myml_find_string(table1, "entity_base.health.max"));
-  lsequal("101", myml_find_string(table1, "entity_base.speed.max"));
-  lsequal("11", myml_find_string(table1, "entity_base.speed.accel"));
-  lok(myml_find_subtable(table1, "entity_base.tag4"));
+    myml_merge(table1, table2);
+    myml_free(table2);
 
-  lsequal("entity_base", myml_find_string(table1, "entity1.inherits"));
-  lsequal("215", myml_find_string(table1, "entity1.health.max"));
-  lsequal("x1", myml_find_string(table1, "entity1.tst1"));
+    lsequal("100", myml_find_string(table1, "entity_base.health.max"));
+    lsequal("101", myml_find_string(table1, "entity_base.speed.max"));
+    lsequal("11", myml_find_string(table1, "entity_base.speed.accel"));
+    lok(myml_find_subtable(table1, "entity_base.tag4"));
 
-  lsequal("entity_base", myml_find_string(table1, "entity2.inherits@1"));
-  lsequal("entity1", myml_find_string(table1, "entity2.inherits@2"));
-  lsequal("111", myml_find_string(table1, "entity2.speed"));
-  lok(myml_find_subtable(table1, "entity2.tag3"));
-  lsequal("15", myml_find_string(table1, "entity2.armor.value"));
+    lsequal("entity_base", myml_find_string(table1, "entity1.inherits"));
+    lsequal("215", myml_find_string(table1, "entity1.health.max"));
+    lsequal("x1", myml_find_string(table1, "entity1.tst1"));
 
-  myml_free(table1);
+    lsequal("entity_base", myml_find_string(table1, "entity2.inherits@1"));
+    lsequal("entity1", myml_find_string(table1, "entity2.inherits@2"));
+    lsequal("111", myml_find_string(table1, "entity2.speed"));
+    lok(myml_find_subtable(table1, "entity2.tag3"));
+    lsequal("15", myml_find_string(table1, "entity2.armor.value"));
+
+    myml_free(table1);
 }
 
 void test_myml_take_inherit() {
-  myml_table_t* table1 = myml_parse(src1).table;
-  lok(table1);
-  lok(!myml_find_subtable(table1, "entity_base.tag4"));
+    myml_table_t* table1 = myml_alloc();
+    myml_error_t  parse_error = myml_parse(table1, src1);
 
-  myml_table_t* table2 = myml_parse(src2).table;
-  lok(table2);
+    lok(!parse_error.message);
+    lok(!myml_find_subtable(table1, "entity_base.tag4"));
 
-  myml_merge(table1, table2);
-  myml_free(table2);
+    myml_table_t* table2 = myml_alloc();
+    parse_error = myml_parse(table2, src2);
+    lok(!parse_error.message);
 
-  myml_error_t error = myml_take_inherit(table1);
+    myml_merge(table1, table2);
+    myml_free(table2);
 
-  lok(!error.message);
+    myml_error_t error = myml_take_inherit(table1);
 
-  lsequal("100", myml_find_string(table1, "entity_base.health.max"));
-  lsequal("101", myml_find_string(table1, "entity_base.speed.max"));
-  lsequal("11", myml_find_string(table1, "entity_base.speed.accel"));
-  lok(myml_find_subtable(table1, "entity_base.tag4"));
+    lok(!error.message);
 
-  lok(!myml_find_string(table1, "entity1.inherits"));
-  lsequal("215", myml_find_string(table1, "entity1.health.max"));
-  lsequal("x1", myml_find_string(table1, "entity1.tst1"));
-  lsequal("101", myml_find_string(table1, "entity1.speed.max"));
-  lsequal("11", myml_find_string(table1, "entity1.speed.accel"));
-  lok(myml_find_subtable(table1, "entity1.tag1"));
-  lok(myml_find_subtable(table1, "entity1.tag2"));
-  lok(myml_find_subtable(table1, "entity1.tag4"));
+    lsequal("100", myml_find_string(table1, "entity_base.health.max"));
+    lsequal("101", myml_find_string(table1, "entity_base.speed.max"));
+    lsequal("11", myml_find_string(table1, "entity_base.speed.accel"));
+    lok(myml_find_subtable(table1, "entity_base.tag4"));
 
-  lok(!myml_find_string(table1, "entity2.inherits@1"));
-  lok(!myml_find_string(table1, "entity2.inherits@2"));
-  lsequal("111", myml_find_string(table1, "entity2.speed"));
-  lsequal("15", myml_find_string(table1, "entity2.armor.value"));
-  lok(myml_find_subtable(table1, "entity2.tag1"));
-  lok(myml_find_subtable(table1, "entity2.tag2"));
-  lok(myml_find_subtable(table1, "entity2.tag3"));
-  lok(myml_find_subtable(table1, "entity2.tag4"));
-  lsequal("215", myml_find_string(table1, "entity2.health.max"));
+    lok(!myml_find_string(table1, "entity1.inherits"));
+    lsequal("215", myml_find_string(table1, "entity1.health.max"));
+    lsequal("x1", myml_find_string(table1, "entity1.tst1"));
+    lsequal("101", myml_find_string(table1, "entity1.speed.max"));
+    lsequal("11", myml_find_string(table1, "entity1.speed.accel"));
+    lok(myml_find_subtable(table1, "entity1.tag1"));
+    lok(myml_find_subtable(table1, "entity1.tag2"));
+    lok(myml_find_subtable(table1, "entity1.tag4"));
 
-  myml_free(table1);
+    lok(!myml_find_string(table1, "entity2.inherits@1"));
+    lok(!myml_find_string(table1, "entity2.inherits@2"));
+    lsequal("111", myml_find_string(table1, "entity2.speed"));
+    lsequal("15", myml_find_string(table1, "entity2.armor.value"));
+    lok(myml_find_subtable(table1, "entity2.tag1"));
+    lok(myml_find_subtable(table1, "entity2.tag2"));
+    lok(myml_find_subtable(table1, "entity2.tag3"));
+    lok(myml_find_subtable(table1, "entity2.tag4"));
+    lsequal("215", myml_find_string(table1, "entity2.health.max"));
+
+    myml_free(table1);
 }
 
 void test_myml_take_inherit_fail() {
-  static const char* src = "entity:\n\
+    static const char* src = "entity:\n\
   inherits: no_base_entity\n\
   speed: 100";
 
-  myml_parse_result_t result = myml_parse(src);
-  myml_table_t* table = result.table;
-  lok(table);
 
-  myml_error_t error = myml_take_inherit(table);
-  lok(error.message);
+    myml_table_t* table = myml_alloc();
+    myml_error_t  error = myml_parse(table, src);
+    lok(!error.message);
 
-  myml_free(table);
+    error = myml_take_inherit(table);
+    lok(error.message);
+
+    myml_free(table);
 }
 
 void sys_register_crash_handler(const char*);
 
 int main(int argc, char** argv) {
-  mi_version();
+    mi_version();
 
-  sys_register_crash_handler(NULL);
+    sys_register_crash_handler(NULL);
 
-  lrun("myml_parse", test_myml_parse);
-  lrun("myml_merge", test_myml_merge);
-  lrun("myml_take_inherit", test_myml_take_inherit);
-  lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
-  lresults();
-  return lfails != 0;
+    lrun("myml_parse", test_myml_parse);
+    lrun("myml_merge", test_myml_merge);
+    lrun("myml_take_inherit", test_myml_take_inherit);
+    lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
+    lresults();
+    return lfails != 0;
 }

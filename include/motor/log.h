@@ -9,20 +9,20 @@
 #define MOTOR_LOG_H
 
 typedef enum {
-  LOG_TRACE,
-  LOG_DEBUG,
-  LOG_INFO,
-  LOG_WARNING,
-  LOG_ERROR,
-  LOG_FATAL
+    kLogTrace,
+    kLogDebug,
+    kLogInfo,
+    kLogWarning,
+    kLogError,
+    kLogFatal
 } logLevel_t;
 
-#define log_trace(...) log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__)
-#define log_debug(...) log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define log_info(...) log_log(LOG_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define log_warning(...) log_log(LOG_WARNING, __FILE__, __LINE__, __VA_ARGS__)
-#define log_error(...) log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define log_fatal(...) log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__)
+#define log_trace(...) log_log(kLogTrace, __FILE__, __LINE__, __VA_ARGS__)
+#define log_debug(...) log_log(kLogDebug, __FILE__, __LINE__, __VA_ARGS__)
+#define log_info(...) log_log(kLogInfo, __FILE__, __LINE__, __VA_ARGS__)
+#define log_warning(...) log_log(kLogWarning, __FILE__, __LINE__, __VA_ARGS__)
+#define log_error(...) log_log(kLogError, __FILE__, __LINE__, __VA_ARGS__)
+#define log_fatal(...) log_log(kLogFatal, __FILE__, __LINE__, __VA_ARGS__)
 
 void log_set_level(logLevel_t level);
 void log_set_fp(FILE* fp, logLevel_t level);

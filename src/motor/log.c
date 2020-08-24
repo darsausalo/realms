@@ -24,10 +24,10 @@
 #include <time.h>
 
 static struct {
-  logLevel_t level;
+    logLevel_t level;
 
-  FILE* fp;
-  logLevel_t file_level;
+    FILE*      fp;
+    logLevel_t file_level;
 } logger = {.fp = NULL, .level = LOG_INFO};
 
 static const char* level_strings[] = {"TRACE", "DEBUG", "INFO",
@@ -37,60 +37,61 @@ static const char* level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m",
                                      "\x1b[33m", "\x1b[31m", "\x1b[35m"};
 
 void log_set_level(logLevel_t level) {
-  // TODO: lock()
+    // TODO: lock()
 
-  logger.level = level;
+    logger.level = level;
 
-  // TODO: unlock()
+    // TODO: unlock()
 }
 void log_set_fp(FILE* fp, logLevel_t level) {
-  // TODO: lock()
+    // TODO: lock()
 
-  logger.fp = fp;
-  logger.file_level = level;
+    logger.fp = fp;
+    logger.file_level = level;
 
-  // TODO: unlock()
+    // TODO: unlock()
 }
 
 void log_log(logLevel_t level, const char* file, int line, const char* fmt,
              ...) {
-  // TODO: lock()
+    // TODO: lock()
 
-  if (level >= logger.level) {
-    time_t t = time(NULL);
-    struct tm* local_time = localtime(&t);
+    if (level >= logger.level) {
+        time_t     t = time(NULL);
+        struct tm* local_time = localtime(&t);
 
-    // log to stderr
-    {
-      va_list ap;
-      va_start(ap, fmt);
+        // log to stderr
+        {
+            va_list ap;
+            va_start(ap, fmt);
 
-      char buf[16];
-      buf[strftime(buf, sizeof(buf), "%H:%M:%S", local_time)] = '\0';
-      fprintf(stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
-              level_colors[level], level_strings[level], file, line);
-      vfprintf(stderr, fmt, ap);
-      fprintf(stderr, "\n");
+            char buf[16];
+            buf[strftime(buf, sizeof(buf), "%H:%M:%S", local_time)] = '\0';
+            fprintf(stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
+                    level_colors[level], level_strings[level], file, line);
+            vfprintf(stderr, fmt, ap);
+            fprintf(stderr, "\n");
 
-      va_end(ap);
+            va_end(ap);
+        }
+
+        // log to file
+        if (logger.fp && level >= logger.file_level) {
+            va_list ap;
+            va_start(ap, fmt);
+
+            char buf[64];
+            buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local_time)] =
+                '\0';
+            fprintf(logger.fp, "%s %-5s %s:%d: ", buf, level_strings[level],
+                    file, line);
+            vfprintf(logger.fp, fmt, ap);
+            fprintf(logger.fp, "\n");
+            fflush(logger.fp);
+
+            va_end(ap);
+        }
     }
 
-    // log to file
-    if (logger.fp && level >= logger.file_level) {
-      va_list ap;
-      va_start(ap, fmt);
-
-      char buf[64];
-      buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local_time)] = '\0';
-      fprintf(logger.fp, "%s %-5s %s:%d: ", buf, level_strings[level], file,
-              line);
-      vfprintf(logger.fp, fmt, ap);
-      fprintf(logger.fp, "\n");
-      fflush(logger.fp);
-
-      va_end(ap);
-    }
-  }
-
-  // TODO: unlock()
+    // TODO: unlock()
 }
