@@ -130,19 +130,34 @@ void test_myml_take_inherit() {
   lsequal("215", myml_find_string(table1, "entity2.health.max"));
 
   myml_free(table1);
-  int* x = 0;
-  *x = 1;
 }
 
+void test_myml_take_inherit_fail() {
+  static const char* src = "entity:\n\
+  inherits: no_base_entity\n\
+  speed: 100";
+
+  myml_parse_result_t result = myml_parse(src);
+  myml_table_t* table = result.table;
+  lok(table);
+
+  myml_error_t error = myml_take_inherit(table);
+  lok(error.message);
+
+  myml_free(table);
+}
 
 void sys_register_crash_handler(const char*);
 
 int main(int argc, char** argv) {
+  mi_version();
+
   sys_register_crash_handler(NULL);
 
   lrun("myml_parse", test_myml_parse);
   lrun("myml_merge", test_myml_merge);
   lrun("myml_take_inherit", test_myml_take_inherit);
+  lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
   lresults();
   return lfails != 0;
 }
