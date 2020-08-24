@@ -14,6 +14,7 @@
 #include <time.h>
 
 #include "motor/api.h"
+#include "motor/log.h"
 #include "motor/myml.h"
 
 #endif // MOTOR_H

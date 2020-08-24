@@ -25,8 +25,8 @@ typedef struct stack_frame_t {
 static const char* sys_sym_search_path = NULL;
 
 static void sys_print_frame(const stack_frame_t* frame) {
-  printf("#%zu\tSource \"%s\", line %zu in %s [0x%zx]\n", frame->num,
-         frame->filename, frame->line, frame->funcname, frame->addr);
+  fprintf(stderr, "#%zu\tSource \"%s\", line %zu in %s [0x%zx]\n", frame->num,
+          frame->filename, frame->line, frame->funcname, frame->addr);
 }
 
 void sys_stack_trace(void* context) {
@@ -62,7 +62,7 @@ void sys_stack_trace(void* context) {
   SymInitialize(hProcess, sys_sym_search_path, TRUE);
   SymRefreshModuleList(hProcess);
 
-  printf("\033[31;1m*** FATAL ERROR ***\n");
+  fprintf(stderr, "\033[31;1m*** FATAL ERROR ***\n");
 
   size_t frame_num = 0;
   while (true) {
@@ -87,9 +87,9 @@ void sys_stack_trace(void* context) {
     frame.filename = "<unknown>";
     frame.line = 0;
 
-    if (frame_num == 1) printf("\033[33m");
+    if (frame_num == 1) fprintf(stderr, "\033[33m");
     else
-      printf("\033[37;0m");
+      fprintf(stderr, "\033[37;0m");
 
     DWORD64 modbase = SymGetModuleBase64(hProcess, PC);
     if (!modbase) {
