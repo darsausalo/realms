@@ -419,8 +419,8 @@ static void myml_merge_base(myml_table_t* table, myml_table_t* base) {
 }
 
 static int myml_compare_inherits_keys(const void* a, const void* b) {
-  myml_value_t* v1 = *(myml_value_t**) a;
-  myml_value_t* v2 = *(myml_value_t**) b;
+  myml_value_t* v1 = (myml_value_t*) a;
+  myml_value_t* v2 = (myml_value_t*) b;
 
   int cmp = strcmp(v1->key, v2->key);
   return cmp ? -cmp : 0;
@@ -431,30 +431,33 @@ static myml_error_t myml_take_inherit_from(myml_table_t* table,
   int* to_remove = malloc(table->size * sizeof(int));
   int to_remove_count = 0;
 
-  myml_value_t** base_keys = malloc(table->size * sizeof(myml_value_t*));
+  myml_value_t* base_keys = malloc(table->size * sizeof(myml_value_t));
   int base_keys_count = 0;
 
   for (int i = 0; i < table->size; i++) {
-    myml_value_t* value = &table->values[i];
-    if (value->type != MVT_STRING) continue;
-    if (strncmp(value->key, MYML_INHERITS, MYML_INHERITS_SIZE) == 0) {
+    if (table->values[i].type != MVT_STRING) continue;
+    if (strncmp(table->values[i].key, MYML_INHERITS, MYML_INHERITS_SIZE) == 0) {
+      myml_value_t value;
+      value.key = table->values[i].key;
+      value.string = table->values[i].string;
       base_keys[base_keys_count++] = value;
       to_remove[to_remove_count++] = i;
     }
   }
 
-  qsort(base_keys, base_keys_count, sizeof(myml_value_t*),
+  qsort(base_keys, base_keys_count, sizeof(myml_value_t),
         myml_compare_inherits_keys);
 
   for (int i = 0; i < base_keys_count; i++) {
-    myml_table_t* base = myml_get_subtable(ref_table, base_keys[i]->string);
+    myml_table_t* base = myml_get_subtable(ref_table, base_keys[i].string);
     if (!base) {
+      myml_error_t error = {.line = base_keys[i].line,
+                            .column = base_keys[i].column,
+                            .message = "base not found"};
+
       free(base_keys);
       free(to_remove);
 
-      myml_error_t error = {.line = base_keys[i]->line,
-                            .column = base_keys[i]->column,
-                            .message = "base not found"};
       return error;
     }
 
