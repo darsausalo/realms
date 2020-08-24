@@ -5,28 +5,6 @@ static myml_error_t no_error = {.line = 0, .column = 0, .message = NULL};
 
 // TODO: support utf8
 
-// TODO: move to common lib
-static char* myml_strdup(const char* s) {
-  size_t len = strlen(s);
-  char* p = malloc(len + 1);
-  if (p) {
-    memcpy(p, s, len);
-    p[len] = 0;
-  }
-  return p;
-}
-
-// TODO: move to common lib
-static char* myml_strndup(const char* s, size_t n) {
-  size_t len = strnlen(s, n);
-  char* p = malloc(len + 1);
-  if (p) {
-    memcpy(p, s, len);
-    p[len] = 0;
-  }
-  return p;
-}
-
 typedef enum { MVT_STRING, MVT_TABLE } myml_value_type_t;
 
 struct myml_value_t {
@@ -94,7 +72,7 @@ static char* myml_sanitize_value(const char* value, int len) {
   len -= (int) (sanitized_value - value);
   if (len <= 0) return NULL;
 
-  return myml_strndup(sanitized_value, len);
+  return mi_strndup(sanitized_value, len);
 }
 
 myml_table_t* myml_alloc() { return calloc(1, sizeof(myml_table_t)); }
@@ -183,7 +161,7 @@ static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = myml_strdup(key);
+    value->key = mi_strdup(key);
   }
   value->type = MVT_STRING;
   value->string = string;
@@ -192,16 +170,16 @@ static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
 }
 
 myml_value_t* myml_set_string(myml_table_t* table, const char* key,
-                              const char* string, size_t len) {
+                              const char* string) {
   myml_value_t* value = myml_get_value(table, key);
   if (!value) {
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = myml_strdup(key);
+    value->key = mi_strdup(key);
   }
   value->type = MVT_STRING;
-  value->string = myml_strndup(string, len);
+  value->string = mi_strdup(string);
 
   return value;
 }
@@ -213,7 +191,7 @@ myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
     table->size++;
     table->values = realloc(table->values, table->size * sizeof(myml_value_t));
     value = &table->values[table->size - 1];
-    value->key = myml_strdup(key);
+    value->key = mi_strdup(key);
   }
   value->type = MVT_TABLE;
   value->table = subtable;
@@ -278,7 +256,7 @@ myml_parse_result_t myml_parse(const char* source) {
 
         if (value_start != -1 && value_stop == -1) { value_stop = i; }
 
-        char* key = myml_strndup(&source[key_start], key_stop - key_start);
+        char* key = mi_strndup(&source[key_start], key_stop - key_start);
         char* value = NULL;
         if (value_start != -1 && value_stop != -1) {
           value = myml_sanitize_value(&source[value_start],
@@ -352,9 +330,9 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
     myml_value_t* dst_value = myml_get_value(dst, src_value->key);
     if (dst_value) {
       dst_value->type = src_value->type;
-      dst_value->key = myml_strdup(src_value->key);
+      dst_value->key = mi_strdup(src_value->key);
       if (src_value->type == MVT_STRING) {
-        dst_value->string = myml_strdup(src_value->string);
+        dst_value->string = mi_strdup(src_value->string);
         dst_value->line = src_value->line;
         dst_value->column = src_value->column;
       } else {
@@ -364,8 +342,7 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
       continue;
     }
     if (src_value->type == MVT_STRING) {
-      dst_value = myml_set_string(dst, src_value->key, src_value->string,
-                                  strlen(src_value->string));
+      dst_value = myml_set_string(dst, src_value->key, src_value->string);
     } else {
       dst_value = myml_set_subtable(dst, src_value->key, myml_alloc());
       myml_merge(dst_value->table, src_value->table);
@@ -403,9 +380,7 @@ static void myml_merge_base(myml_table_t* table, myml_table_t* base) {
     if (base_value->type == MVT_STRING) {
       if (!value &&
           strncmp(base_value->key, MYML_INHERITS, MYML_INHERITS_SIZE) != 0) {
-
-        myml_set_string(table, base_value->key, base_value->string,
-                        strlen(base_value->string));
+        myml_set_string(table, base_value->key, base_value->string);
       }
     } else {
       if (!value) {

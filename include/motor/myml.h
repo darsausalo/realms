@@ -32,7 +32,7 @@ const char* myml_find_string(myml_table_t* table, const char* key_path);
 myml_table_t* myml_find_subtable(myml_table_t* table, const char* key_path);
 
 myml_value_t* myml_set_string(myml_table_t* table, const char* key,
-                              const char* string, size_t len);
+                              const char* string);
 myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
                                 myml_table_t* subtable);
 
