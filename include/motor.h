@@ -1,6 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#include <mimalloc.h>
+
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>

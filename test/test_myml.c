@@ -130,9 +130,16 @@ void test_myml_take_inherit() {
   lsequal("215", myml_find_string(table1, "entity2.health.max"));
 
   myml_free(table1);
+  int* x = 0;
+  *x = 1;
 }
 
+
+void sys_register_crash_handler(const char*);
+
 int main(int argc, char** argv) {
+  sys_register_crash_handler(NULL);
+
   lrun("myml_parse", test_myml_parse);
   lrun("myml_merge", test_myml_merge);
   lrun("myml_take_inherit", test_myml_take_inherit);

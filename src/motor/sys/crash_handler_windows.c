@@ -13,7 +13,7 @@
 
 #define MAX_STACK_FRAMES 16
 
-typedef struct stack_frame_s {
+typedef struct stack_frame_t {
   size_t num;
   uintptr_t addr;
   const char* filename;

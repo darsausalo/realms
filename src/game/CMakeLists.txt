@@ -4,4 +4,6 @@ add_library(${FRONTIER_GAME_PLUGIN} MODULE
     ${GAME_PLUGIN_SOURCES})
 
 target_include_directories(${FRONTIER_GAME_PLUGIN} PRIVATE
-    ${FRONTIER_INCLUDE_DIR})
+    ${FRONTIER_INCLUDE_DIRS})
+target_link_libraries(${FRONTIER_GAME_PLUGIN} PRIVATE
+    mimalloc)

@@ -1,5 +1,5 @@
 extern "C" {
-#include "motor.h"
+#include "motor/plugins/plugin.h"
 
 #include "private_api.h"
 }
