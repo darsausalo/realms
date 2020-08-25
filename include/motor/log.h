@@ -15,19 +15,18 @@ typedef enum {
     kLogWarning,
     kLogError,
     kLogFatal
-} logLevel_t;
+} log_level_t;
 
-#define log_trace(...) log_log(kLogTrace, __FILE__, __LINE__, __VA_ARGS__)
-#define log_debug(...) log_log(kLogDebug, __FILE__, __LINE__, __VA_ARGS__)
-#define log_info(...) log_log(kLogInfo, __FILE__, __LINE__, __VA_ARGS__)
-#define log_warning(...) log_log(kLogWarning, __FILE__, __LINE__, __VA_ARGS__)
-#define log_error(...) log_log(kLogError, __FILE__, __LINE__, __VA_ARGS__)
-#define log_fatal(...) log_log(kLogFatal, __FILE__, __LINE__, __VA_ARGS__)
+#define log_trace(...) log_log(kLogTrace, __VA_ARGS__)
+#define log_debug(...) log_log(kLogDebug, __VA_ARGS__)
+#define log_info(...) log_log(kLogInfo, __VA_ARGS__)
+#define log_warning(...) log_log(kLogWarning, __VA_ARGS__)
+#define log_error(...) log_log(kLogError, __VA_ARGS__)
+#define log_fatal(...) log_log(kLogFatal, __VA_ARGS__)
 
-void log_set_level(logLevel_t level);
-void log_set_fp(FILE* fp, logLevel_t level);
+void log_set_level(log_level_t level);
+void log_set_fp(FILE* fp, log_level_t level);
 
-void log_log(logLevel_t level, const char* file, int line, const char* fmt,
-             ...);
+void log_log(log_level_t level, const char* fmt, ...);
 
 #endif // MOTOR_LOG_H

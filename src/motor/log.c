@@ -24,11 +24,11 @@
 #include <time.h>
 
 static struct {
-    logLevel_t level;
+    log_level_t level;
 
-    FILE*      fp;
-    logLevel_t file_level;
-} logger = {.fp = NULL, .level = LOG_INFO};
+    FILE*       fp;
+    log_level_t file_level;
+} logger = {.fp = NULL, .level = kLogInfo};
 
 static const char* level_strings[] = {"TRACE", "DEBUG", "INFO",
                                       "WARN",  "ERROR", "FATAL"};
@@ -36,14 +36,14 @@ static const char* level_strings[] = {"TRACE", "DEBUG", "INFO",
 static const char* level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m",
                                      "\x1b[33m", "\x1b[31m", "\x1b[35m"};
 
-void log_set_level(logLevel_t level) {
+void log_set_level(log_level_t level) {
     // TODO: lock()
 
     logger.level = level;
 
     // TODO: unlock()
 }
-void log_set_fp(FILE* fp, logLevel_t level) {
+void log_set_fp(FILE* fp, log_level_t level) {
     // TODO: lock()
 
     logger.fp = fp;
@@ -52,8 +52,7 @@ void log_set_fp(FILE* fp, logLevel_t level) {
     // TODO: unlock()
 }
 
-void log_log(logLevel_t level, const char* file, int line, const char* fmt,
-             ...) {
+void log_log(log_level_t level, const char* fmt, ...) {
     // TODO: lock()
 
     if (level >= logger.level) {
@@ -67,8 +66,8 @@ void log_log(logLevel_t level, const char* file, int line, const char* fmt,
 
             char buf[16];
             buf[strftime(buf, sizeof(buf), "%H:%M:%S", local_time)] = '\0';
-            fprintf(stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
-                    level_colors[level], level_strings[level], file, line);
+            fprintf(stderr, "[ %s %s%-5s\x1b[0m\x1b[0m] ", buf,
+                    level_colors[level], level_strings[level]);
             vfprintf(stderr, fmt, ap);
             fprintf(stderr, "\n");
 
@@ -83,8 +82,7 @@ void log_log(logLevel_t level, const char* file, int line, const char* fmt,
             char buf[64];
             buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local_time)] =
                 '\0';
-            fprintf(logger.fp, "%s %-5s %s:%d: ", buf, level_strings[level],
-                    file, line);
+            fprintf(logger.fp, "[ %s %-5s ]", buf, level_strings[level]);
             vfprintf(logger.fp, fmt, ap);
             fprintf(logger.fp, "\n");
             fflush(logger.fp);

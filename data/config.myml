@@ -1,0 +1,6 @@
+window:
+  monitor: default
+  fullscreen: false
+  position:
+    x: -1
+    y: -1

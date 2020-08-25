@@ -1,5 +1,6 @@
 #include "motor.h"
 #include <minctest.h>
+#include "private_api.h"
 
 static const char* src1 = "entity_base:\n\
   health:\n\
@@ -155,6 +156,22 @@ void test_myml_take_inherit_fail() {
     myml_free(table);
 }
 
+void test_myml_set_path_string() {
+    myml_table_t* table = myml_alloc();
+
+    myml_set_path_string(table, "fs.base.dir1", "path1");
+    lsequal("path1", myml_find_string(table, "fs.base.dir1"));
+    myml_set_path_string(table, "window.position.x", "11");
+    lsequal("11", myml_find_string(table, "window.position.x"));
+    lok(!myml_find_string(table, "window.position"));
+    lok(myml_set_path_string(table, "fs.base", "path1"));
+    lok(!myml_find_string(table, "fs.base.dir1"));
+
+    myml_free(table);
+
+    if (mt_free_count != (mt_malloc_count + mt_calloc_count)) { lok(false); }
+}
+
 void sys_register_crash_handler(const char*);
 
 int main(int argc, char** argv) {
@@ -162,10 +179,11 @@ int main(int argc, char** argv) {
 
     sys_register_crash_handler(NULL);
 
-    lrun("myml_parse", test_myml_parse);
-    lrun("myml_merge", test_myml_merge);
-    lrun("myml_take_inherit", test_myml_take_inherit);
-    lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
+    // lrun("myml_parse", test_myml_parse);
+    // lrun("myml_merge", test_myml_merge);
+    // lrun("myml_take_inherit", test_myml_take_inherit);
+    // lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
+    lrun("test_myml_set_path_string", test_myml_set_path_string);
     lresults();
     return lfails != 0;
 }

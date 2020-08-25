@@ -1,5 +1,3 @@
-add_subdirectory(plugins)
-
 file(GLOB_RECURSE MOTOR_SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.c)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -16,10 +14,15 @@ add_executable(frontier
 
 target_include_directories(frontier PRIVATE
     ${FRONTIER_INCLUDE_DIRS}
+    ${FRONTIER_INCLUDE_DIR}/motor/private
     ${CMAKE_CURRENT_LIST_DIR})
 target_compile_definitions(frontier PRIVATE
     -DFRONTIER_GAME_PLUGIN="${FRONTIER_GAME_PLUGIN}"
-    -DFRONTIER_BINARY_DIR="${FRONTIER_BINARY_DIR}")
+    -DMOTOR_OS="${CMAKE_SYSTEM}"
+    -DMOTOR_PROJECT_VERSION="${PROJECT_VERSION}"
+    -DMOTOR_PROJECT_NAME="frontier"
+    -DMOTOR_PROJECT_ORG="Auriga Games"
+    -DMOTOR_BASE_DIR="data"
+    -DMOTOR_USER_DIR="save")
 target_link_libraries(frontier PRIVATE
-    mimalloc
-    plugins)
+    mimalloc)

@@ -1,5 +1,5 @@
-#include "motor.h"
-#include <setjmp.h>
+#include "private_api.h"
+#include <mimalloc.h>
 
 static myml_error_t no_error = {.line = 0, .column = 0, .message = NULL};
 
@@ -36,7 +36,7 @@ static void myml_stack_push(myml_stack_t* stack, myml_table_t* table) {
     if (stack->size >= stack->capacity) {
         stack->capacity = stack->capacity != 0 ? stack->capacity * 2 : 4;
         stack->tables =
-            realloc(stack->tables, stack->capacity * sizeof(myml_table_t));
+            mt_realloc(stack->tables, stack->capacity * sizeof(myml_table_t));
     }
     stack->tables[index] = table;
 }
@@ -71,10 +71,10 @@ static char* myml_sanitize_value(const char* value, int len) {
     len -= (int) (sanitized_value - value);
     if (len <= 0) return NULL;
 
-    return mi_strndup(sanitized_value, len);
+    return mt_strndup(sanitized_value, len);
 }
 
-myml_table_t* myml_alloc() { return calloc(1, sizeof(myml_table_t)); }
+myml_table_t* myml_alloc() { return mt_calloc(1, sizeof(myml_table_t)); }
 
 void myml_free(myml_table_t* table) {
     if (!table) return;
@@ -84,12 +84,13 @@ void myml_free(myml_table_t* table) {
         if (value->type == MVT_TABLE) {
             myml_free(value->table);
         } else {
-            free((void*) (intptr_t) value->string);
+            mt_free((void*) (intptr_t) value->string);
         }
-        free((void*) (intptr_t) value->key);
+        mt_free((void*) (intptr_t) value->key);
     }
 
-    free((void*) (intptr_t) table);
+    mt_free((void*) (intptr_t) table->values);
+    mt_free((void*) (intptr_t) table);
 }
 
 myml_value_t* myml_get_value(myml_table_t* table, const char* key) {
@@ -117,7 +118,7 @@ void myml_get_location(myml_value_t* value, int* line, int* column) {
     *column = value->column;
 }
 
-const char* myml_find_string(myml_table_t* table, const char* key_path) {
+const char* myml_find_string(const myml_table_t* table, const char* key_path) {
     int len = 0;
     while (key_path[len] != '\0' && key_path[len] != '.') len++;
     bool partial = key_path[len] == '.';
@@ -136,7 +137,8 @@ const char* myml_find_string(myml_table_t* table, const char* key_path) {
     return NULL;
 }
 
-myml_table_t* myml_find_subtable(myml_table_t* table, const char* key_path) {
+myml_table_t* myml_find_subtable(const myml_table_t* table,
+                                 const char*         key_path) {
     int len = 0;
     while (key_path[len] != '\0' && key_path[len] != '.') len++;
     bool partial = key_path[len] == '.';
@@ -154,6 +156,42 @@ myml_table_t* myml_find_subtable(myml_table_t* table, const char* key_path) {
     return NULL;
 }
 
+myml_value_t* myml_set_path_string(myml_table_t* table, const char* key_path,
+                                   const char* string) {
+    int len = 0;
+    while (key_path[len] != '\0' && key_path[len] != '.') len++;
+    bool partial = key_path[len] == '.';
+
+    if (partial) {
+        myml_table_t* subtable = NULL;
+        for (int i = 0; i < table->size; i++) {
+            myml_value_t* value = &table->values[i];
+            if (strncmp(value->key, key_path, len) == 0) {
+                if (value->type == MVT_TABLE) {
+                    subtable = value->table;
+                    break;
+                } else {
+                    return NULL;
+                }
+            }
+        }
+
+        if (!subtable) {
+            subtable = myml_alloc();
+            table->size++;
+            table->values =
+                mt_realloc(table->values, table->size * sizeof(myml_value_t));
+            myml_value_t* value = &table->values[table->size - 1];
+            value->type = MVT_TABLE;
+            value->key = mt_strndup(key_path, len);
+            value->table = subtable;
+        }
+        return myml_set_path_string(subtable, &key_path[len + 1], string);
+    } else {
+        return myml_set_string(table, key_path, string);
+    }
+}
+
 static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
                                             const char*   key,
                                             const char*   string) {
@@ -161,9 +199,9 @@ static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
     if (!value) {
         table->size++;
         table->values =
-            realloc(table->values, table->size * sizeof(myml_value_t));
+            mt_realloc(table->values, table->size * sizeof(myml_value_t));
         value = &table->values[table->size - 1];
-        value->key = mi_strdup(key);
+        value->key = mt_strdup(key);
     }
     value->type = MVT_STRING;
     value->string = string;
@@ -177,25 +215,27 @@ myml_value_t* myml_set_string(myml_table_t* table, const char* key,
     if (!value) {
         table->size++;
         table->values =
-            realloc(table->values, table->size * sizeof(myml_value_t));
+            mt_realloc(table->values, table->size * sizeof(myml_value_t));
         value = &table->values[table->size - 1];
-        value->key = mi_strdup(key);
+        value->key = mt_strdup(key);
+    } else if (value->type == MVT_TABLE) {
+        myml_free(value->table);
     }
     value->type = MVT_STRING;
-    value->string = mi_strdup(string);
+    value->string = mt_strdup(string);
 
     return value;
 }
 
-myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
-                                myml_table_t* subtable) {
+static myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
+                                       myml_table_t* subtable) {
     myml_value_t* value = myml_get_value(table, key);
     if (!value) {
         table->size++;
         table->values =
-            realloc(table->values, table->size * sizeof(myml_value_t));
+            mt_realloc(table->values, table->size * sizeof(myml_value_t));
         value = &table->values[table->size - 1];
-        value->key = mi_strdup(key);
+        value->key = mt_strdup(key);
     }
     value->type = MVT_TABLE;
     value->table = subtable;
@@ -263,7 +303,7 @@ myml_error_t myml_parse(myml_table_t* table, const char* source) {
                 if (value_start != -1 && value_stop == -1) { value_stop = i; }
 
                 char* key =
-                    mi_strndup(&source[key_start], key_stop - key_start);
+                    mt_strndup(&source[key_start], key_stop - key_start);
                 char* value = NULL;
                 if (value_start != -1 && value_stop != -1) {
                     value = myml_sanitize_value(&source[value_start],
@@ -335,9 +375,9 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
         myml_value_t* dst_value = myml_get_value(dst, src_value->key);
         if (dst_value) {
             dst_value->type = src_value->type;
-            dst_value->key = mi_strdup(src_value->key);
+            dst_value->key = mt_strdup(src_value->key);
             if (src_value->type == MVT_STRING) {
-                dst_value->string = mi_strdup(src_value->string);
+                dst_value->string = mt_strdup(src_value->string);
                 dst_value->line = src_value->line;
                 dst_value->column = src_value->column;
             } else {
@@ -362,9 +402,9 @@ static void myml_remove_at(myml_table_t* table, int index) {
 
     myml_value_t* value = &table->values[index];
 
-    free((void*) (uintptr_t) value->key);
+    mt_free((void*) (uintptr_t) value->key);
     if (value->type == MVT_STRING) {
-        free((void*) (uintptr_t) value->string);
+        mt_free((void*) (uintptr_t) value->string);
     } else {
         myml_free(value->table);
     }
@@ -408,10 +448,10 @@ static int myml_compare_inherits_keys(const void* a, const void* b) {
 
 static myml_error_t myml_take_inherit_from(myml_table_t* table,
                                            myml_table_t* ref_table) {
-    int* to_remove = malloc(table->size * sizeof(int));
+    int* to_remove = mt_malloc(table->size * sizeof(int));
     int  to_remove_count = 0;
 
-    myml_value_t* base_keys = malloc(table->size * sizeof(myml_value_t));
+    myml_value_t* base_keys = mt_malloc(table->size * sizeof(myml_value_t));
     int           base_keys_count = 0;
 
     for (int i = 0; i < table->size; i++) {
@@ -436,8 +476,8 @@ static myml_error_t myml_take_inherit_from(myml_table_t* table,
                                   .column = base_keys[i].column,
                                   .message = "base not found"};
 
-            free(base_keys);
-            free(to_remove);
+            mt_free(base_keys);
+            mt_free(to_remove);
 
             return error;
         }
@@ -447,8 +487,8 @@ static myml_error_t myml_take_inherit_from(myml_table_t* table,
 
     for (int i = 0; i < to_remove_count; i++) { myml_remove_at(table, i); }
 
-    free(base_keys);
-    free(to_remove);
+    mt_free(base_keys);
+    mt_free(to_remove);
 
     return no_error;
 }

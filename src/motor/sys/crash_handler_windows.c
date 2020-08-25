@@ -1,15 +1,10 @@
-#include "motor.h"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "sys_windows.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4091)
 #include <dbghelp.h>
 #pragma comment(lib, "dbghelp.lib")
 #pragma warning(pop)
-
-#include <psapi.h>
 
 #define MAX_STACK_FRAMES 16
 
@@ -23,13 +18,14 @@ typedef struct stack_frame_t {
 } stack_frame_t;
 
 static const char* sys_sym_search_path = NULL;
+static void (*sys_interrupt_callback)() = NULL;
 
 static void sys_print_frame(const stack_frame_t* frame) {
     fprintf(stderr, "#%zu\tSource \"%s\", line %zu in %s [0x%zx]\n", frame->num,
             frame->filename, frame->line, frame->funcname, frame->addr);
 }
 
-void sys_stack_trace(void* context) {
+void sys_dump_stack_trace(void* context) {
     STACKFRAME64 stack_frame;
     memset(&stack_frame, 0, sizeof(stack_frame));
 
@@ -133,15 +129,31 @@ void sys_stack_trace(void* context) {
     fflush(stderr);
 }
 
-LONG WINAPI sys_error_handler(LPEXCEPTION_POINTERS ep) {
-    sys_stack_trace((void*) ep);
+static LONG WINAPI sys_error_handler(LPEXCEPTION_POINTERS ep) {
+    sys_dump_stack_trace((void*) ep);
 
     _exit(ep->ExceptionRecord->ExceptionCode);
+
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
-void sys_register_crash_handler(const char* sym_search_path) {
-    sys_sym_search_path = sym_search_path;
+static BOOL WINAPI sys_interrupt_handler(DWORD dwCtrlType) {
+    if (sys_interrupt_callback) {
+        sys_interrupt_callback();
+        return TRUE;
+    }
+    return FALSE;
+}
+
+void sys_register_crash_handler() {
     SetUnhandledExceptionFilter(sys_error_handler);
-    // TODO: SetConsoleCtrlHandler(interruptHandler, TRUE);
+    SetConsoleCtrlHandler(sys_interrupt_handler, TRUE);
+}
+
+void sys_set_sym_search_path(const char* sym_search_path) {
+    sys_sym_search_path = sym_search_path;
+}
+
+void sys_set_interrupt_handler(void (*interrupt_handler_func)()) {
+    sys_interrupt_callback = interrupt_handler_func;
 }

@@ -1,49 +1,75 @@
-#include "motor.h"
-
 #include "private_api.h"
+#include <mimalloc.h>
 
-const char* plugin = FRONTIER_BINARY_DIR "/" CR_PLUGIN(FRONTIER_GAME_PLUGIN);
+static mt_atomic_int_t host_want_quit;
 
-static const char* Host_GetText(int i) { return "Test"; }
+static void host_check_memory_leaks() {
+    log_info("   malloc count: %d", mt_malloc_count);
+    log_info("  realloc count: %d", mt_realloc_count);
+    log_info("   calloc count: %d", mt_calloc_count);
+    log_info("     free count: %d", mt_free_count);
 
-void printmemstat(const char* msg, void* arg) { printf("%s", msg); }
+    int alloc_count = (mt_malloc_count + mt_calloc_count);
+    if (mt_free_count != alloc_count) { log_error("memory leak detected!"); }
+}
 
+static myml_table_t* host_parse_cli_options(int argc, char** argv) {
+    myml_table_t* options = myml_alloc();
 
-int main(int argc, char* argv[]) {
-    log_set_level(LOG_TRACE);
-    log_info("initalize: mi version: %d", mi_version());
-
-    mi_stats_reset();
-
-    sys_register_crash_handler(FRONTIER_BINARY_DIR);
-
-    hostApi_t api;
-
-    api.GetText = Host_GetText;
-
-    cr_plugin ctx;
-    ctx.userdata = &api;
-    // the host application should initalize a plugin with a context, a plugin
-    // filename without extension and the full path to the plugin
-    if (!cr_plugin_open(&ctx, plugin)) {
-        log_fatal("game plugin not found");
-        mi_stats_print_out(printmemstat, NULL);
-        return -1;
+    const char* key = NULL;
+    for (int i = 0; i < argc; i++) {
+        int len = strlen(argv[i]);
+        if (len < 3 || argv[i][0] != '-' || argv[i][1] != '-') {
+            if (key) {
+                myml_set_path_string(options, key, argv[i]);
+                key = NULL;
+            }
+            continue;
+        }
+        if (key) { log_warning("argument without value: %s", key); }
+        key = &argv[i][2];
     }
+    if (key) { log_warning("argument without value: %s", key); }
 
-    // call the plugin update function with the plugin context to execute it
-    // at any frequency matters to you
-    while (true) {
-        cr_plugin_update(&ctx, true);
-        fflush(stdout);
-        fflush(stderr);
-    }
+    return options;
+}
 
-    // at the end do not forget to cleanup the plugin context, as it needs to
-    // allocate some memory to track internal and plugin states
-    cr_plugin_close(&ctx);
+void host_init(int argc, char** argv) {
+    log_info("init host: start");
+    log_info("     version: %s", MOTOR_PROJECT_VERSION);
+    log_info("  mi version: %d", mi_version());
+    log_info("          os: %s", MOTOR_OS);
 
-    // mi_stats_print_out(printmemstat, NULL);
+    sys_set_interrupt_handler(host_abort);
+    host_want_quit = 0;
 
-    return 0;
+    myml_table_t* cli_options = host_parse_cli_options(argc, argv);
+
+    fs_init(cli_options);
+
+    myml_free(cli_options);
+
+    log_info("init host: done");
+}
+
+void host_shutdown() {
+    log_info("shudown host: start");
+
+    fs_shutdown();
+
+    host_check_memory_leaks();
+
+    log_info("shudown host: done");
+}
+
+bool host_is_run() { return !host_want_quit; }
+
+void host_quit() {
+    log_debug("request quit");
+    host_want_quit = mt_axchg(&host_want_quit, 1);
+}
+
+void host_abort() {
+    host_shutdown();
+    exit(1);
 }
