@@ -16,13 +16,13 @@ static bool cr_plugin_load_internal(cr_plugin& ctx, bool rollback) {
   auto p = (cr_internal*) ctx.p;
   const std::string file = p->fullname;
   if (cr_exists(file) || rollback) {
-    const auto old_file = cr_version_path(file, ctx.version, p->temppath);
+    const auto old_file = cr_version_path(file, ctx.version);
     CR_LOG("unload '%s' with rollback: %d\n", old_file.c_str(), rollback);
     int r = cr_plugin_unload(ctx, rollback, false);
     if (r < 0) { return false; }
 
     auto new_version = rollback ? ctx.version : ctx.next_version;
-    auto new_file = cr_version_path(file, new_version, p->temppath);
+    auto new_file = cr_version_path(file, new_version);
     if (rollback) {
       if (ctx.version == 0) {
         ctx.failure = CR_INITIAL_FAILURE;
@@ -219,7 +219,7 @@ static bool cr_plugin_rollback(cr_plugin& ctx) {
 // update one time with `cr_op::CR_LOAD`. Note that this may fail due to crash
 // handling during this first update, effectivelly rollbacking if possible and
 // causing a consecutive `CR_LOAD` with the previous version.
-static void cr_plugin_reload(cr_plugin& ctx) {
+extern "C" void cr_plugin_reload(cr_plugin& ctx) {
   if (cr_plugin_changed(ctx)) {
     CR_TRACE
     if (!cr_plugin_load_internal(ctx, false)) { return; }
@@ -288,9 +288,9 @@ extern "C" void cr_plugin_close(cr_plugin* ctx) {
   // delete backups
   const auto file = p->fullname;
   for (unsigned int i = 0; i < ctx->version; i++) {
-    cr_del(cr_version_path(file, i, p->temppath));
+    cr_del(cr_version_path(file, i));
 #if defined(_MSC_VER)
-    cr_del(cr_replace_extension(cr_version_path(file, i, p->temppath), ".pdb"));
+    cr_del(cr_replace_extension(cr_version_path(file, i), ".pdb"));
 #endif
   }
 

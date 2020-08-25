@@ -4,6 +4,8 @@ file(GLOB_RECURSE MOTOR_SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.c)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     list(FILTER MOTOR_SOURCES EXCLUDE REGEX "\\\\*_linux\\.c")
+    list(FILTER MOTOR_SOURCES EXCLUDE REGEX "\\\\*_osx\\.c")
+    list(FILTER MOTOR_SOURCES EXCLUDE REGEX "\\\\*_unix\\.c")
 else()
     # TODO: support for Linux, OSX
     message(SEND_ERROR "Not supported platform: " ${CMAKE_SYSTEM_NAME})
@@ -21,11 +23,3 @@ target_compile_definitions(frontier PRIVATE
 target_link_libraries(frontier PRIVATE
     mimalloc
     plugins)
-
-# add_custom_command(TARGET frontier POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -P  get_runtime_deps.cmake)
-
-# add_custom_command(TARGET frontier POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         "${mialloc_BINARY_DIR}" $<TARGET_FILE_DIR:frontier>)
-
