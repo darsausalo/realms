@@ -3,7 +3,6 @@
 
 #include "motor.h"
 
-#include "os_api.h"
 #include "sys.h"
 #include "fs.h"
 #include "host.h"

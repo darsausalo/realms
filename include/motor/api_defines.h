@@ -18,7 +18,7 @@ typedef uint32_t mt_flags32_t;
 typedef uint32_t mt_flags64_t;
 
 typedef int mt_size_t;
-#define mt_sizeof(T) (mt_size_t) sizeof(T);
+#define mt_sizeof(T) ((mt_size_t) sizeof(T))
 
 #define mt_min(a, b) (((a) < (b)) ? (a) : (b))
 #define mt_max(a, b) (((a) > (b)) ? (a) : (b))
