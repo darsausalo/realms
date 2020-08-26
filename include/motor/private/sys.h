@@ -14,4 +14,6 @@ char* sys_get_userdir();
 
 void sys_normalize_ospath(char* path);
 
+str_array_t sys_list_files(const char* path, const char* extension);
+
 #endif // MOTOR_SYS_SYS_H

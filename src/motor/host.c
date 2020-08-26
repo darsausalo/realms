@@ -53,7 +53,7 @@ void host_init(int argc, char** argv) {
 }
 
 void host_shutdown() {
-    log_info("shudown host: start");
+    log_info("shutdown host: start");
 
     fs_shutdown();
 

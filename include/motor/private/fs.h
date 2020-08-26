@@ -18,4 +18,7 @@ const char* fs_get_bindir();
 const char* fs_get_basedir();
 const char* fs_get_userdir();
 
+str_array_t fs_list_files(const char* directory, const char* extension);
+void        fs_free_file_list(str_array_t list);
+
 #endif // MOTOR_FS_H
