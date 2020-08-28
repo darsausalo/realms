@@ -1,7 +1,10 @@
 #include "private_api.h"
 #include <mimalloc.h>
+#include <locale.h>
+#include <uchar.h>
 
 static mt_atomic_int_t host_want_quit;
+static FILE*           host_log_file;
 
 static void host_check_memory_leaks() {
     log_info("   malloc count: %d", mt_malloc_count);
@@ -35,12 +38,15 @@ static myml_table_t* host_parse_cli_options(int argc, char** argv) {
 }
 
 void host_init(int argc, char** argv) {
-    log_info("init host: start");
+    sys_init();
+
+    host_log_file = sys_open_log_file();
+    log_set_fp(host_log_file, kLogTrace);
+    log_info("init host: start (тест, 世界)");
     log_info("     version: %s", MOTOR_PROJECT_VERSION);
     log_info("  mi version: %d", mi_version());
     log_info("          os: %s", MOTOR_OS);
 
-    sys_set_interrupt_handler(host_abort);
     host_want_quit = 0;
 
     myml_table_t* cli_options = host_parse_cli_options(argc, argv);
@@ -48,6 +54,8 @@ void host_init(int argc, char** argv) {
     fs_init(cli_options);
 
     myml_free(cli_options);
+
+    sys_set_interrupt_handler(host_abort);
 
     log_info("init host: done");
 }
@@ -59,7 +67,12 @@ void host_shutdown() {
 
     host_check_memory_leaks();
 
-    log_info("shudown host: done");
+    log_info("shutdown host: done");
+
+    fflush(host_log_file);
+    fclose(host_log_file);
+
+    sys_shutdown();
 }
 
 bool host_is_run() { return !host_want_quit; }

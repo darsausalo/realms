@@ -9,6 +9,7 @@ add_executable(test_myml
     ${CMAKE_SOURCE_DIR}/src/motor/os_api.c
     ${CMAKE_SOURCE_DIR}/src/motor/log.c
     ${CMAKE_SOURCE_DIR}/src/motor/myml.c
+    ${CMAKE_SOURCE_DIR}/src/motor/sds.c
     ${CMAKE_SOURCE_DIR}/src/motor/sys/crash_handler_windows.c)
 add_test(NAME test_myml COMMAND test_myml)
 

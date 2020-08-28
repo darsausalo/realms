@@ -41,6 +41,7 @@ void mt_assert(bool condition, int32_t error_code, const char* param,
 #define MT_OUT_OF_MEMORY (1)
 #define MT_INVALID_PARAMETER (2)
 #define MT_INVALID_HANDLE (3)
+#define MT_SYSTEM_ERROR (4)
 
 const char* mt_errstring(int32_t error_code);
 

@@ -82,7 +82,7 @@ void log_log(log_level_t level, const char* fmt, ...) {
             char buf[64];
             buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local_time)] =
                 '\0';
-            fprintf(logger.fp, "[ %s %-5s ]", buf, level_strings[level]);
+            fprintf(logger.fp, "[ %s %-5s] ", buf, level_strings[level]);
             vfprintf(logger.fp, fmt, ap);
             fprintf(logger.fp, "\n");
             fflush(logger.fp);

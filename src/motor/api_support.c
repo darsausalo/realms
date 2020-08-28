@@ -23,6 +23,8 @@ const char* mt_errstring(int32_t error_code) {
         return "invalid parameter";
     case MT_INVALID_HANDLE:
         return "invalid handle";
+    case MT_SYSTEM_ERROR:
+        return "system error";
     }
 
     return "unknown error code";

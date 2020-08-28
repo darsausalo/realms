@@ -11,8 +11,6 @@ typedef struct {
 } my_st_t;
 
 int main(int argc, char* argv[]) {
-    sys_register_crash_handler();
-
     host_init(argc, argv);
 
     while (host_is_run()) {}

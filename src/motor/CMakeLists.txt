@@ -22,6 +22,7 @@ target_compile_definitions(frontier PRIVATE
     -DMOTOR_PROJECT_VERSION="${PROJECT_VERSION}"
     -DMOTOR_PROJECT_NAME="frontier"
     -DMOTOR_PROJECT_ORG="Auriga Games"
+    -DMOTOR_LOG_FILENAME="log.txt"
     -DMOTOR_BASE_DIR="data"
     -DMOTOR_USER_DIR="save")
 target_link_libraries(frontier PRIVATE

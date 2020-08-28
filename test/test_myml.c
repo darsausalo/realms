@@ -38,6 +38,19 @@ entity2:\n\
     value: 15\n\
 ";
 
+static bool no_mem_leaks() {
+    int total_alloc_count = mt_malloc_count + mt_calloc_count;
+    if (mt_free_count != total_alloc_count) {
+        fprintf(stderr, "--- mem leak detected ---\n");
+        fprintf(stderr, "  alloc count: %d (m: %d, c: %d, r: %d)\n",
+                total_alloc_count, mt_malloc_count, mt_calloc_count,
+                mt_realloc_count);
+        fprintf(stderr, "   free count: %d\n\n", mt_free_count);
+        return false;
+    }
+    return true;
+}
+
 void test_myml_parse() {
     myml_table_t* table = myml_alloc();
     myml_error_t  parse_error = myml_parse(table, src1);
@@ -93,6 +106,8 @@ void test_myml_merge() {
     lsequal("15", myml_find_string(table1, "entity2.armor.value"));
 
     myml_free(table1);
+
+    lok(no_mem_leaks());
 }
 
 void test_myml_take_inherit() {
@@ -138,6 +153,8 @@ void test_myml_take_inherit() {
     lsequal("215", myml_find_string(table1, "entity2.health.max"));
 
     myml_free(table1);
+
+    lok(no_mem_leaks());
 }
 
 void test_myml_take_inherit_fail() {
@@ -154,6 +171,8 @@ void test_myml_take_inherit_fail() {
     lok(error.message);
 
     myml_free(table);
+
+    lok(no_mem_leaks());
 }
 
 void test_myml_set_path_string() {
@@ -169,7 +188,18 @@ void test_myml_set_path_string() {
 
     myml_free(table);
 
-    if (mt_free_count != (mt_malloc_count + mt_calloc_count)) { lok(false); }
+    lok(no_mem_leaks());
+}
+
+void test_myml_simple_parse_no_leak() {
+    static const char* src = "key: value\n";
+
+    myml_table_t* table = myml_alloc();
+    myml_error_t  error = myml_parse(table, src);
+    lok(!error.message);
+    myml_free(table);
+
+    lok(no_mem_leaks());
 }
 
 void sys_register_crash_handler(const char*);
@@ -179,11 +209,12 @@ int main(int argc, char** argv) {
 
     sys_register_crash_handler(NULL);
 
-    // lrun("myml_parse", test_myml_parse);
-    // lrun("myml_merge", test_myml_merge);
-    // lrun("myml_take_inherit", test_myml_take_inherit);
-    // lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
+    lrun("myml_parse", test_myml_parse);
+    lrun("myml_merge", test_myml_merge);
+    lrun("myml_take_inherit", test_myml_take_inherit);
+    lrun("myml_take_inherit_fail", test_myml_take_inherit_fail);
     lrun("test_myml_set_path_string", test_myml_set_path_string);
+    lrun("test_myml_simple_parse_no_leak", test_myml_simple_parse_no_leak);
     lresults();
     return lfails != 0;
 }

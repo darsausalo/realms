@@ -9,9 +9,9 @@ typedef enum { MVT_STRING, MVT_TABLE } myml_value_type_t;
 
 struct myml_value_t {
     myml_value_type_t type;
-    const char*       key;
+    sds               key;
     union {
-        const char*   string;
+        sds           string;
         myml_table_t* table;
     };
     int line;
@@ -59,11 +59,11 @@ typedef struct myml_parse_context_t {
 static myml_error_t myml_error(myml_parse_context_t* ctx, const char* message) {
     myml_error_t error = {.line = ctx->line,
                           .column = ctx->column,
-                          message = message};
+                          .message = message};
     return error;
 }
 
-static char* myml_sanitize_value(const char* value, int len) {
+static sds myml_sanitize_value(sds s, const char* value, int len) {
     if (!value) return NULL;
 
     const char* sanitized_value = value;
@@ -71,7 +71,7 @@ static char* myml_sanitize_value(const char* value, int len) {
     len -= (int) (sanitized_value - value);
     if (len <= 0) return NULL;
 
-    return mt_strndup(sanitized_value, len);
+    return sdscpylen(s, sanitized_value, len);
 }
 
 myml_table_t* myml_alloc() { return mt_calloc(1, sizeof(myml_table_t)); }
@@ -84,16 +84,16 @@ void myml_free(myml_table_t* table) {
         if (value->type == MVT_TABLE) {
             myml_free(value->table);
         } else {
-            mt_free((void*) (intptr_t) value->string);
+            sdsfree(value->string);
         }
-        mt_free((void*) (intptr_t) value->key);
+        sdsfree(value->key);
     }
 
     mt_free((void*) (intptr_t) table->values);
     mt_free((void*) (intptr_t) table);
 }
 
-myml_value_t* myml_get_value(myml_table_t* table, const char* key) {
+static myml_value_t* myml_get_value(myml_table_t* table, const char* key) {
     if (!table || !table->values) return NULL;
 
     for (int i = 0; i < table->size; i++) {
@@ -183,30 +183,13 @@ myml_value_t* myml_set_path_string(myml_table_t* table, const char* key_path,
                 mt_realloc(table->values, table->size * sizeof(myml_value_t));
             myml_value_t* value = &table->values[table->size - 1];
             value->type = MVT_TABLE;
-            value->key = mt_strndup(key_path, len);
+            value->key = sdsnewlen(key_path, len);
             value->table = subtable;
         }
         return myml_set_path_string(subtable, &key_path[len + 1], string);
     } else {
         return myml_set_string(table, key_path, string);
     }
-}
-
-static myml_value_t* myml_set_string_nocopy(myml_table_t* table,
-                                            const char*   key,
-                                            const char*   string) {
-    myml_value_t* value = myml_get_value(table, key);
-    if (!value) {
-        table->size++;
-        table->values =
-            mt_realloc(table->values, table->size * sizeof(myml_value_t));
-        value = &table->values[table->size - 1];
-        value->key = mt_strdup(key);
-    }
-    value->type = MVT_STRING;
-    value->string = string;
-
-    return value;
 }
 
 myml_value_t* myml_set_string(myml_table_t* table, const char* key,
@@ -217,12 +200,12 @@ myml_value_t* myml_set_string(myml_table_t* table, const char* key,
         table->values =
             mt_realloc(table->values, table->size * sizeof(myml_value_t));
         value = &table->values[table->size - 1];
-        value->key = mt_strdup(key);
+        value->key = sdsnew(key);
     } else if (value->type == MVT_TABLE) {
         myml_free(value->table);
     }
     value->type = MVT_STRING;
-    value->string = mt_strdup(string);
+    value->string = sdsnew(string);
 
     return value;
 }
@@ -235,7 +218,7 @@ static myml_value_t* myml_set_subtable(myml_table_t* table, const char* key,
         table->values =
             mt_realloc(table->values, table->size * sizeof(myml_value_t));
         value = &table->values[table->size - 1];
-        value->key = mt_strdup(key);
+        value->key = sdsnew(key);
     }
     value->type = MVT_TABLE;
     value->table = subtable;
@@ -274,6 +257,9 @@ myml_error_t myml_parse(myml_table_t* table, const char* source) {
     int value_start = -1, value_stop = -1;
     int comment_start = -1;
 
+    sds key = sdsempty(), value = sdsempty();
+
+    // TODO: handle eot without eol
     for (int i = 0; source[i] != '\0'; i++) {
         char curc = source[i];
         column++;
@@ -302,11 +288,10 @@ myml_error_t myml_parse(myml_table_t* table, const char* source) {
 
                 if (value_start != -1 && value_stop == -1) { value_stop = i; }
 
-                char* key =
-                    mt_strndup(&source[key_start], key_stop - key_start);
-                char* value = NULL;
+                key = sdscpylen(key, &source[key_start], key_stop - key_start);
+                sdsclear(value);
                 if (value_start != -1 && value_stop != -1) {
-                    value = myml_sanitize_value(&source[value_start],
+                    value = myml_sanitize_value(value, &source[value_start],
                                                 value_stop - value_start);
                 }
 
@@ -318,12 +303,12 @@ myml_error_t myml_parse(myml_table_t* table, const char* source) {
                 }
 
                 myml_value_t* v;
-                if (!value) {
+                if (!sdslen(value)) {
                     myml_table_t* subtable = myml_alloc();
                     v = myml_set_subtable(current_table, key, subtable);
                     myml_stack_push(&ctx.levels, subtable);
                 } else {
-                    v = myml_set_string_nocopy(current_table, key, value);
+                    v = myml_set_string(current_table, key, value);
                 }
                 v->line = ctx.line;
                 v->column = ctx.column;
@@ -364,6 +349,11 @@ myml_error_t myml_parse(myml_table_t* table, const char* source) {
         }
     }
 
+    sdsfree(key);
+    sdsfree(value);
+
+    mt_free(ctx.levels.tables);
+
     return no_error;
 }
 
@@ -374,22 +364,31 @@ void myml_merge(myml_table_t* dst, myml_table_t* src) {
         myml_value_t* src_value = &src->values[i];
         myml_value_t* dst_value = myml_get_value(dst, src_value->key);
         if (dst_value) {
+            if (dst_value->type == MVT_TABLE && src_value->type == MVT_STRING) {
+                myml_free(dst_value->table);
+                dst_value->table = myml_alloc();
+            }
             dst_value->type = src_value->type;
-            dst_value->key = mt_strdup(src_value->key);
+            dst_value->key = sdscpy(dst_value->key, src_value->key);
             if (src_value->type == MVT_STRING) {
-                dst_value->string = mt_strdup(src_value->string);
-                dst_value->line = src_value->line;
-                dst_value->column = src_value->column;
+                dst_value->string =
+                    sdscpy(dst_value->string, src_value->string);
             } else {
-                if (!dst_value->table) { dst_value->table = myml_alloc(); }
                 myml_merge(dst_value->table, src_value->table);
             }
+            dst_value->line = src_value->line;
+            dst_value->column = src_value->column;
             continue;
         }
+        dst->size++;
+        dst->values = mt_realloc(dst->values, dst->size * sizeof(myml_value_t));
+        dst_value = &dst->values[dst->size - 1];
+        dst_value->type = src_value->type;
+        dst_value->key = sdsdup(src_value->key);
         if (src_value->type == MVT_STRING) {
-            dst_value = myml_set_string(dst, src_value->key, src_value->string);
+            dst_value->string = sdsdup(src_value->string);
         } else {
-            dst_value = myml_set_subtable(dst, src_value->key, myml_alloc());
+            dst_value->table = myml_alloc();
             myml_merge(dst_value->table, src_value->table);
         }
         dst_value->line = src_value->line;
@@ -402,9 +401,9 @@ static void myml_remove_at(myml_table_t* table, int index) {
 
     myml_value_t* value = &table->values[index];
 
-    mt_free((void*) (uintptr_t) value->key);
+    sdsfree(value->key);
     if (value->type == MVT_STRING) {
-        mt_free((void*) (uintptr_t) value->string);
+        sdsfree(value->string);
     } else {
         myml_free(value->table);
     }

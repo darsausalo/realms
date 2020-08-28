@@ -80,6 +80,7 @@ char* mt_strdup(const char* str);
 char* mt_strndup(const char* str, mt_size_t size);
 #define mt_strlen(str) (mt_size_t) strlen(str)
 #define mt_strcmp(str1, str2) strcmp(str1, str2)
+#define mt_strcasecmp(str1, str2) strcmp(str1, str2)
 #define mt_strncmp(str1, str2, num) strncmp(str1, str2, (size_t)(num))
 #define mt_memcmp(ptr1, ptr2, num) memcmp(ptr1, ptr2, (size_t)(num))
 #define mt_memcpy(ptr1, ptr2, num) memcpy(ptr1, ptr2, (size_t)(num))
