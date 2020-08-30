@@ -1,0 +1,31 @@
+# IDEs
+/.vscode
+.idea
+cmake-build-*
+
+# sublime text
+*.sublime-*
+
+## make
+CMakeFiles
+*/CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+makefile
+build*
+prebuilt
+/bin
+/build
+/lib
+
+## windows build process
+.vs
+/deps
+/MSVC*
+
+# vim swp files
+*.swp
+
+# project temporary folders
+save
