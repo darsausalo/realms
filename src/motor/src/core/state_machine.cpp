@@ -30,15 +30,15 @@ void state_machine::update() {
         auto state = state_stack.back();
         auto trans = state->update();
 
-        std::visit(
-                [this, state](auto&& arg) {
-                    using T = std::decay_t<decltype(arg)>;
-                    if constexpr (std::is_same_v<T, transition_quit>) {
-                        state->on_stop();
-                        running = false;
-                    }
-                },
-                trans);
+        if (auto t_quit = std::get_if<transition_quit>(&trans); t_quit) {
+            state->on_stop();
+            running = false;
+        } else if (auto t_switch = std::get_if<transition_switch>(&trans);
+                   t_switch) {
+            state->on_stop();
+            state_stack.pop_back();
+            state_stack.push_back(t_switch->game_state);
+        }
     }
 }
 

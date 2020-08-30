@@ -9,6 +9,7 @@ set(VCPKG_CRT_LINKAGE dynamic)
 find_package(mimalloc 1.6 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(tomlplusplus CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 

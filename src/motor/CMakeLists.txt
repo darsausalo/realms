@@ -5,10 +5,15 @@ set(SOURCES
 	"src/core/game_state.cpp"
 	"src/core/state_machine.cpp"
 	"src/core/application.cpp"
+	"src/core/window_system.cpp"
+	"src/core/event_system.cpp"
 
 	# platform
 	"src/platform/platform.cpp"
 	"src/platform/platform_windows.cpp"
+
+	# systems
+	"src/systems/system_dispatcher.cpp"
 )
 
 set(HEADERS
@@ -19,9 +24,17 @@ set(HEADERS
 	"include/motor/core/state_machine.h"
 	"include/motor/core/application.h"
 
+	"src/core/window_system.h"
+	"src/core/event_system.h"
+
 	# platform
 	"src/platform/platform.h"
 	"src/platform/backward.hpp"
+
+	# systems
+	"include/motor/systems/system.h"
+	"include/motor/systems/system_dispatcher.h"
+	"include/motor/systems/game_data.h"
 )
 
 add_library(motor ${SOURCES} ${HEADERS})
@@ -29,6 +42,7 @@ target_include_directories(motor PRIVATE ${UTFCPP_INCLUDE_DIRS})
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
+	tomlplusplus::tomlplusplus
 	SDL2::SDL2
 )
 target_link_libraries(motor PUBLIC
