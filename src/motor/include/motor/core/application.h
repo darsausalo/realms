@@ -16,26 +16,15 @@ public:
 
     template<typename InitialState>
     int run() {
-        states = std::make_unique<state_machine>(
-                std::make_shared<InitialState>());
+        run_game_loop(state_machine(std::make_shared<InitialState>()));
 
-        initialize();
-        auto result = run_game_loop();
-        shutdown();
-
-        return result;
+        return 0;
     }
 
 private:
-    std::vector<std::string> args{};
-    std::unique_ptr<state_machine> states{};
-    game_data data{};
-    system_dispatcher dispatcher{};
     bool quit_requested{};
 
-    void initialize();
-    void shutdown();
-    int run_game_loop();
+    void run_game_loop(state_machine& states);
 
     bool should_close();
 
