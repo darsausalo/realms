@@ -23,6 +23,7 @@ public:
     }
 
 private:
+    std::vector<std::string> args;
     platform platform;
     bool quit_requested{};
 

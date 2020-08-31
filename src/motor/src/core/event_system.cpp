@@ -1,4 +1,5 @@
 #include "event_system.h"
+#include "motor/core/events.h"
 #include "motor/systems/game_data.h"
 #include <SDL.h>
 #include <spdlog/spdlog.h>
@@ -6,11 +7,11 @@
 namespace motor {
 
 void event_system::on_start(game_data& data) {
-    spdlog::debug("event_system::start");
+    spdlog::debug("event_system::started");
 }
 
 void event_system::on_stop(game_data& data) {
-    spdlog::debug("event_system::stop");
+    spdlog::debug("event_system::stopped");
 }
 
 void event_system::update(game_data& data) {

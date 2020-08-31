@@ -5,6 +5,7 @@ set(SOURCES
 	"src/core/game_state.cpp"
 	"src/core/state_machine.cpp"
 	"src/core/application.cpp"
+	"src/core/config_system.cpp"
 	"src/core/window_system.cpp"
 	"src/core/event_system.cpp"
 
@@ -24,6 +25,7 @@ set(HEADERS
 	"include/motor/core/state_machine.h"
 	"include/motor/core/application.h"
 
+	"src/core/config_system.h"
 	"src/core/window_system.h"
 	"src/core/event_system.h"
 
@@ -50,7 +52,8 @@ target_compile_definitions(motor PRIVATE
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
-	tomlplusplus::tomlplusplus
+	nlohmann_json::nlohmann_json
+	cereal
 	SDL2::SDL2
 )
 target_link_libraries(motor PUBLIC

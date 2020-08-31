@@ -20,13 +20,17 @@ public:
     system_dispatcher(game_data& data) noexcept : data(data) {}
     ~system_dispatcher();
 
-    template<typename System>
-    void add_system() {
+    template<typename System, typename... Args>
+    System& add_system(Args&&... args) {
         static_assert(std::is_base_of_v<system, System>,
                       "System should be derived from motor::system");
         system_types.emplace(entt::type_info<System>::id(), systems.size());
-        systems.push_back(std::make_unique<System>());
+        systems.push_back(std::unique_ptr<System>(
+                new System(std::forward<Args>(args)...)));
         systems.back()->on_start(data);
+        auto system = static_cast<System*>(systems.back().get());
+        sort();
+        return *system;
     }
 
     template<typename System>
@@ -38,6 +42,7 @@ public:
             it->second->on_stop(data);
             systems.erase(systems.begin() + it->second);
             system_types.erase(it);
+            sort();
         }
     }
 

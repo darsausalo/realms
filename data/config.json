@@ -1,0 +1,17 @@
+{
+    "logging": {
+        "level": "trace"
+    },
+    "window": {
+        "fullscreen": false,
+        "monitor": "default",
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "size": {
+            "height": 768,
+            "width": 1280
+        }
+    }
+}

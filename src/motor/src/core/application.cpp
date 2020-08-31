@@ -1,4 +1,5 @@
 #include "motor/core/application.h"
+#include "core/config_system.h"
 #include "core/event_system.h"
 #include "core/window_system.h"
 #include "motor/core/exception.h"
@@ -13,15 +14,14 @@
 namespace motor {
 
 application::application(int argc, const char* argv[]) {
-    // TODO: use config
-    spdlog::set_level(spdlog::level::debug);
-    // platform.set_data_path("todo");
+    for (int i = 0; i < argc; i++) {
+        if (argv[i]) {
+            args.push_back(argv[i]);
+        }
+    }
 
     spdlog::info("{} v{} started", MOTOR_PROJECT_TITLE, MOTOR_PROJECT_VERSION);
     spdlog::info("mimalloc: {}", mi_version());
-    spdlog::info("base path: {}", platform.get_base_path().generic_string());
-    spdlog::info("data path: {}", platform.get_data_path().generic_string());
-    spdlog::info("user path: {}", platform.get_user_path().generic_string());
 }
 
 void application::run_game_loop(state_machine& states) {
@@ -31,7 +31,9 @@ void application::run_game_loop(state_machine& states) {
     data.event_dispatcher.sink<event::quit>()
             .connect<&application::receive_event_quit>(*this);
 
-    dispatcher.add_system<window_system>();
+    auto& cfg_sys = dispatcher.add_system<config_system>(args, platform);
+
+    dispatcher.add_system<window_system>(cfg_sys.get_config());
     dispatcher.add_system<event_system>();
 
     states.start();
