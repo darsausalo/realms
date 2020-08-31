@@ -1,9 +1,9 @@
-[ ] Serialization - cereal + nlohmann json
-[ ] System modules
-[ ] Move game logic to separate dll
-[ ] Mods management + json merge/inheritance resolve
-[ ] DynamicLibrary
-[ ] Hot Reload
-[ ] Resource background loading
-[ ] Graphics - sokol
-[ ] Code cleanup: review, refine cmake (version etc), CI
+- [ ] Serialization - cereal + nlohmann json
+- [ ] System modules
+- [ ] Move game logic to separate dll
+- [ ] Mods management + json merge/inheritance resolve
+- [ ] DynamicLibrary
+- [ ] Hot Reload
+- [ ] Resource background loading
+- [ ] Graphics - sokol
+- [ ] Code cleanup: review, refine cmake (version etc), CI
