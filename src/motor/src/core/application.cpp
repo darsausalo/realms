@@ -3,8 +3,9 @@
 #include "core/event_system.h"
 #include "core/window_system.h"
 #include "motor/core/exception.h"
+#include "motor/core/storage.h"
 #include "motor/platform/platform.h"
-#include "motor/systems/game_data.h"
+#include "motor/systems/context.h"
 #include "motor/systems/system_dispatcher.h"
 #include <entt/entity/registry.hpp>
 #include <fstream>
@@ -24,16 +25,18 @@ application::application(int argc, const char* argv[]) {
     spdlog::info("mimalloc: {}", mi_version());
 }
 
-void application::run_game_loop(state_machine& states) {
-    game_data data;
-    system_dispatcher dispatcher{data};
+void application::run_loop(state_machine& states) {
+    context ctx;
+    system_dispatcher dispatcher{ctx};
 
-    data.event_dispatcher.sink<event::quit>()
+    ctx.set<entt::dispatcher>()
+            .sink<event::quit>()
             .connect<&application::receive_event_quit>(*this);
+    ctx.set<storage>(platform.get_base_path(), platform.get_data_path(),
+                     platform.get_user_path());
 
-    auto& cfg_sys = dispatcher.add_system<config_system>(args, platform);
-
-    dispatcher.add_system<window_system>(cfg_sys.get_config());
+    dispatcher.add_system<config_system>(args);
+    dispatcher.add_system<window_system>();
     dispatcher.add_system<event_system>();
 
     states.start();

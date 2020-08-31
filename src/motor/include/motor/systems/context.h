@@ -1,26 +1,25 @@
-#ifndef MOTOR_GAME_DATA_H
-#define MOTOR_GAME_DATA_H
+#ifndef MOTOR_CONTEXT_H
+#define MOTOR_CONTEXT_H
 
+#include <cassert>
 #include <entt/core/type_info.hpp>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <unordered_map>
+#include <tsl/hopscotch_map.h>
 
 namespace motor {
 
-class game_data {
+class context {
 public:
-    entt::dispatcher event_dispatcher{};
     entt::registry registry{};
-    entt::registry prefab_registry{};
 
-public:
-    game_data() noexcept = default;
-    ~game_data() noexcept = default;
+    context() noexcept = default;
+    context(const context&) noexcept = default;
+    context(context&&) noexcept = default;
+    ~context() noexcept = default;
 
     template<typename Type, typename... Args>
     Type& set(Args&&... args) {
-        unset<Type>();
         auto [it, _] = vars.insert_or_assign(
                 entt::type_info<Type>::id(),
                 std::unique_ptr<void, void (*)(void*)>{
@@ -50,12 +49,27 @@ public:
         return const_cast<Type*>(std::as_const(*this).template get_if<Type>());
     }
 
+    template<typename Type>
+    const Type& get() const {
+        auto* v = get_if();
+        assert(v);
+        return *v;
+    }
+
+    template<typename Type>
+    Type& get() {
+        auto* v =
+                const_cast<Type*>(std::as_const(*this).template get_if<Type>());
+        assert(v);
+        return *v;
+    }
+
 private:
     using variable_data = std::unique_ptr<void, void (*)(void*)>;
 
-    std::unordered_map<entt::id_type, variable_data> vars{};
+    tsl::hopscotch_map<entt::id_type, variable_data> vars{};
 };
 
 } // namespace motor
 
-#endif // MOTOR_GAME_DATA_H
+#endif // MOTOR_CONTEXT_H

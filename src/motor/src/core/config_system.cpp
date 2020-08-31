@@ -1,6 +1,6 @@
 #include "config_system.h"
-#include "motor/platform/platform.h"
-#include "motor/systems/game_data.h"
+#include "motor/core/storage.h"
+#include "motor/systems/context.h"
 #include <fstream>
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
@@ -46,9 +46,7 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system(const std::vector<std::string>& args,
-                             motor::platform& platform)
-    : platform(platform) {
+config_system::config_system(const std::vector<std::string>& args) {
     std::string key;
     for (auto& arg : args) {
         auto arg_size = arg.size();
@@ -64,24 +62,37 @@ config_system::config_system(const std::vector<std::string>& args,
         }
         key = arg.substr(2);
     }
+}
+
+void config_system::on_start(context& ctx) {
+    auto& stg = ctx.get<storage>();
 
     if (cli_config.contains("/fs/data_path"_json_pointer)) {
-        platform.set_data_path(
+        stg.set_data_path(
                 cli_config["/fs/data_path"_json_pointer].get<std::string>());
     }
 
     if (cli_config.contains("/fs/user_path"_json_pointer)) {
-        platform.set_user_path(
+        stg.set_user_path(
                 cli_config["/fs/user_path"_json_pointer].get<std::string>());
     }
-}
 
-void config_system::on_start(game_data& data) {
-    spdlog::info("base path: {}", platform.get_base_path().generic_string());
-    spdlog::info("data path: {}", platform.get_data_path().generic_string());
-    spdlog::info("user path: {}", platform.get_user_path().generic_string());
+    auto user_path = stg.get_user_path();
+    if (!std::filesystem::exists(user_path)) {
+        try {
+            std::filesystem::create_directories(user_path);
+        } catch (std::filesystem::filesystem_error& e) {
+            spdlog::error("failed to create user dir: {}", e.what());
+        }
+    }
 
-    std::ifstream cfg_file(platform.get_full_path("config.json"));
+    spdlog::info("base path: {}", stg.get_base_path().generic_string());
+    spdlog::info("data path: {}", stg.get_data_path().generic_string());
+    spdlog::info("user path: {}", stg.get_user_path().generic_string());
+
+    auto& config = ctx.set<config_data>().jconfig;
+
+    std::ifstream cfg_file(stg.get_full_path("config.json"));
     try {
         cfg_file >> config;
     } catch (nlohmann::json::exception& e) {
@@ -96,21 +107,23 @@ void config_system::on_start(game_data& data) {
         spdlog::set_level(static_cast<spdlog::level::level_enum>(ll));
     }
 
-    data.event_dispatcher.sink<config_changed>()
+    ctx.get<entt::dispatcher>()
+            .sink<event::config_changed>()
             .connect<&config_system::receive_config_changed>(*this);
 
     spdlog::debug("config_system::started");
 }
 
-void config_system::on_stop(game_data& data) {
+void config_system::on_stop(context& ctx) {
     spdlog::debug("config_system::stopped");
 }
 
-void config_system::update(game_data& data) {
+void config_system::update(context& ctx) {
     if (modified) {
         try {
-            std::ofstream cfg_file(platform.get_full_path("config.json", true));
-            cfg_file << std::setw(4) << config;
+            std::ofstream cfg_file(
+                    ctx.get<storage>().get_full_path("config.json", true));
+            cfg_file << std::setw(4) << ctx.get<config_data>().jconfig;
         } catch (std::exception& e) {
             spdlog::error("config.json save: {}", e.what());
         }
@@ -119,13 +132,8 @@ void config_system::update(game_data& data) {
     }
 }
 
-void config_system::receive_config_changed(const config_changed& event) {
+void config_system::receive_config_changed(const event::config_changed&) {
     modified = true;
-    try {
-        config[event.key] = event.value;
-    } catch (nlohmann::json::exception& e) {
-        spdlog::warn("config.json change: {}", e.what());
-    }
 }
 
 } // namespace motor

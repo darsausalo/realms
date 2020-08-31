@@ -8,31 +8,32 @@
 
 namespace motor {
 
-class platform;
+namespace event {
 
 struct config_changed {
     std::string key;
     nlohmann::json value;
 };
 
+} // namespace event
+
+struct config_data {
+    nlohmann::json jconfig;
+};
+
 class config_system : public system {
 public:
-    config_system(const std::vector<std::string>& args, platform& platform);
+    config_system(const std::vector<std::string>& args);
 
-    void on_start(game_data& data) override;
-    void on_stop(game_data& data) override;
-    void update(game_data& data) override;
-
-    const nlohmann::json& get_config() const { return config; }
+    void on_start(context& ctx) override;
+    void on_stop(context& ctx) override;
+    void update(context& ctx) override;
 
 private:
     bool modified{};
-    nlohmann::json config{};
     nlohmann::json cli_config{};
 
-    const platform& platform;
-
-    void receive_config_changed(const config_changed& event);
+    void receive_config_changed(const event::config_changed&);
 };
 
 } // namespace motor

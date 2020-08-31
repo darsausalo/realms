@@ -4,7 +4,6 @@
 #include "motor/core/events.h"
 #include "motor/core/state_machine.h"
 #include "motor/platform/platform.h"
-#include "motor/systems/game_data.h"
 #include "motor/systems/system_dispatcher.h"
 #include <string>
 
@@ -17,8 +16,7 @@ public:
 
     template<typename InitialState>
     int run() {
-        run_game_loop(state_machine(std::make_shared<InitialState>()));
-
+        run_loop(state_machine(std::make_shared<InitialState>()));
         return 0;
     }
 
@@ -27,7 +25,7 @@ private:
     platform platform;
     bool quit_requested{};
 
-    void run_game_loop(state_machine& states);
+    void run_loop(state_machine& states);
 
     bool should_close();
 

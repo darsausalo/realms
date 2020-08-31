@@ -8,9 +8,9 @@ namespace motor {
 
 class event_system : public system {
 public:
-    void on_start(game_data& data) override;
-    void on_stop(game_data& data) override;
-    void update(game_data& data) override;
+    void on_start(context& ctx) override;
+    void on_stop(context& ctx) override;
+    void update(context& ctx) override;
 };
 
 } // namespace motor

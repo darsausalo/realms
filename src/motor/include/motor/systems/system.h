@@ -5,16 +5,16 @@
 
 namespace motor {
 
-class game_data;
+class context;
 
 class system {
 public:
     system() noexcept = default;
     virtual ~system() noexcept = default;
 
-    virtual void on_start(game_data& data) {}
-    virtual void on_stop(game_data& data) {}
-    virtual void update(game_data& data) {}
+    virtual void on_start(context& data) {}
+    virtual void on_stop(context& data) {}
+    virtual void update(context& data) {}
 };
 
 } // namespace motor

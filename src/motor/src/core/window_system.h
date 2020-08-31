@@ -27,11 +27,11 @@ struct window_config {
 
 class window_system : public system {
 public:
-    window_system(const nlohmann::json& jconfig);
+    window_system() noexcept;
 
-    void on_start(game_data& data) override;
-    void on_stop(game_data& data) override;
-    void update(game_data& data) override;
+    void on_start(context& ctx) override;
+    void on_stop(context& ctx) override;
+    void update(context& ctx) override;
 
 private:
     SDL_Window* window{};

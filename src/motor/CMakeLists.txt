@@ -4,6 +4,7 @@ set(SOURCES
 	# core
 	"src/core/game_state.cpp"
 	"src/core/state_machine.cpp"
+	"src/core/storage.cpp"
 	"src/core/application.cpp"
 	"src/core/config_system.cpp"
 	"src/core/window_system.cpp"
@@ -23,6 +24,7 @@ set(HEADERS
 	"include/motor/core/transition.h"
 	"include/motor/core/game_state.h"
 	"include/motor/core/state_machine.h"
+	"include/motor/core/storage.h"
 	"include/motor/core/application.h"
 
 	"src/core/config_system.h"
@@ -37,7 +39,7 @@ set(HEADERS
 	# systems
 	"include/motor/systems/system.h"
 	"include/motor/systems/system_dispatcher.h"
-	"include/motor/systems/game_data.h"
+	"include/motor/systems/context.h"
 )
 
 add_library(motor ${SOURCES} ${HEADERS})
@@ -52,6 +54,7 @@ target_compile_definitions(motor PRIVATE
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
+	tsl::hopscotch_map
 	nlohmann_json::nlohmann_json
 	cereal
 	SDL2::SDL2

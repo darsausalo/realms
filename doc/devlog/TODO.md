@@ -1,3 +1,4 @@
+- [ ] input_system (+context or service_locator?)
 - [ ] Serialization - cereal + nlohmann json
 - [ ] System modules
 - [ ] Move game logic to separate dll

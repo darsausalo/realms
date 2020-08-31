@@ -1,7 +1,7 @@
 #include "window_system.h"
 #include "config_system.h"
 #include "motor/core/exception.h"
-#include "motor/systems/game_data.h"
+#include "motor/systems/context.h"
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
@@ -40,20 +40,15 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("size").get_to(c.size);
 }
 
-window_system::window_system(const nlohmann::json& jconfig)
-    : config{"default", false, {-1, -1}, {1280, 768}} {
-    try {
-        jconfig.at("window").get_to(config);
-    } catch (nlohmann::json::exception& e) {
-        spdlog::warn("invalid window config: {}", e.what());
-    }
+window_system::window_system() noexcept
+    : config{"default", false, {0, 0}, {1280, 768}} {
 }
 
-void window_system::on_start(game_data& data) {
+void window_system::on_start(context& ctx) {
     try {
-
+        ctx.get<config_data>().jconfig.at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
-        spdlog::warn("config.window: {}", e.what());
+        spdlog::warn("invalid window config: {}", e.what());
     }
 
     int x = config.position.x != 0 ? config.position.x
@@ -70,12 +65,12 @@ void window_system::on_start(game_data& data) {
     spdlog::debug("window_system::started");
 }
 
-void window_system::on_stop(game_data& data) {
+void window_system::on_stop(context& ctx) {
     SDL_DestroyWindow(window);
     spdlog::debug("window_system::stopped");
 }
 
-void window_system::update(game_data& data) {
+void window_system::update(context& ctx) {
     bool modified = false;
 
     int x, y;
@@ -96,8 +91,8 @@ void window_system::update(game_data& data) {
 
     if (modified) {
         try {
-            nlohmann::json j = config;
-            data.event_dispatcher.trigger(config_changed{"window", j});
+            ctx.get<config_data>().jconfig["window"] = config;
+            ctx.get<entt::dispatcher>().trigger<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());
         }
