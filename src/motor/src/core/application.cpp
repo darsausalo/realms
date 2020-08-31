@@ -2,23 +2,26 @@
 #include "core/event_system.h"
 #include "core/window_system.h"
 #include "motor/core/exception.h"
+#include "motor/platform/platform.h"
 #include "motor/systems/game_data.h"
 #include "motor/systems/system_dispatcher.h"
-#include "platform/platform.h"
 #include <entt/entity/registry.hpp>
+#include <fstream>
+#include <mimalloc.h>
 #include <spdlog/spdlog.h>
 
 namespace motor {
 
 application::application(int argc, const char* argv[]) {
-    platform::initialize();
-
     // TODO: use config
     spdlog::set_level(spdlog::level::debug);
-}
+    // platform.set_data_path("todo");
 
-application::~application() {
-    platform::shutdown();
+    spdlog::info("{} v{} started", MOTOR_PROJECT_TITLE, MOTOR_PROJECT_VERSION);
+    spdlog::info("mimalloc: {}", mi_version());
+    spdlog::info("base path: {}", platform.get_base_path().generic_string());
+    spdlog::info("data path: {}", platform.get_data_path().generic_string());
+    spdlog::info("user path: {}", platform.get_user_path().generic_string());
 }
 
 void application::run_game_loop(state_machine& states) {

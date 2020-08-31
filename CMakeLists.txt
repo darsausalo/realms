@@ -6,6 +6,9 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(FrontierProject)
 include(BackwardConfig)
 
+set(PROJECT_TITLE "Frontier")
+set(PROJECT_ORG "Auriga Games")
+
 set(FRONTIER_BIN "bin")
 set(FRONTIER_LIB "lib")
 

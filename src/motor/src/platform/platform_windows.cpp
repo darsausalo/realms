@@ -1,5 +1,5 @@
 #include "backward.hpp"
-#include "platform.h"
+#include "motor/platform/platform.h"
 #include <SDL.h>
 
 #if defined(_WIN32) && !defined(WINDOWS_STORE)
@@ -12,9 +12,9 @@
 
 #include <psapi.h>
 
-namespace motor::platform {
+namespace motor {
 
-void setup_crash_handling(std::string_view base_path) {
+void platform::setup_crash_handling(std::string_view base_path) {
     SetConsoleOutputCP(CP_UTF8);
 
     backward::report_path = base_path;
@@ -28,7 +28,7 @@ void setup_crash_handling(std::string_view base_path) {
     }
 }
 
-} // namespace motor::platform
+} // namespace motor
 
 namespace backward {
 

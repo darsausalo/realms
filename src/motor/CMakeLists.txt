@@ -28,7 +28,8 @@ set(HEADERS
 	"src/core/event_system.h"
 
 	# platform
-	"src/platform/platform.h"
+	"include/motor/platform/platform.h"
+
 	"src/platform/backward.hpp"
 
 	# systems
@@ -39,6 +40,13 @@ set(HEADERS
 
 add_library(motor ${SOURCES} ${HEADERS})
 target_include_directories(motor PRIVATE ${UTFCPP_INCLUDE_DIRS})
+target_compile_definitions(motor PRIVATE
+	-DMOTOR_DATA_DIR="data"
+	-DMOTOR_PROJECT_NAME="${PROJECT_NAME}"
+	-DMOTOR_PROJECT_VERSION="${PROJECT_VERSION}"
+	-DMOTOR_PROJECT_ORG="${PROJECT_ORG}"
+	-DMOTOR_PROJECT_TITLE="${PROJECT_TITLE}"
+)
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward

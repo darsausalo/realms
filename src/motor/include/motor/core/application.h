@@ -3,6 +3,7 @@
 
 #include "motor/core/events.h"
 #include "motor/core/state_machine.h"
+#include "motor/platform/platform.h"
 #include "motor/systems/game_data.h"
 #include "motor/systems/system_dispatcher.h"
 #include <string>
@@ -12,7 +13,7 @@ namespace motor {
 class application final {
 public:
     application(int argc, const char* argv[]);
-    ~application();
+    ~application() = default;
 
     template<typename InitialState>
     int run() {
@@ -22,6 +23,7 @@ public:
     }
 
 private:
+    platform platform;
     bool quit_requested{};
 
     void run_game_loop(state_machine& states);
