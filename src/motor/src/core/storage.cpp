@@ -1,4 +1,7 @@
 #include "motor/core/storage.h"
+#include "motor/core/exception.h"
+#include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
 namespace motor {
 
@@ -10,9 +13,23 @@ storage::storage(const std::filesystem::path& base_path,
 
 void storage::set_data_path(const std::filesystem::path& path) {
     data_path = path;
+    if (!std::filesystem::exists(data_path)) {
+        throw exception(fmt::format("data directory '{}' was not found",
+                                    data_path.string()));
+    }
 }
 
 void storage::set_user_path(const std::filesystem::path& path) {
+    if (!std::filesystem::exists(path)) {
+        try {
+            std::filesystem::create_directories(path);
+        } catch (std::filesystem::filesystem_error& e) {
+            user_path = data_path;
+            spdlog::error("failed to create directory '{}': {}",
+                          user_path.string(), e.what());
+            return;
+        }
+    }
     user_path = path;
 }
 

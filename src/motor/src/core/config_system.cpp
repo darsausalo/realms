@@ -80,17 +80,10 @@ void config_system::on_start(entt::registry& reg) {
     }
 
     auto user_path = stg.get_user_path();
-    if (!std::filesystem::exists(user_path)) {
-        try {
-            std::filesystem::create_directories(user_path);
-        } catch (std::filesystem::filesystem_error& e) {
-            spdlog::error("failed to create user dir: {}", e.what());
-        }
-    }
 
-    spdlog::info("base path: {}", stg.get_base_path().generic_string());
-    spdlog::info("data path: {}", stg.get_data_path().generic_string());
-    spdlog::info("user path: {}", stg.get_user_path().generic_string());
+    spdlog::info("base path: {}", stg.get_base_path().string());
+    spdlog::info("data path: {}", stg.get_data_path().string());
+    spdlog::info("user path: {}", stg.get_user_path().string());
 
     auto& config = reg.ctx<core_context>().jconfig;
 
