@@ -1,5 +1,5 @@
 #include "backward.hpp"
-#include "motor/platform/platform.h"
+#include "platform.h"
 #include <SDL.h>
 
 #if defined(_WIN32) && !defined(WINDOWS_STORE)

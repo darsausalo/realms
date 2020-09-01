@@ -5,13 +5,17 @@
 
 namespace motor {
 
-class platform;
-
 class storage {
 public:
     storage(const std::filesystem::path& base_path,
             const std::filesystem::path& data_path,
             const std::filesystem::path& user_path) noexcept;
+    storage(storage&) = delete;
+    storage(storage&&) = default;
+
+    storage& operator=(storage&) = delete;
+    storage& operator=(storage&&) = default;
+
     ~storage() noexcept = default;
 
     const std::filesystem::path& get_base_path() const { return base_path; }

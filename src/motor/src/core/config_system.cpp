@@ -1,6 +1,8 @@
 #include "config_system.h"
+#include "motor/core/core_context.h"
 #include "motor/core/storage.h"
-#include "motor/systems/context.h"
+#include <entt/entity/registry.hpp>
+#include <entt/signal/dispatcher.hpp>
 #include <fstream>
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
@@ -64,8 +66,8 @@ config_system::config_system(const std::vector<std::string>& args) {
     }
 }
 
-void config_system::on_start(context& ctx) {
-    auto& stg = ctx.get<storage>();
+void config_system::on_start(entt::registry& reg) {
+    auto& stg = reg.ctx<core_context>().get_storage();
 
     if (cli_config.contains("/fs/data_path"_json_pointer)) {
         stg.set_data_path(
@@ -90,13 +92,13 @@ void config_system::on_start(context& ctx) {
     spdlog::info("data path: {}", stg.get_data_path().generic_string());
     spdlog::info("user path: {}", stg.get_user_path().generic_string());
 
-    auto& config = ctx.set<config_data>().jconfig;
+    auto& config = reg.ctx<core_context>().jconfig;
 
     std::ifstream cfg_file(stg.get_full_path("config.json"));
     try {
         cfg_file >> config;
     } catch (nlohmann::json::exception& e) {
-        spdlog::warn("config.json: {}", e.what());
+        spdlog::warn("failed to read config.json: {}", e.what());
     }
 
     config.merge_patch(cli_config);
@@ -107,25 +109,25 @@ void config_system::on_start(context& ctx) {
         spdlog::set_level(static_cast<spdlog::level::level_enum>(ll));
     }
 
-    ctx.get<entt::dispatcher>()
+    reg.ctx<entt::dispatcher>()
             .sink<event::config_changed>()
             .connect<&config_system::receive_config_changed>(*this);
 
     spdlog::debug("config_system::started");
 }
 
-void config_system::on_stop(context& ctx) {
+void config_system::on_stop(entt::registry& reg) {
     spdlog::debug("config_system::stopped");
 }
 
-void config_system::update(context& ctx) {
+void config_system::update(entt::registry& reg) {
     if (modified) {
         try {
-            std::ofstream cfg_file(
-                    ctx.get<storage>().get_full_path("config.json", true));
-            cfg_file << std::setw(4) << ctx.get<config_data>().jconfig;
+            auto& stg = reg.ctx<core_context>().get_storage();
+            std::ofstream cfg_file(stg.get_full_path("config.json", true));
+            cfg_file << std::setw(4) << reg.ctx<core_context>().jconfig;
         } catch (std::exception& e) {
-            spdlog::error("config.json save: {}", e.what());
+            spdlog::error("failed to write config.json save: {}", e.what());
         }
 
         modified = false;

@@ -1,7 +1,6 @@
 #ifndef MOTOR_SYSTEM_DISPATCHER_H
 #define MOTOR_SYSTEM_DISPATCHER_H
 
-#include "motor/systems/context.h"
 #include "motor/systems/system.h"
 #include <entt/core/type_info.hpp>
 #include <memory>
@@ -13,11 +12,13 @@ namespace motor {
 
 class system_dispatcher final {
 public:
-    using system_map = std::unordered_map<entt::id_type, size_t>;
-    using system_list = std::vector<std::unique_ptr<system>>;
+    system_dispatcher(entt::registry& reg) noexcept : reg(reg) {}
+    system_dispatcher(system_dispatcher&) = delete;
+    system_dispatcher(system_dispatcher&&) = delete;
 
-public:
-    system_dispatcher(context& ctx) noexcept : ctx(ctx) {}
+    system_dispatcher operator=(system_dispatcher&) = delete;
+    system_dispatcher operator=(system_dispatcher&&) = delete;
+
     ~system_dispatcher();
 
     template<typename System, typename... Args>
@@ -27,7 +28,7 @@ public:
         system_types.emplace(entt::type_info<System>::id(), systems.size());
         systems.push_back(std::unique_ptr<System>(
                 new System(std::forward<Args>(args)...)));
-        systems.back()->on_start(ctx);
+        systems.back()->on_start(reg);
         auto system = static_cast<System*>(systems.back().get());
         sort();
         return *system;
@@ -39,7 +40,7 @@ public:
                       "System should be derived from motor::system");
         if (auto it = system_types.find(entt::type_info<System>::id());
             it != system_types.end()) {
-            it->second->on_stop(ctx);
+            it->second->on_stop(reg);
             systems.erase(systems.begin() + it->second);
             system_types.erase(it);
             sort();
@@ -49,7 +50,10 @@ public:
     void update();
 
 private:
-    context& ctx;
+    using system_map = std::unordered_map<entt::id_type, size_t>;
+    using system_list = std::vector<std::unique_ptr<system>>;
+
+    entt::registry& reg;
 
     system_map system_types{};
     system_list systems{};

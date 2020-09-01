@@ -25,6 +25,7 @@ set(HEADERS
 	"include/motor/core/game_state.h"
 	"include/motor/core/state_machine.h"
 	"include/motor/core/storage.h"
+	"include/motor/core/core_context.h"
 	"include/motor/core/application.h"
 
 	"src/core/config_system.h"
@@ -32,14 +33,12 @@ set(HEADERS
 	"src/core/event_system.h"
 
 	# platform
-	"include/motor/platform/platform.h"
-
+	"src/platform/platform.h"
 	"src/platform/backward.hpp"
 
 	# systems
 	"include/motor/systems/system.h"
 	"include/motor/systems/system_dispatcher.h"
-	"include/motor/systems/context.h"
 )
 
 add_library(motor ${SOURCES} ${HEADERS})

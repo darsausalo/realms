@@ -3,7 +3,6 @@
 
 #include "motor/systems/system.h"
 #include <SDL.h>
-#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace motor {
@@ -29,9 +28,9 @@ class window_system : public system {
 public:
     window_system() noexcept;
 
-    void on_start(context& ctx) override;
-    void on_stop(context& ctx) override;
-    void update(context& ctx) override;
+    void on_start(entt::registry& reg) override;
+    void on_stop(entt::registry& reg) override;
+    void update(entt::registry& reg) override;
 
 private:
     SDL_Window* window{};

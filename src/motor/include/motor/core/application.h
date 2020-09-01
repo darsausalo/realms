@@ -3,16 +3,24 @@
 
 #include "motor/core/events.h"
 #include "motor/core/state_machine.h"
-#include "motor/platform/platform.h"
 #include "motor/systems/system_dispatcher.h"
+#include <memory>
 #include <string>
 
 namespace motor {
 
+class platform;
+
 class application final {
 public:
     application(int argc, const char* argv[]);
-    ~application() = default;
+    application(const application&) = delete;
+    application(application&&) = delete;
+
+    application& operator=(const application&) = delete;
+    application& operator=(application&&) = delete;
+
+    ~application();
 
     template<typename InitialState>
     int run() {
@@ -22,7 +30,7 @@ public:
 
 private:
     std::vector<std::string> args;
-    platform platform;
+    std::unique_ptr<platform> platform;
     bool quit_requested{};
 
     void run_loop(state_machine& states);

@@ -4,14 +4,14 @@ namespace motor {
 
 system_dispatcher::~system_dispatcher() {
     while (!systems.empty()) {
-        systems.back()->on_stop(ctx);
+        systems.back()->on_stop(reg);
         systems.pop_back();
     }
 }
 
 void system_dispatcher::update() {
     for (auto& system : systems) {
-        system->update(ctx);
+        system->update(reg);
     }
 }
 

@@ -1,24 +1,25 @@
 #include "event_system.h"
 #include "motor/core/events.h"
-#include "motor/systems/context.h"
 #include <SDL.h>
+#include <entt/entity/registry.hpp>
+#include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>
 
 namespace motor {
 
-void event_system::on_start(context& ctx) {
+void event_system::on_start(entt::registry& reg) {
     spdlog::debug("event_system::started");
 }
 
-void event_system::on_stop(context& ctx) {
+void event_system::on_stop(entt::registry& reg) {
     spdlog::debug("event_system::stopped");
 }
 
-void event_system::update(context& ctx) {
+void event_system::update(entt::registry& reg) {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         if (sdl_event.type == SDL_QUIT) {
-            ctx.get<entt::dispatcher>().trigger<event::quit>();
+            reg.ctx<entt::dispatcher>().trigger<event::quit>();
         }
     }
 }

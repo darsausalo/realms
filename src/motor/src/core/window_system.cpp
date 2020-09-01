@@ -1,7 +1,9 @@
 #include "window_system.h"
 #include "config_system.h"
+#include "motor/core/core_context.h"
 #include "motor/core/exception.h"
-#include "motor/systems/context.h"
+#include <entt/entity/registry.hpp>
+#include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
@@ -44,9 +46,9 @@ window_system::window_system() noexcept
     : config{"default", false, {0, 0}, {1280, 768}} {
 }
 
-void window_system::on_start(context& ctx) {
+void window_system::on_start(entt::registry& reg) {
     try {
-        ctx.get<config_data>().jconfig.at("window").get_to(config);
+        reg.ctx<core_context>().jconfig.at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
@@ -65,12 +67,12 @@ void window_system::on_start(context& ctx) {
     spdlog::debug("window_system::started");
 }
 
-void window_system::on_stop(context& ctx) {
+void window_system::on_stop(entt::registry& reg) {
     SDL_DestroyWindow(window);
     spdlog::debug("window_system::stopped");
 }
 
-void window_system::update(context& ctx) {
+void window_system::update(entt::registry& reg) {
     bool modified = false;
 
     int x, y;
@@ -91,8 +93,8 @@ void window_system::update(context& ctx) {
 
     if (modified) {
         try {
-            ctx.get<config_data>().jconfig["window"] = config;
-            ctx.get<entt::dispatcher>().trigger<event::config_changed>();
+            reg.ctx<core_context>().jconfig["window"] = config;
+            reg.ctx<entt::dispatcher>().trigger<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());
         }
