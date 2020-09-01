@@ -10,9 +10,9 @@ public:
     loading_state() noexcept = default;
     ~loading_state() noexcept = default;
 
-    void on_start() override;
-    void on_stop() override;
-    motor::transition update() override;
+    void on_start(entt::registry& reg) override;
+    void on_stop(entt::registry& reg) override;
+    motor::transition update(entt::registry& reg) override;
 
 private:
     int progress{};

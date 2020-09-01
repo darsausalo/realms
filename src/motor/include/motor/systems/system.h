@@ -1,7 +1,7 @@
 #ifndef MOTOR_SYSTEM_H
 #define MOTOR_SYSTEM_H
 
-#include <entt/fwd.hpp>
+#include <entt/entity/fwd.hpp>
 
 namespace motor {
 

@@ -23,7 +23,6 @@ set(HEADERS
 	"include/motor/core/exception.h"
 	"include/motor/core/transition.h"
 	"include/motor/core/game_state.h"
-	"include/motor/core/state_machine.h"
 	"include/motor/core/storage.h"
 	"include/motor/core/core_context.h"
 	"include/motor/core/application.h"
@@ -31,6 +30,8 @@ set(HEADERS
 	"src/core/config_system.h"
 	"src/core/window_system.h"
 	"src/core/event_system.h"
+
+	"src/core/state_machine.h"
 
 	# platform
 	"src/platform/platform.h"

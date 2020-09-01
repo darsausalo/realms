@@ -1,6 +1,7 @@
-- [ ] input_system (+context or service_locator?)
-- [ ] Serialization - cereal + nlohmann json
+- [x] context
+- [ ] input_system
 - [ ] System modules
+- [ ] Serialization - cereal + nlohmann json
 - [ ] Move game logic to separate dll
 - [ ] Mods management + json merge/inheritance resolve
 - [ ] DynamicLibrary

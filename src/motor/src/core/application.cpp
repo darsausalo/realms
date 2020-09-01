@@ -7,6 +7,7 @@
 #include "motor/core/storage.h"
 #include "motor/systems/system_dispatcher.h"
 #include "platform/platform.h"
+#include "state_machine.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fstream>
@@ -30,9 +31,8 @@ application::application(int argc, const char* argv[])
 application::~application() {
 }
 
-void application::run_loop(state_machine& states) {
+void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
     entt::registry reg;
-    system_dispatcher dispatcher{reg};
 
     reg.set<entt::dispatcher>()
             .sink<event::quit>()
@@ -40,19 +40,16 @@ void application::run_loop(state_machine& states) {
     reg.set<core_context>(platform->get_base_path(), platform->get_data_path(),
                           platform->get_user_path());
 
+    system_dispatcher dispatcher{reg};
+
     dispatcher.add_system<config_system>(args);
     dispatcher.add_system<window_system>();
     dispatcher.add_system<event_system>();
 
-    states.start();
-    while (states.is_running()) {
+    state_machine states{reg, std::move(initial_state)};
+    while (states.is_running() && !should_close()) {
         dispatcher.update();
         states.update();
-
-        if (should_close()) {
-            states.stop();
-            break;
-        }
     }
 }
 

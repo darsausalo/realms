@@ -2,7 +2,7 @@
 #define MOTOR_APPLICATION_H
 
 #include "motor/core/events.h"
-#include "motor/core/state_machine.h"
+#include "motor/core/game_state.h"
 #include "motor/systems/system_dispatcher.h"
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@ public:
 
     template<typename InitialState>
     int run() {
-        run_loop(state_machine(std::make_shared<InitialState>()));
+        run_loop(std::move(std::make_shared<InitialState>()));
         return 0;
     }
 
@@ -33,7 +33,7 @@ private:
     std::unique_ptr<platform> platform;
     bool quit_requested{};
 
-    void run_loop(state_machine& states);
+    void run_loop(std::shared_ptr<game_state>&& initial_state);
 
     bool should_close();
 
