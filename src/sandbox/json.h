@@ -2,6 +2,7 @@
 #define MOTOR_ARCHIVE_JSON_H
 
 #include "archive.h"
+#include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
 namespace motor {
@@ -13,33 +14,39 @@ public:
         node_stack.push_back(&j);
     }
 
-    void start_node() {
-        // TODO: check?
-        node_stack.push_back(current_member);
-    }
+    void start_node() { node_stack.push_back(current_member); }
 
     void end_node() {
         if (node_stack.size() < 1) {
-            // TODO: refine
-            throw std::exception("empty stack");
+            throw serialize_error("missing stack size on read from json");
         }
         node_stack.pop_back();
     }
 
     void find_key(std::string_view key) {
         const auto* current_value = node_stack.back();
-        current_member = (current_value && current_value->contains(key))
-                                 ? &current_value->at(std::data(key))
-                                 : nullptr;
+        if (current_value && !current_value->is_null()) {
+            if (!current_value->is_object()) {
+                throw serialize_error("object expected");
+            }
+            current_member = current_value->contains(key)
+                                     ? &current_value->at(std::data(key))
+                                     : nullptr;
+        } else {
+            current_member = nullptr;
+        }
     }
 
     template<typename T, std::size_t N>
     void load_array(std::array<T, N>& arr) {
-        // TODO: exception?
-        if (current_member) {
+        if (current_member && !current_member->is_null()) {
+            if (!current_member->is_array()) {
+                throw serialize_error("array expected");
+            }
             std::size_t i;
             for (i = 0u; i < N && i < current_member->size(); i++) {
-                arr[i] = current_member->at(i);
+                auto& jvalue = current_member->at(i);
+                arr[i] = !jvalue.is_null() ? jvalue.get<T>() : T{};
             }
             for (; i < N; i++) {
                 arr[i] = T{};

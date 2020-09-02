@@ -1,6 +1,5 @@
 #include "platform.h"
 #include "backward.hpp"
-#include "motor/core/exception.h"
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
@@ -18,7 +17,7 @@ platform::platform() {
 
     SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0) {
-        throw exception(
+        throw std::runtime_error(
                 fmt::format("SDL initialization failed: {}", SDL_GetError()));
     }
 }

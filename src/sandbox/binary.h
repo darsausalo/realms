@@ -2,6 +2,7 @@
 #define MOTOR_ARCHIVE_BINARY_H
 
 #include "archive.h"
+#include <fmt/core.h>
 #include <iostream>
 
 namespace motor {
@@ -20,7 +21,8 @@ public:
         const auto read_size =
                 stream.rdbuf()->sgetn(reinterpret_cast<char*>(data), size);
         if (read_size != size) {
-            // TODO: exception
+            throw serialize_error(fmt::format(
+                    "failed to read {} bytes, read {}", size, read_size));
         }
     }
 
@@ -54,7 +56,8 @@ public:
         const auto write_size = stream.rdbuf()->sputn(
                 reinterpret_cast<const char*>(data), size);
         if (write_size != size) {
-            // TODO: exception
+            throw serialize_error(fmt::format(
+                    "failed to write {} bytes, wrote {}", size, write_size));
         }
     }
 

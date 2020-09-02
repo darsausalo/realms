@@ -3,7 +3,6 @@
 #include "core/event_system.h"
 #include "core/window_system.h"
 #include "motor/core/core_context.h"
-#include "motor/core/exception.h"
 #include "motor/core/storage.h"
 #include "motor/systems/system_dispatcher.h"
 #include "platform/platform.h"

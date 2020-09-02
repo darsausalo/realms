@@ -7,6 +7,15 @@
 
 namespace motor {
 
+/* errors */
+
+class serialize_error : public std::runtime_error {
+public:
+    serialize_error(const std::string& what_arg)
+        : std::runtime_error(what_arg) {}
+    serialize_error(const char* what_arg) : std::runtime_error(what_arg) {}
+};
+
 /* type traits */
 template<typename T>
 struct is_array {

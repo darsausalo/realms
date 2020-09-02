@@ -1,4 +1,3 @@
-// #include "../motor/src/platform/backward.hpp"
 #include "archive.h"
 #include "binary.h"
 #include "json.h"
@@ -8,22 +7,13 @@
 #include <iostream>
 #include <sstream>
 
-/*namespace backward {
-
-SignalHandling sh;
-
-std::string report_path;
-
-} // namespace backward*/
-
-
 static const char* json_str = R"({
     "entity1": "todo1",
     "entity2": "todo2"
 })";
 
 static const char* json_str_2 = R"({
-    "arr1": [2, 4, 5],
+    "arr1": [null, 2, 4, 5, 45, 32, 112],
     "y": 4,
     "x": 12.1,
     "inner": {
@@ -112,8 +102,8 @@ int main(int argc, char const* argv[]) {
             std::cout << n << ",";
         }
         std::cout << std::endl;
-    } catch (nlohmann::json::exception& e) {
-        std::cout << "ERROR:" << e.what() << std::endl;
+    } catch (std::exception& e) {
+        std::cout << "ERROR: " << e.what() << std::endl;
     }
 
     return 0;

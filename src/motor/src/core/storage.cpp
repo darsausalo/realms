@@ -1,5 +1,4 @@
 #include "motor/core/storage.h"
-#include "motor/core/exception.h"
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
@@ -14,8 +13,8 @@ storage::storage(const std::filesystem::path& base_path,
 void storage::set_data_path(const std::filesystem::path& path) {
     data_path = path;
     if (!std::filesystem::exists(data_path)) {
-        throw exception(fmt::format("data directory '{}' was not found",
-                                    data_path.string()));
+        throw std::runtime_error(fmt::format(
+                "data directory '{}' was not found", data_path.string()));
     }
 }
 

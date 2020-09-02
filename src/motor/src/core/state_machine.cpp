@@ -1,5 +1,4 @@
 #include "state_machine.h"
-#include "motor/core/exception.h"
 #include "motor/core/game_state.h"
 
 namespace motor {

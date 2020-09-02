@@ -1,3 +1,5 @@
+include_directories("../motor/include")
+
 set(SOURCES
 	main2.cpp
 )

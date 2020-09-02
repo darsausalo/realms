@@ -1,7 +1,6 @@
 #include "window_system.h"
 #include "config_system.h"
 #include "motor/core/core_context.h"
-#include "motor/core/exception.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>
@@ -60,7 +59,7 @@ void window_system::on_start(entt::registry& reg) {
     window = SDL_CreateWindow("frontier", x, y, config.size.width,
                               config.size.height, SDL_WINDOW_OPENGL);
     if (!window) {
-        throw exception(
+        throw std::runtime_error(
                 fmt::format("Could not create window: {}", SDL_GetError()));
     }
 
