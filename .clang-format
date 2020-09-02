@@ -65,7 +65,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-TabWidth: 2
+TabWidth: 4
 UseTab: Never
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 60

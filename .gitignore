@@ -27,5 +27,6 @@ prebuilt
 # vim swp files
 *.swp
 
-# project temporary folders
+# project temporary files
 save
+*.bin

@@ -54,7 +54,6 @@ target_compile_definitions(motor PRIVATE
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
-	tsl::hopscotch_map
 	nlohmann_json::nlohmann_json
 	cereal
 	SDL2::SDL2
