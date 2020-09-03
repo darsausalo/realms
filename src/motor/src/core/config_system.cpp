@@ -48,7 +48,9 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system(const std::vector<std::string>& args) {
+void config_system::on_start(entt::registry& reg) {
+    auto& args = reg.ctx<core_context>().args;
+
     std::string key;
     for (auto& arg : args) {
         auto arg_size = arg.size();
@@ -64,9 +66,7 @@ config_system::config_system(const std::vector<std::string>& args) {
         }
         key = arg.substr(2);
     }
-}
 
-void config_system::on_start(entt::registry& reg) {
     auto& stg = reg.ctx<core_context>().get_storage();
 
     if (cli_config.contains("/fs/data_path"_json_pointer)) {

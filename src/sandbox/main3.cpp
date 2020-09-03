@@ -63,12 +63,32 @@ void serialize(Archive& ar, health& h) {
     ar.member("value", h.value);
 }
 
+class system_a : public motor::system {};
+class system_b : public motor::system {};
+class system_c : public motor::system {};
+class system_d : public motor::system {};
+class system_e : public motor::system {};
+
+class system_a1 : public motor::system {};
+class system_a2 : public motor::system {};
+
 class module_a : public motor::system_module {
 public:
     module_a() {
         component<position>();
         component<timer>();
         component<health>();
+
+        system<system_a1>();
+
+        system<system_e, system_a, system_d>();
+        system<system_d, system_b, system_c>();
+
+        system<system_b, system_a>();
+        system<system_c, system_b>();
+        system<system_a>();
+
+        system<system_a2>();
     }
 };
 
@@ -77,8 +97,8 @@ extern "C" void plugin_entry(motor::plugin_context* ctx) {
 }
 
 int main(int argc, char const* argv[]) {
-
     entt::registry reg;
+    motor::system_dispatcher dispatcher{reg};
     motor::prefab_loader loader{reg};
 
     nlohmann::json j = nlohmann::json::parse(json_text);
@@ -86,6 +106,8 @@ int main(int argc, char const* argv[]) {
     motor::plugin_context ctx;
 
     ctx.register_module<module_a>();
+
+    ctx.add_systems(dispatcher);
 
     std::cout << "go!" << std::endl;
 
@@ -102,6 +124,10 @@ int main(int argc, char const* argv[]) {
     reg.view<health>().each([](const auto& h) {
         std::cout << "h = " << h.max << "," << h.value << std::endl;
     });
+
+    std::cout << "======== systems ========" << std::endl;
+
+    dispatcher.dump();
 
     return 0;
 }

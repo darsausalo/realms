@@ -13,10 +13,11 @@ public:
     std::vector<std::string> args;
     nlohmann::json jconfig;
 
-    core_context(const std::filesystem::path& base_path,
+    core_context(const std::vector<std::string>& args,
+                 const std::filesystem::path& base_path,
                  const std::filesystem::path& data_path,
                  const std::filesystem::path& user_path)
-        : storage(base_path, data_path, user_path) {}
+        : args(std::move(args)), storage(base_path, data_path, user_path) {}
     core_context(const core_context&) = delete;
     core_context(core_context&&) = default;
 

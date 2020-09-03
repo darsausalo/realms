@@ -36,12 +36,12 @@ void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
     reg.set<entt::dispatcher>()
             .sink<event::quit>()
             .connect<&application::receive_event_quit>(*this);
-    reg.set<core_context>(platform->get_base_path(), platform->get_data_path(),
-                          platform->get_user_path());
+    reg.set<core_context>(args, platform->get_base_path(),
+                          platform->get_data_path(), platform->get_user_path());
 
     system_dispatcher dispatcher{reg};
 
-    dispatcher.add_system<config_system>(args);
+    dispatcher.add_system<config_system>();
     dispatcher.add_system<window_system>();
     dispatcher.add_system<event_system>();
 

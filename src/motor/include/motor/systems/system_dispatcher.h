@@ -1,12 +1,15 @@
 #ifndef MOTOR_SYSTEM_DISPATCHER_H
 #define MOTOR_SYSTEM_DISPATCHER_H
 
+#include "motor/core/utility.h"
 #include "motor/systems/system.h"
 #include <entt/core/type_info.hpp>
 #include <memory>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
+
+#include <iostream>
 
 namespace motor {
 
@@ -21,15 +24,19 @@ public:
 
     ~system_dispatcher();
 
-    template<typename System, typename... Args>
-    System& add_system(Args&&... args) {
+    template<typename System, typename... Dependencies>
+    System& add_system() {
         static_assert(std::is_base_of_v<system, System>,
                       "System should be derived from motor::system");
-        system_types.emplace(entt::type_info<System>::id(), systems.size());
-        systems.push_back(std::unique_ptr<System>(
-                new System(std::forward<Args>(args)...)));
-        systems.back()->on_start(reg);
-        auto system = static_cast<System*>(systems.back().get());
+        auto it = std::find_if(systems.cbegin(), systems.cend(), [](auto&& sd) {
+            return sd.type_id == entt::type_info<System>::id();
+        });
+        systems.push_back(system_desc{entt::type_info<System>::id(),
+                                      nameof_type<System>(),
+                                      {entt::type_info<Dependencies>::id()...},
+                                      std::make_unique<System>()});
+        systems.back().instance->on_start(reg);
+        auto system = static_cast<System*>(systems.back().instance.get());
         sort();
         return *system;
     }
@@ -38,27 +45,43 @@ public:
     void remove_system() {
         static_assert(std::is_base_of_v<system, System>,
                       "System should be derived from motor::system");
-        if (auto it = system_types.find(entt::type_info<System>::id());
-            it != system_types.end()) {
-            it->second->on_stop(reg);
-            systems.erase(systems.begin() + it->second);
-            system_types.erase(it);
+        auto it = std::find_if(systems.cbegin(), systems.cend(), [](auto&& sd) {
+            return sd.type_id == entt::type_info<System>::id();
+        });
+        if (it != systems.end()) {
+            it->instance->on_stop(reg);
+            systems.erase(it);
             sort();
         }
     }
 
     void update();
 
+    void dump() {
+        for (auto&& sd : systems) {
+            std::cout << sd.name << "[";
+            for (auto&& id : sd.dependencies) {
+                auto it = std::find_if(
+                        systems.cbegin(), systems.cend(),
+                        [&id](auto&& s) { return s.type_id == id; });
+                if (it != systems.end()) {
+                    std::cout << it->name << ", ";
+                }
+            }
+            std::cout << "]" << std::endl;
+        }
+    }
+
 private:
-    using system_map = std::unordered_map<entt::id_type, size_t>;
-    using system_list = std::vector<std::unique_ptr<system>>;
+    struct system_desc {
+        entt::id_type type_id;
+        std::string_view name;
+        std::vector<entt::id_type> dependencies;
+        std::unique_ptr<system> instance;
+    };
 
     entt::registry& reg;
-
-    system_map system_types{};
-    system_list systems{};
-
-    [[maybe_unused]] bool in_update{};
+    std::vector<system_desc> systems{};
 
     void sort();
 };

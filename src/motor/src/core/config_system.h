@@ -23,8 +23,6 @@ struct config_data {
 
 class config_system : public system {
 public:
-    config_system(const std::vector<std::string>& args);
-
     void on_start(entt::registry& reg) override;
     void on_stop(entt::registry& reg) override;
     void update(entt::registry& reg) override;

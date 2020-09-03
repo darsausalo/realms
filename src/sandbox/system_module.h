@@ -60,8 +60,9 @@ protected:
     template<typename System, typename... Dependencies>
     void system() {
         // TODO: Dependencies
-        system_adders.push_back([](auto& d) { d.add_system<System>(); });
-        system_removers.push_back([](auto& d) { d.remove_system<System>(); })
+        system_adders.push_back(
+                [](auto& d) { d.add_system<System, Dependencies...>(); });
+        system_removers.push_back([](auto& d) { d.remove_system<System>(); });
     }
 
 private:
