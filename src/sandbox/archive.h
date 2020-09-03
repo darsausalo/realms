@@ -4,6 +4,7 @@
 #include <array>
 #include <iostream>
 #include <type_traits>
+#include <utility>
 
 namespace motor {
 
@@ -75,7 +76,7 @@ private:
 
     template<typename T, typename... Other>
     void process(T&& head, Other&&... tail) {
-        process(std::froward<T>(head));
+        process(std::forward<T>(head));
         process(std::forward<Other>(tail)...);
     }
 
@@ -123,7 +124,7 @@ private:
 
     template<typename T, typename... Other>
     void process(T&& head, Other&&... tail) {
-        process(std::froward<T>(head));
+        process(std::forward<T>(head));
         process(std::forward<Other>(tail)...);
     }
 

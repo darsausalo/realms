@@ -20,6 +20,7 @@ set(SOURCES
 
 set(HEADERS
 	# core
+	"include/motor/core/utility.h"
 	"include/motor/core/transition.h"
 	"include/motor/core/game_state.h"
 	"include/motor/core/storage.h"

@@ -22,11 +22,6 @@ static const char* json_str_2 = R"({
     }
 })";
 
-template<typename Component>
-struct poly_loader {
-    void load();
-};
-
 struct inner {
     std::int32_t foo;
     std::int64_t boo;
