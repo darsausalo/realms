@@ -7,15 +7,15 @@ namespace motor {
 
 template<typename T>
 inline std::string_view nameof_type() {
-    static constexpr char* struct_prefix = "struct ";
+    static constexpr char struct_prefix[] = "struct ";
     static constexpr std::size_t struct_prefix_size = sizeof(struct_prefix) - 1;
-    static constexpr char* class_prefix = "class ";
+    static constexpr char class_prefix[] = "class ";
     static constexpr std::size_t class_prefix_size = sizeof(class_prefix) - 1;
     std::string_view type_name = nameof::nameof_type<T>();
     if (auto n = type_name.find(struct_prefix); n != std::string_view::npos) {
         type_name = type_name.substr(struct_prefix_size);
-    }
-    if (auto n = type_name.find(class_prefix); n != std::string_view::npos) {
+    } else if (auto n = type_name.find(class_prefix);
+               n != std::string_view::npos) {
         type_name = type_name.substr(class_prefix_size);
     }
     return type_name;
