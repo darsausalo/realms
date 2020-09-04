@@ -1,7 +1,7 @@
 - [x] context
-- [ ] Serialization - cereal + nlohmann json
+- [ ] Serialization - json + binary
 - [ ] System modules
-- [ ] Systems dependencies
+- [x] Systems dependencies
 - [ ] Binary data cache
 - [ ] input_system
 - [ ] Move game logic to separate dll

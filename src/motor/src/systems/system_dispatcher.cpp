@@ -22,14 +22,45 @@ void system_dispatcher::update() {
 }
 
 void system_dispatcher::sort() {
-    // TODO: topological sorting
-    std::sort(systems.begin(), systems.end(), [](auto& a, auto& b) {
-        auto ds = std::find_if(b.dependencies.cbegin(), b.dependencies.cend(),
-                               [&a](auto&& b_type_id) {
-                                   return a.type_id == b_type_id;
-                               }) != b.dependencies.end();
-        return ds;
-    });
+    std::vector<std::vector<std::size_t>> all_dependencies;
+    for (auto&& sd : systems) {
+        all_dependencies.push_back({});
+        auto& dependencies = all_dependencies.back();
+
+        std::transform(sd.dependencies.cbegin(), sd.dependencies.cend(),
+                       std::back_inserter(dependencies),
+                       [=](auto& type_id) -> std::size_t {
+                           auto it = std::find_if(
+                                   systems.cbegin(), systems.cend(),
+                                   [&type_id](auto&& s) {
+                                       return s.type_id == type_id;
+                                   });
+                           return it - systems.cbegin();
+                       });
+    }
+    std::vector<bool> visited;
+    visited.resize(all_dependencies.size());
+    std::fill(visited.begin(), visited.end(), false);
+
+    std::vector<system_desc> sorted;
+
+    std::function<void(std::size_t v)> dfs = [&, this](std::size_t v) {
+        visited[v] = true;
+        for (auto&& i : all_dependencies[v]) {
+            if (!visited[i]) {
+                dfs(i);
+            }
+        }
+        sorted.push_back(std::move(this->systems[v]));
+    };
+
+    for (auto v = 0u; v < all_dependencies.size(); v++) {
+        if (!visited[v]) {
+            dfs(v);
+        }
+    }
+
+    systems = std::move(sorted);
 }
 
 std::vector<std::pair<std::string, std::string>> system_dispatcher::dump() {
