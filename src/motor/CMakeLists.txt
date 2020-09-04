@@ -42,7 +42,7 @@ set(HEADERS
 	"include/motor/systems/system_dispatcher.h"
 )
 
-add_library(motor ${SOURCES} ${HEADERS})
+add_library(motor STATIC ${SOURCES} ${HEADERS})
 target_include_directories(motor PRIVATE ${UTFCPP_INCLUDE_DIRS})
 target_compile_definitions(motor PRIVATE
 	-DMOTOR_DATA_DIR="data"
@@ -64,3 +64,5 @@ target_link_libraries(motor PUBLIC
 	EnTT::EnTT
 )
 add_backward(motor)
+
+doctest_make_exe_for_static_lib(motor_test motor)

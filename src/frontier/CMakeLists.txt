@@ -15,3 +15,5 @@ add_executable(frontier ${SOURCES} ${HEADERS})
 target_link_libraries(frontier PRIVATE
 	motor
 )
+
+doctest_force_implementation(frontier motor)

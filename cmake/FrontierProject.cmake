@@ -16,6 +16,8 @@ find_package(cereal CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 
+find_package(doctest CONFIG REQUIRED)
+
 find_path(UTFCPP_INCLUDE_DIRS "utf8.h")
 
 # Compiler-specific flags

@@ -9,8 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <iostream>
-
 namespace motor {
 
 class system_dispatcher final {
@@ -37,7 +35,7 @@ public:
                                       std::make_unique<System>()});
         systems.back().instance->on_start(reg);
         auto system = static_cast<System*>(systems.back().instance.get());
-        sort();
+        need_sorting = true;
         return *system;
     }
 
@@ -51,26 +49,13 @@ public:
         if (it != systems.end()) {
             it->instance->on_stop(reg);
             systems.erase(it);
-            sort();
+            need_sorting = true;
         }
     }
 
     void update();
 
-    void dump() {
-        for (auto&& sd : systems) {
-            std::cout << sd.name << "[";
-            for (auto&& id : sd.dependencies) {
-                auto it = std::find_if(
-                        systems.cbegin(), systems.cend(),
-                        [&id](auto&& s) { return s.type_id == id; });
-                if (it != systems.end()) {
-                    std::cout << it->name << ", ";
-                }
-            }
-            std::cout << "]" << std::endl;
-        }
-    }
+    std::vector<std::pair<std::string, std::string>> dump();
 
 private:
     struct system_desc {
@@ -82,6 +67,7 @@ private:
 
     entt::registry& reg;
     std::vector<system_desc> systems{};
+    bool need_sorting{};
 
     void sort();
 };
