@@ -75,9 +75,7 @@ class system_a2 : public motor::system {};
 class module_a : public motor::system_module {
 public:
     module_a() {
-        component<position>();
-        component<timer>();
-        component<health>();
+        component<position, timer, health>();
 
         system<system_a1>();
 

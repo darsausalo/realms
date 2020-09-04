@@ -41,25 +41,19 @@ public:
 protected:
     system_module() = default;
 
-    template<typename Component>
+    template<typename... Component>
     void component() {
-        prefab_loaders.push_back([](auto& loader) {
-            // TODO: use variadic
-            loader.component<Component>();
-        });
+        prefab_loaders.push_back(
+                [](auto& loader) { loader.component<Component...>(); });
         snapshot_loaders.push_back([](auto& ss_loader, auto& ar) {
-            // TODO: use variadic
-            ss_loader.component<Component>(ar);
+            ss_loader.component<Component...>(ar);
         });
-        snapshot_savers.push_back([](auto& ss, auto& ar) {
-            // TODO: use variadic
-            ss.component<Component>(ar);
-        });
+        snapshot_savers.push_back(
+                [](auto& ss, auto& ar) { ss.component<Component...>(ar); });
     }
 
     template<typename System, typename... Dependencies>
     void system() {
-        // TODO: Dependencies
         system_adders.push_back(
                 [](auto& d) { d.add_system<System, Dependencies...>(); });
         system_removers.push_back([](auto& d) { d.remove_system<System>(); });

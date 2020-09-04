@@ -22,6 +22,19 @@ class basic_prefab_loader {
         std::unordered_map<std::string_view, const nlohmann::json*> components;
     };
 
+    template<typename Component>
+    void load_component() const {
+        auto component_name = motor::nameof_type<Component>();
+        for (auto& [name, desc] : descs) {
+            if (auto& it = desc.components.find(component_name);
+                it != desc.components.end()) {
+                Component instance{};
+                serialize(json_input_archive{*it->second}, instance);
+                reg->template emplace<Component>(desc.entity, instance);
+            }
+        }
+    }
+
 public:
     basic_prefab_loader(registry_type& destination) noexcept
         : reg{&destination} {}
@@ -41,19 +54,12 @@ public:
         return *this;
     }
 
-    template<typename Component>
+    template<typename... Component>
     const basic_prefab_loader& component() const {
-        auto component_name = motor::nameof_type<Component>();
-        for (auto& [name, desc] : descs) {
-            if (auto& it = desc.components.find(component_name);
-                it != desc.components.end()) {
-                Component instance{};
-                serialize(json_input_archive{*it->second}, instance);
-                reg->template emplace<Component>(desc.entity, instance);
-            }
-        }
+        (load_component<Component>(), ...);
         return *this;
     }
+
 
 private:
     registry_type* reg{};
