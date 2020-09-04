@@ -1,9 +1,9 @@
 #ifndef MOTOR_APPLICATION_H
 #define MOTOR_APPLICATION_H
 
-#include "motor/core/events.h"
-#include "motor/core/game_state.h"
-#include "motor/systems/system_dispatcher.h"
+#include "motor/core/system_dispatcher.h"
+#include "motor/host/events.h"
+#include "motor/host/game_state.h"
 #include <memory>
 #include <string>
 

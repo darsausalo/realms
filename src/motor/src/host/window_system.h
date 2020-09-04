@@ -1,7 +1,7 @@
 #ifndef MOTOR_WINDOW_SYSTEM_H
 #define MOTOR_WINDOW_SYSTEM_H
 
-#include "motor/systems/system.h"
+#include "motor/core/system.h"
 #include <SDL.h>
 #include <string>
 

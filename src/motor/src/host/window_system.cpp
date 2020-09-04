@@ -1,6 +1,6 @@
 #include "window_system.h"
 #include "config_system.h"
-#include "motor/core/core_context.h"
+#include "motor/host/core_context.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>

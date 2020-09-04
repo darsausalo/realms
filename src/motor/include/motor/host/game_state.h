@@ -1,7 +1,7 @@
 #ifndef MOTOR_GAME_STATE_H
 #define MOTOR_GAME_STATE_H
 
-#include "motor/core/transition.h"
+#include "motor/host/transition.h"
 #include <entt/entity/fwd.hpp>
 
 namespace motor {

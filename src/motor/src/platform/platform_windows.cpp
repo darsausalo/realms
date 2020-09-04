@@ -10,8 +10,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <psapi.h>
-
 namespace motor {
 
 void platform::setup_crash_handling(std::string_view base_path) {

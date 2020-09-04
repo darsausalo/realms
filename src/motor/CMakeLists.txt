@@ -2,44 +2,44 @@ include_directories("include" "src")
 
 set(SOURCES
 	# core
-	"src/core/game_state.cpp"
-	"src/core/state_machine.cpp"
-	"src/core/storage.cpp"
-	"src/core/application.cpp"
-	"src/core/config_system.cpp"
-	"src/core/window_system.cpp"
-	"src/core/event_system.cpp"
+	"src/core/system_dispatcher.cpp"
+
+	# host
+	"src/host/game_state.cpp"
+	"src/host/state_machine.cpp"
+	"src/host/storage.cpp"
+	"src/host/application.cpp"
+	"src/host/config_system.cpp"
+	"src/host/window_system.cpp"
+	"src/host/event_system.cpp"
 
 	# platform
 	"src/platform/platform.cpp"
 	"src/platform/platform_windows.cpp"
-
-	# systems
-	"src/systems/system_dispatcher.cpp"
 )
 
 set(HEADERS
 	# core
+	"include/motor/core/system.h"
+	"include/motor/core/system_dispatcher.h"
 	"include/motor/core/utility.h"
-	"include/motor/core/transition.h"
-	"include/motor/core/game_state.h"
-	"include/motor/core/storage.h"
-	"include/motor/core/core_context.h"
-	"include/motor/core/application.h"
 
-	"src/core/config_system.h"
-	"src/core/window_system.h"
-	"src/core/event_system.h"
+	# host
+	"include/motor/host/transition.h"
+	"include/motor/host/game_state.h"
+	"include/motor/host/storage.h"
+	"include/motor/host/core_context.h"
+	"include/motor/host/application.h"
 
-	"src/core/state_machine.h"
+	"src/host/config_system.h"
+	"src/host/window_system.h"
+	"src/host/event_system.h"
+
+	"src/host/state_machine.h"
 
 	# platform
 	"src/platform/platform.h"
 	"src/platform/backward.hpp"
-
-	# systems
-	"include/motor/systems/system.h"
-	"include/motor/systems/system_dispatcher.h"
 )
 
 add_library(motor STATIC ${SOURCES} ${HEADERS})

@@ -2,8 +2,8 @@
 #define MOTOR_SYSTEM_MODULE_H
 
 #include "binary.h"
+#include "motor/core/system_dispatcher.h"
 #include "motor/core/utility.h"
-#include "motor/systems/system_dispatcher.h"
 #include "prefab_loader.h"
 #include <entt/entity/fwd.hpp>
 #include <memory>

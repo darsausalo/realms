@@ -1,7 +1,7 @@
 #ifndef CONFIG_SYSTEM_H
 #define CONFIG_SYSTEM_H
 
-#include "motor/systems/system.h"
+#include "motor/core/system.h"
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>

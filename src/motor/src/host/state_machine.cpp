@@ -1,5 +1,5 @@
 #include "state_machine.h"
-#include "motor/core/game_state.h"
+#include "motor/host/game_state.h"
 
 namespace motor {
 

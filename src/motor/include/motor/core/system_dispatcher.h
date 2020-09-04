@@ -1,8 +1,8 @@
 #ifndef MOTOR_SYSTEM_DISPATCHER_H
 #define MOTOR_SYSTEM_DISPATCHER_H
 
+#include "motor/core/system.h"
 #include "motor/core/utility.h"
-#include "motor/systems/system.h"
 #include <entt/core/type_info.hpp>
 #include <memory>
 #include <type_traits>

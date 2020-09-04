@@ -2,7 +2,7 @@
 #define MOTOR_PLUGIN_CONTEXT_H
 
 #include "binary.h"
-#include "motor/systems/system_dispatcher.h"
+#include "motor/core/system_dispatcher.h"
 #include "prefab_loader.h"
 #include "system_module.h"
 #include <entt/entity/fwd.hpp>

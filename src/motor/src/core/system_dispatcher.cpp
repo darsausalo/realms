@@ -1,4 +1,4 @@
-#include "motor/systems/system_dispatcher.h"
+#include "motor/core/system_dispatcher.h"
 #include <algorithm>
 #include <functional>
 

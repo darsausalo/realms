@@ -1,7 +1,7 @@
 #ifndef FRONTIER_LOADING_STATE_H
 #define FRONTIER_LOADING_STATE_H
 
-#include <motor/core/game_state.h>
+#include <motor/host/game_state.h>
 
 namespace frontier {
 

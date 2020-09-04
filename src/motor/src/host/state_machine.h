@@ -1,8 +1,8 @@
 #ifndef MOTOR_STATE_MACHINE_H
 #define MOTOR_STATE_MACHINE_H
 
-#include "motor/core/game_state.h"
-#include "motor/core/transition.h"
+#include "motor/host/game_state.h"
+#include "motor/host/transition.h"
 #include <entt/entity/fwd.hpp>
 #include <vector>
 
