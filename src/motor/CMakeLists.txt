@@ -8,13 +8,14 @@ set(SOURCES
 	"src/host/game_state.cpp"
 	"src/host/state_machine.cpp"
 	"src/host/storage.cpp"
-	"src/host/application.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
 	"src/host/event_system.cpp"
+	"src/host/application.cpp"
 
 	# platform
-	"src/platform/platform.cpp"
+	"src/platform/backward.cpp"
+
 	"src/platform/platform_windows.cpp"
 )
 
@@ -28,7 +29,6 @@ set(HEADERS
 	"include/motor/host/transition.h"
 	"include/motor/host/game_state.h"
 	"include/motor/host/storage.h"
-	"include/motor/host/core_context.h"
 	"include/motor/host/application.h"
 
 	"src/host/config_system.h"
@@ -55,7 +55,6 @@ target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
 	nlohmann_json::nlohmann_json
-	cereal
 	SDL2::SDL2
 )
 target_link_libraries(motor PUBLIC

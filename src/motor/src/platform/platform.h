@@ -4,26 +4,10 @@
 #include <filesystem>
 #include <string_view>
 
-namespace motor {
+namespace motor::platform {
 
-class platform {
-public:
-    platform();
-    ~platform();
+void setup_crash_handling(const std::filesystem::path& base_path);
 
-    const std::filesystem::path& get_base_path() const { return base_path; }
-    const std::filesystem::path& get_data_path() const { return data_path; }
-    const std::filesystem::path& get_user_path() const { return user_path; }
-
-private:
-    std::filesystem::path base_path;
-    std::filesystem::path data_path;
-    std::filesystem::path user_path;
-
-    void setup_crash_handling(std::string_view base_path);
-};
-
-
-} // namespace motor
+} // namespace motor::platform
 
 #endif // MOTOR_PLATFORM_H

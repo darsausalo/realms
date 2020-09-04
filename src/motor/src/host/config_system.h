@@ -2,11 +2,15 @@
 #define CONFIG_SYSTEM_H
 
 #include "motor/core/system.h"
+#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
 namespace motor {
+
+using arg_list = std::vector<std::string>;
+using core_config = nlohmann::json;
 
 namespace event {
 
@@ -17,19 +21,21 @@ struct config_changed {
 
 } // namespace event
 
-struct config_data {
-    nlohmann::json jconfig;
-};
-
 class config_system : public system {
 public:
+    config_system();
+    ~config_system();
+
     void on_start(entt::registry& reg) override;
     void on_stop(entt::registry& reg) override;
     void update(entt::registry& reg) override;
 
 private:
+    std::filesystem::path base_path;
+    std::filesystem::path data_path;
+    std::filesystem::path user_path;
+
     bool modified{};
-    nlohmann::json cli_config{};
 
     void receive_config_changed(const event::config_changed&);
 };

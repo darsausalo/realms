@@ -18,8 +18,6 @@ find_package(EnTT CONFIG REQUIRED)
 
 find_package(doctest CONFIG REQUIRED)
 
-find_path(UTFCPP_INCLUDE_DIRS "utf8.h")
-
 # Compiler-specific flags
 if (MSVC)
 	add_compile_options(/FC /utf-8 /Zc:__cplusplus)

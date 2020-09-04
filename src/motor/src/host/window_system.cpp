@@ -1,6 +1,5 @@
 #include "window_system.h"
 #include "config_system.h"
-#include "motor/host/core_context.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>
@@ -47,7 +46,7 @@ window_system::window_system() noexcept
 
 void window_system::on_start(entt::registry& reg) {
     try {
-        reg.ctx<core_context>().jconfig.at("window").get_to(config);
+        reg.ctx<core_config>().at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
@@ -92,7 +91,7 @@ void window_system::update(entt::registry& reg) {
 
     if (modified) {
         try {
-            reg.ctx<core_context>().jconfig["window"] = config;
+            reg.ctx<core_config>()["window"] = config;
             reg.ctx<entt::dispatcher>().trigger<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());

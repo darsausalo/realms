@@ -2,14 +2,16 @@
 #define MOTOR_APPLICATION_H
 
 #include "motor/core/system_dispatcher.h"
-#include "motor/host/events.h"
 #include "motor/host/game_state.h"
+#include <entt/entity/registry.hpp>
 #include <memory>
 #include <string>
 
 namespace motor {
 
-class platform;
+namespace event {
+struct quit {};
+} // namespace event
 
 class application final {
 public:
@@ -29,8 +31,7 @@ public:
     }
 
 private:
-    std::vector<std::string> args;
-    std::unique_ptr<platform> platform;
+    entt::registry reg{};
     bool quit_requested{};
 
     void run_loop(std::shared_ptr<game_state>&& initial_state);

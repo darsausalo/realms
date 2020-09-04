@@ -1,11 +1,15 @@
 #include "config_system.h"
-#include "motor/host/core_context.h"
+#include "../platform/platform.h"
 #include "motor/host/storage.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fstream>
+#include <mimalloc.h>
 #include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
+
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
 
 namespace motor {
 
@@ -48,9 +52,21 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-void config_system::on_start(entt::registry& reg) {
-    auto& args = reg.ctx<core_context>().args;
+config_system::config_system() {
+    base_path = SDL_GetBasePath();
+    data_path = base_path / MOTOR_DATA_DIR;
+    user_path = SDL_GetPrefPath(MOTOR_PROJECT_ORG, MOTOR_PROJECT_NAME);
 
+    platform::setup_crash_handling(SDL_GetBasePath());
+}
+
+config_system::~config_system() {
+}
+
+void config_system::on_start(entt::registry& reg) {
+    auto& args = reg.ctx<arg_list>();
+
+    nlohmann::json cli_config{};
     std::string key;
     for (auto& arg : args) {
         auto arg_size = arg.size();
@@ -67,7 +83,9 @@ void config_system::on_start(entt::registry& reg) {
         key = arg.substr(2);
     }
 
-    auto& stg = reg.ctx<core_context>().get_storage();
+    reg.unset<arg_list>();
+
+    auto& stg = reg.set<storage>(base_path, data_path, user_path);
 
     if (cli_config.contains("/fs/data_path"_json_pointer)) {
         stg.set_data_path(
@@ -81,11 +99,20 @@ void config_system::on_start(entt::registry& reg) {
 
     auto user_path = stg.get_user_path();
 
+    SDL_SetMainReady();
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0) {
+        throw std::runtime_error(
+                fmt::format("SDL initialization failed: {}", SDL_GetError()));
+    }
+
+    spdlog::info("{} v{} started", MOTOR_PROJECT_TITLE, MOTOR_PROJECT_VERSION);
+    spdlog::info("mimalloc: {}", mi_version());
+
     spdlog::info("base path: {}", stg.get_base_path().string());
     spdlog::info("data path: {}", stg.get_data_path().string());
     spdlog::info("user path: {}", stg.get_user_path().string());
 
-    auto& config = reg.ctx<core_context>().jconfig;
+    auto& config = reg.set<core_config>();
 
     std::ifstream cfg_file(stg.get_full_path("config.json"));
     try {
@@ -110,15 +137,16 @@ void config_system::on_start(entt::registry& reg) {
 }
 
 void config_system::on_stop(entt::registry& reg) {
+    SDL_Quit();
     spdlog::debug("config_system::stopped");
 }
 
 void config_system::update(entt::registry& reg) {
     if (modified) {
         try {
-            auto& stg = reg.ctx<core_context>().get_storage();
+            auto& stg = reg.ctx<storage>();
             std::ofstream cfg_file(stg.get_full_path("config.json", true));
-            cfg_file << std::setw(4) << reg.ctx<core_context>().jconfig;
+            cfg_file << std::setw(4) << reg.ctx<core_config>();
         } catch (std::exception& e) {
             spdlog::error("failed to write config.json save: {}", e.what());
         }
