@@ -3,6 +3,8 @@ include_directories("include" "src")
 set(SOURCES
 	# core
 	"src/core/system_dispatcher.cpp"
+	"src/core/binary_archive.cpp"
+	"src/core/json_archive.cpp"
 
 	# host
 	"src/host/game_state.cpp"
@@ -23,7 +25,10 @@ set(HEADERS
 	# core
 	"include/motor/core/system.h"
 	"include/motor/core/system_dispatcher.h"
+	"include/motor/core/type_traits.h"
 	"include/motor/core/utility.h"
+	"include/motor/core/archive.h"
+	"include/motor/core/binary_archive.h"
 
 	# host
 	"include/motor/host/transition.h"
