@@ -46,7 +46,14 @@ public:
             std::size_t i;
             for (i = 0u; i < N && i < current_member->size(); i++) {
                 auto& jvalue = current_member->at(i);
-                arr[i] = !jvalue.is_null() ? jvalue.get<T>() : T{};
+                if (!jvalue.is_null()) {
+                    const auto* save_member = current_member;
+                    current_member = &jvalue;
+                    process(arr[i]);
+                    current_member = save_member;
+                } else {
+                    arr[i] = T{};
+                }
             }
             for (; i < N; i++) {
                 arr[i] = T{};
@@ -61,7 +68,12 @@ public:
         if (current_member && !current_member->is_null()) {
             value = current_member->get<T>();
         } else {
-            value = T{};
+            const auto* current_value = node_stack.back();
+            if (!current_value->is_object() && !current_value->is_array()) {
+                value = current_value->get<T>();
+            } else {
+                value = T{};
+            }
         }
     }
 

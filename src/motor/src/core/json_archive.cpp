@@ -12,15 +12,26 @@
 
 namespace motor::test::json_archive {
 
+struct bullet {
+    float damage;
+};
+
+template<typename Archive>
+void serialize(Archive& ar, bullet& b) {
+    ar.member(M(b.damage));
+}
+
 struct weapon {
     float damage;
     float crit;
+    std::array<bullet, 3> bullets;
 };
 
 template<typename Archive>
 void serialize(Archive& ar, weapon& w) {
     ar.member(M(w.damage));
     ar.member(M(w.crit));
+    ar.member(M(w.bullets));
 }
 
 struct monster {
@@ -36,10 +47,11 @@ void serialize(Archive& ar, monster& m) {
     ar.member(M(m.inventory));
 }
 
-static const char* input_json_str = R"({
+static const char* json_text = R"({
     "weapon": {
         "crit": 0.5,
-        "damage": 0.1
+        "damage": 0.1,
+        "bullets": [{ "damage": 0.5 }]
     },
     "inventory": [1, null, 6],
     "max_health": 100
@@ -47,10 +59,10 @@ static const char* input_json_str = R"({
 
 } // namespace motor::test::json_archive
 
-TEST_CASE("testing json_archive") {
+TEST_CASE("json deserialization: struct") {
     using namespace motor::test::json_archive;
 
-    nlohmann::json j = nlohmann::json::parse(input_json_str);
+    nlohmann::json j = nlohmann::json::parse(json_text);
     monster monster1;
     {
         motor::json_input_archive input{j};

@@ -91,17 +91,17 @@ public:
     }
 
 protected:
-    const archive_type* self;
-
     input_archive(const archive_type* derived) noexcept : self(derived) {}
 
-private:
     template<typename T>
     void process(T& value) {
         prologue(const_cast<archive_type&>(*self), value);
         serialize(const_cast<archive_type&>(*self), value);
         epilogue(const_cast<archive_type&>(*self), value);
     }
+
+private:
+    const archive_type* self;
 };
 
 } // namespace motor
