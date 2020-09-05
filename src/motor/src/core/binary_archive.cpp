@@ -45,7 +45,7 @@ void serialize(Archive& ar, monster& m) {
 
 } // namespace motor::test::binary_archive
 
-TEST_CASE("testing binary_archive") {
+TEST_CASE("binary serializization/deserializization: struct") {
     using namespace motor::test::binary_archive;
 
     std::stringstream s;

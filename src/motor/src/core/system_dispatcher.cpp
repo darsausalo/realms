@@ -111,7 +111,7 @@ class system_a2 : public motor::system {};
 
 } // namespace motor::test::system_dispatcher
 
-TEST_CASE("testing system_dispatcher sorting") {
+TEST_CASE("system dispatcher: topology sorting") {
     using namespace motor::test::system_dispatcher;
 
     entt::registry reg;
