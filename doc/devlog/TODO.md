@@ -1,13 +1,14 @@
 - [x] context
-- [ ] Serialization - json + binary
-- [ ] System modules
+- [x] Serialization - json + binary
+- [x] System modules
 - [x] Systems dependencies
-- [ ] Binary data cache
 - [ ] Move game logic to separate dll
+- [ ] Input events + basic input in game side
 - [ ] Mods management + json merge/inheritance resolve
+- [ ] Binary cache
+- [ ] Save files consistency
 - [ ] DynamicLibrary
 - [ ] Hot Reload
-- [ ] Input events + basic input in game side
 - [ ] Resource background loading
 - [ ] Graphics - sokol
 - [ ] Code cleanup: review, refine cmake (version etc), CI
