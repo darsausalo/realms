@@ -2,16 +2,14 @@
 #define MOTOR_ARCHIVE_H
 
 #include "motor/core/type_traits.h"
-#include <nameof.hpp>
+#include <refl.hpp>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 
 namespace motor {
 
-#define M(member) NAMEOF(member), member
-
-/* errors */
+// errors
 
 class serialize_error : public std::runtime_error {
 public:
@@ -20,7 +18,7 @@ public:
     serialize_error(const char* what_arg) : std::runtime_error(what_arg) {}
 };
 
-/* prologue and epilogue */
+// prologue and epilogue
 
 template<typename Archive, typename T>
 inline void prologue(Archive&, const T&) {
@@ -30,7 +28,7 @@ template<typename Archive, typename T>
 inline void epilogue(Archive&, const T&) {
 }
 
-/* base output archive */
+// base output archive
 
 template<typename Archive>
 class output_archive {
@@ -67,7 +65,7 @@ private:
     }
 };
 
-/* base input archive */
+// base input archive
 
 template<typename Archive>
 class input_archive {
@@ -103,6 +101,16 @@ protected:
 private:
     const archive_type* self;
 };
+
+// serialization specification
+
+template<typename Archive, typename T>
+auto serialize(Archive& ar, T& value)
+        -> std::enable_if_t<std::is_class_v<T>, void> {
+    for_each(refl::reflect(value).members, [&](auto member) {
+        ar.member(get_display_name(member), member(value));
+    });
+}
 
 } // namespace motor
 

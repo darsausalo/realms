@@ -54,7 +54,7 @@ set(HEADERS
 )
 
 add_library(motor STATIC ${SOURCES} ${HEADERS})
-target_include_directories(motor PRIVATE ${UTFCPP_INCLUDE_DIRS})
+target_include_directories(motor PUBLIC ${REFL_CPP_INCLUDE_DIRS})
 target_compile_definitions(motor PRIVATE
 	-DMOTOR_DATA_DIR="data"
 	-DMOTOR_PROJECT_NAME="${PROJECT_NAME}"

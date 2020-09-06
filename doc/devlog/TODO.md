@@ -3,11 +3,11 @@
 - [ ] System modules
 - [x] Systems dependencies
 - [ ] Binary data cache
-- [ ] input_system
 - [ ] Move game logic to separate dll
 - [ ] Mods management + json merge/inheritance resolve
 - [ ] DynamicLibrary
 - [ ] Hot Reload
+- [ ] Input events + basic input in game side
 - [ ] Resource background loading
 - [ ] Graphics - sokol
 - [ ] Code cleanup: review, refine cmake (version etc), CI

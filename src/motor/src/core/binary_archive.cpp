@@ -17,33 +17,22 @@ struct weapon {
     float crit;
 };
 
-template<typename Archive>
-void serialize(Archive& ar, weapon& w) {
-    ar.member(M(w.damage));
-    ar.member(M(w.crit));
-}
-
 struct inventory {
     std::array<weapon, 3> weapons;
 };
-
-template<typename Archive>
-void serialize(Archive& ar, inventory& inv) {
-    ar.member(M(inv.weapons));
-}
 
 struct monster {
     int max_health;
     inventory inventory;
 };
 
-template<typename Archive>
-void serialize(Archive& ar, monster& m) {
-    ar.member(M(m.max_health));
-    ar.member(M(m.inventory));
-}
-
 } // namespace motor::test::binary_archive
+
+REFL_AUTO(type(motor::test::binary_archive::weapon), field(damage),
+          field(crit));
+REFL_AUTO(type(motor::test::binary_archive::inventory), field(weapons));
+REFL_AUTO(type(motor::test::binary_archive::monster), field(max_health),
+          field(inventory));
 
 TEST_CASE("binary serializization/deserializization: struct") {
     using namespace motor::test::binary_archive;

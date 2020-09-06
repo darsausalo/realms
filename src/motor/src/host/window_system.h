@@ -3,6 +3,7 @@
 
 #include "motor/core/system.h"
 #include <SDL.h>
+#include <refl.hpp>
 #include <string>
 
 namespace motor {
@@ -38,5 +39,7 @@ private:
 };
 
 } // namespace motor
+
+REFL_AUTO(type(motor::window_system));
 
 #endif // MOTOR_WINDOW_SYSTEM_H

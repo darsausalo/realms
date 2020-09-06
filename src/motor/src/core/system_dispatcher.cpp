@@ -111,6 +111,14 @@ class system_a2 : public motor::system {};
 
 } // namespace motor::test::system_dispatcher
 
+REFL_AUTO(type(motor::test::system_dispatcher::system_a));
+REFL_AUTO(type(motor::test::system_dispatcher::system_b));
+REFL_AUTO(type(motor::test::system_dispatcher::system_c));
+REFL_AUTO(type(motor::test::system_dispatcher::system_d));
+REFL_AUTO(type(motor::test::system_dispatcher::system_e));
+REFL_AUTO(type(motor::test::system_dispatcher::system_a1));
+REFL_AUTO(type(motor::test::system_dispatcher::system_a2));
+
 TEST_CASE("system dispatcher: topology sorting") {
     using namespace motor::test::system_dispatcher;
 

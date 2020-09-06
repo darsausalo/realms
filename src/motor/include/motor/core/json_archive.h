@@ -82,29 +82,37 @@ private:
     const nlohmann::json* current_member{};
 };
 
-template<typename T,
-         typename = std::enable_if_t<!std::is_arithmetic_v<T>, void>>
-inline void prologue(json_input_archive& ar, const T&) {
+// prologue/epilogue
+
+template<typename T>
+auto prologue(json_input_archive& ar, const T&)
+        -> std::enable_if_t<std::is_class_v<T>, void> {
     ar.start_node();
 }
 
-template<typename T,
-         typename = std::enable_if_t<!std::is_arithmetic_v<T>, void>>
-inline void epilogue(json_input_archive& ar, const T&) {
+template<typename T>
+auto epilogue(json_input_archive& ar, const T&)
+        -> std::enable_if_t<std::is_class_v<T>, void> {
     ar.end_node();
 }
 
-/* serialization specialization */
+// serialization specialization
 
-template<typename T, typename = typename std::enable_if_t<
-                             is_array_v<T>, typename T::value_type>>
-void serialize(json_input_archive& ar, T& value) {
+template<typename T>
+auto serialize(json_input_archive& ar, T& value)
+        -> std::enable_if_t<is_array_v<T>, void> {
     ar.load_array(value);
 }
 
 template<typename T>
-typename std::enable_if_t<std::is_arithmetic<T>::value, void>
-serialize(json_input_archive& ar, T& value) {
+auto serialize(json_input_archive& ar, T& value)
+        -> std::enable_if_t<std::is_arithmetic_v<T>, void> {
+    ar.load_value(value);
+}
+
+template<typename T>
+auto serialize(json_input_archive& ar, T& value) ->
+        typename std::enable_if_t<std::is_enum_v<T>, void> {
     ar.load_value(value);
 }
 

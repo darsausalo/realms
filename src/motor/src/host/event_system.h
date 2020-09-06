@@ -2,6 +2,7 @@
 #define MOTOR_EVENT_SYSTEM_H
 
 #include "motor/core/system.h"
+#include <refl.hpp>
 
 namespace motor {
 
@@ -13,5 +14,7 @@ public:
 };
 
 } // namespace motor
+
+REFL_AUTO(type(motor::event_system));
 
 #endif // MOTOR_EVENT_SYSTEM_H

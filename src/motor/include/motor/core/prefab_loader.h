@@ -6,15 +6,11 @@
 #include "motor/core/utility.h"
 #include <entt/entity/registry.hpp>
 #include <nlohmann/json.hpp>
+#include <refl.hpp>
 #include <string_view>
 #include <unordered_map>
 
 namespace motor {
-
-template<>
-struct type_name<entt::id_type> : std::true_type {
-    static constexpr char* name = "entt::id";
-};
 
 template<typename Entity>
 class basic_prefab_loader {
@@ -28,7 +24,7 @@ class basic_prefab_loader {
 
     template<typename Component>
     void load_component() const {
-        auto component_name = nameof_type<Component>();
+        auto component_name = refl::reflect<Component>().name.c_str();
         for (auto& [name, desc] : descs) {
             if (auto& it = desc.components.find(component_name);
                 it != desc.components.end()) {

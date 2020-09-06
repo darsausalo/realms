@@ -4,6 +4,7 @@
 #include "motor/core/system.h"
 #include <filesystem>
 #include <nlohmann/json.hpp>
+#include <refl.hpp>
 #include <string>
 #include <vector>
 
@@ -41,5 +42,7 @@ private:
 };
 
 } // namespace motor
+
+REFL_AUTO(type(motor::config_system));
 
 #endif // CONFIG_SYSTEM_H
