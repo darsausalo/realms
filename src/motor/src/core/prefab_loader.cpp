@@ -14,16 +14,12 @@
 
 namespace motor {
 template<>
-struct type_name<entt::tag<"prefab"_hs>> : std::true_type {
-    static constexpr char* name = "motor::test::prefab_loader::prefab";
+struct type_name<entt::tag<"prefab_loader"_hs>> : std::true_type {
+    static constexpr char* name = "motor::prefab_loader";
 };
 } // namespace motor
 
 namespace motor::test::prefab_loader {
-
-// TODO: integral aliases?
-// TODO: tags
-
 
 struct position {
     float x;
@@ -72,7 +68,7 @@ static const char* json_text = R"({
         "entt::id": 2,
         "motor::test::prefab_loader::position": { "x": 102, "y": 202 },
         "motor::test::prefab_loader::health": { "max": 102 },
-        "motor::test::prefab_loader::prefab": {}
+        "motor::prefab_loader": {}
     },
     "entity3": {
         "entt::id": 3,
@@ -103,13 +99,13 @@ TEST_CASE("prefab_loader: load from json") {
 
     loader.entities(j)
             .component<entt::id_type, position, timer, health>()
-            .component<prefab_tag, entt::tag<"prefab"_hs>>();
+            .component<prefab_tag, entt::tag<"prefab_loader"_hs>>();
     CHECK(reg.view<entt::id_type, position>().size() == 3);
     CHECK(reg.view<position>().size() == 3);
     CHECK(reg.view<health>().size() == 2);
     CHECK(reg.view<timer>().size() == 2);
     CHECK(reg.view<prefab_tag>().size() == 1);
-    CHECK(reg.view<entt::tag<"prefab"_hs>>().size() == 1);
+    CHECK(reg.view<entt::tag<"prefab_loader"_hs>>().size() == 1);
 
     reg.view<entt::id_type, position>().each(
             [&j](const auto& id, const auto& p) {

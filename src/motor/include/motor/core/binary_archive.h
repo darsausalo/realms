@@ -2,6 +2,7 @@
 #define MOTOR_BINARY_ARCHIVE_H
 
 #include "motor/core/archive.h"
+#include <entt/entity/fwd.hpp>
 #include <fmt/core.h>
 #include <iostream>
 
@@ -53,6 +54,27 @@ private:
     std::istream& stream;
 };
 
+/* serialization specialization */
+
+template<typename T,
+         typename = std::enable_if_t<is_array_v<T>, typename T::value_type>>
+void serialize(binary_output_archive& ar, T& value) {
+    ar.save_data(std::addressof(value), sizeof(value));
+}
+
+template<typename T>
+typename std::enable_if_t<std::is_arithmetic_v<T>, void>
+serialize(binary_output_archive& ar, T& value) {
+    ar.save_data(std::addressof(value), sizeof(value));
+}
+
+template<typename T>
+typename std::enable_if_t<std::is_enum_v<T>, void>
+serialize(binary_output_archive& ar, T& value) {
+    using base_type = std::underlying_type_t<T>;
+    ar.save_data(std::addressof(value), sizeof(base_type));
+}
+
 template<typename T, typename = typename std::enable_if_t<
                              is_array_v<T>, typename T::value_type>>
 void serialize(binary_input_archive& ar, T& value) {
@@ -65,18 +87,11 @@ serialize(binary_input_archive& ar, T& value) {
     ar.load_data(std::addressof(value), sizeof(value));
 }
 
-/* serialization specialization */
-
-template<typename T,
-         typename = std::enable_if_t<is_array_v<T>, typename T::value_type>>
-void serialize(binary_output_archive& ar, T& value) {
-    ar.save_data(std::addressof(value), sizeof(value));
-}
-
 template<typename T>
-typename std::enable_if_t<std::is_arithmetic<T>::value, void>
-serialize(binary_output_archive& ar, T& value) {
-    ar.save_data(std::addressof(value), sizeof(value));
+typename std::enable_if_t<std::is_enum_v<T>, void>
+serialize(binary_input_archive& ar, T& value) {
+    using base_type = std::underlying_type_t<T>;
+    ar.load_data(std::addressof(value), sizeof(base_type));
 }
 
 } // namespace motor

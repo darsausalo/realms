@@ -28,7 +28,7 @@ class basic_prefab_loader {
 
     template<typename Component>
     void load_component() const {
-        auto component_name = motor::nameof_type<Component>();
+        auto component_name = nameof_type<Component>();
         for (auto& [name, desc] : descs) {
             if (auto& it = desc.components.find(component_name);
                 it != desc.components.end()) {
