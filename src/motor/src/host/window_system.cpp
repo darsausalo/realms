@@ -62,12 +62,12 @@ void window_system::on_start(entt::registry& reg) {
                 fmt::format("Could not create window: {}", SDL_GetError()));
     }
 
-    spdlog::debug("window_system::started");
+    spdlog::info("window_system::started");
 }
 
 void window_system::on_stop(entt::registry& reg) {
     SDL_DestroyWindow(window);
-    spdlog::debug("window_system::stopped");
+    spdlog::info("window_system::stopped");
 }
 
 void window_system::update(entt::registry& reg) {

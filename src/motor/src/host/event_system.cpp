@@ -8,11 +8,11 @@
 namespace motor {
 
 void event_system::on_start(entt::registry& reg) {
-    spdlog::debug("event_system::started");
+    spdlog::info("event_system::started");
 }
 
 void event_system::on_stop(entt::registry& reg) {
-    spdlog::debug("event_system::stopped");
+    spdlog::info("event_system::stopped");
 }
 
 void event_system::update(entt::registry& reg) {

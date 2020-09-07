@@ -120,8 +120,9 @@ void config_system::on_start(entt::registry& reg) {
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("failed to read config.json: {}", e.what());
     }
-
-    config.merge_patch(cli_config);
+    if (cli_config.is_object() && !cli_config.is_null()) {
+        config.merge_patch(cli_config);
+    }
 
     if (config.contains("/logging/level"_json_pointer)) {
         log_level ll;
@@ -133,12 +134,12 @@ void config_system::on_start(entt::registry& reg) {
             .sink<event::config_changed>()
             .connect<&config_system::receive_config_changed>(*this);
 
-    spdlog::debug("config_system::started");
+    spdlog::info("config_system::started");
 }
 
 void config_system::on_stop(entt::registry& reg) {
     SDL_Quit();
-    spdlog::debug("config_system::stopped");
+    spdlog::info("config_system::stopped");
 }
 
 void config_system::update(entt::registry& reg) {
