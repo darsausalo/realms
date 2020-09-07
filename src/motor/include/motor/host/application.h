@@ -22,8 +22,6 @@ public:
     application& operator=(const application&) = delete;
     application& operator=(application&&) = delete;
 
-    ~application();
-
     template<typename InitialState>
     int run() {
         run_loop(std::move(std::make_shared<InitialState>()));

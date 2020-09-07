@@ -26,17 +26,14 @@ application::application(int argc, const char* argv[]) {
             .connect<&application::receive_event_quit>(*this);
 }
 
-application::~application() {
-}
-
 void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
-    state_machine states{reg, std::move(initial_state)};
     system_dispatcher dispatcher{reg};
 
     dispatcher.add_system<config_system>();
     dispatcher.add_system<window_system>();
     dispatcher.add_system<event_system>();
 
+    state_machine states{reg, std::move(initial_state)};
     while (states.is_running() && !should_close()) {
         dispatcher.update();
         states.update();
