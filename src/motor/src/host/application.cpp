@@ -1,9 +1,9 @@
 #include "motor/host/application.h"
 #include "host/config_system.h"
 #include "host/event_system.h"
+#include "host/plugin_system.h"
 #include "host/window_system.h"
 #include "motor/core/system_dispatcher.h"
-#include "motor/host/storage.h"
 #include "platform/platform.h"
 #include "state_machine.h"
 #include <entt/entity/registry.hpp>
@@ -31,6 +31,7 @@ void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
 
     dispatcher.add_system<config_system>();
     dispatcher.add_system<window_system>();
+    dispatcher.add_system<plugin_system>();
     dispatcher.add_system<event_system>();
 
     state_machine states{reg, std::move(initial_state)};

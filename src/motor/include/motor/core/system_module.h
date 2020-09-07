@@ -7,6 +7,7 @@
 #include "motor/core/utility.h"
 #include <entt/entity/fwd.hpp>
 #include <memory>
+#include <spdlog/fwd.h>
 #include <type_traits>
 
 namespace motor {
@@ -24,6 +25,8 @@ public:
                 "System module should be derived from motor::system_module");
         add_module(nameof_type<Module>(), std::make_unique<Module>());
     }
+
+    virtual std::shared_ptr<spdlog::logger> get_logger() const = 0;
 
 protected:
     system_module_context() = default;

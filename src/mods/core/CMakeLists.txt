@@ -1,0 +1,19 @@
+include_directories("include" "../../motor/include")
+
+set(SOURCES
+	"src/entry.cpp"
+)
+
+add_library(core MODULE ${SOURCES})
+target_include_directories(core PUBLIC ${REFL_CPP_INCLUDE_DIRS})
+target_link_libraries(core PRIVATE
+	fmt::fmt
+	spdlog::spdlog
+	EnTT::EnTT
+)
+
+set_target_properties(core PROPERTIES
+	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
+	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
+	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
+)

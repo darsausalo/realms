@@ -1,4 +1,5 @@
 #include "motor/host/plugin_context.h"
+#include <spdlog/spdlog.h>
 
 namespace motor {
 
@@ -48,6 +49,10 @@ void plugin_context::add_module(
         std::string_view module_name,
         std::unique_ptr<system_module>&& module_instance) {
     modules.emplace_back(module_name, std::move(module_instance));
+}
+
+std::shared_ptr<spdlog::logger> plugin_context::get_logger() const {
+    return spdlog::default_logger();
 }
 
 } // namespace motor

@@ -23,6 +23,8 @@ public:
                        binary_input_archive& ar);
     void save_snapshot(const entt::snapshot& ss, binary_output_archive& ar);
 
+    std::shared_ptr<spdlog::logger> get_logger() const override;
+
 protected:
     void add_module(std::string_view module_name,
                     std::unique_ptr<system_module>&& module_instance) override;

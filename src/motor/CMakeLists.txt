@@ -13,6 +13,7 @@ set(SOURCES
 	"src/host/storage.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
+	"src/host/plugin_system.cpp"
 	"src/host/event_system.cpp"
 	"src/host/plugin_context.cpp"
 	"src/host/application.cpp"
@@ -21,10 +22,12 @@ set(SOURCES
 	"src/platform/backward.cpp"
 
 	"src/platform/platform_windows.cpp"
+	"src/platform/dynamic_library_windows.cpp"
 )
 
 set(HEADERS
 	# core
+	"include/motor/core/attribute.h"
 	"include/motor/core/system.h"
 	"include/motor/core/system_dispatcher.h"
 	"include/motor/core/type_traits.h"
@@ -44,6 +47,7 @@ set(HEADERS
 
 	"src/host/config_system.h"
 	"src/host/window_system.h"
+	"src/host/plugin_system.h"
 	"src/host/event_system.h"
 
 	"src/host/state_machine.h"
@@ -56,7 +60,8 @@ set(HEADERS
 add_library(motor STATIC ${SOURCES} ${HEADERS})
 target_include_directories(motor PUBLIC ${REFL_CPP_INCLUDE_DIRS})
 target_compile_definitions(motor PRIVATE
-	-DMOTOR_DATA_DIR="data"
+	-DMOTOR_DATA_DIR="${PROJECT_DATA}"
+	-DMOTOR_MODS_DIR="${PROJECT_MODS}"
 	-DMOTOR_PROJECT_NAME="${PROJECT_NAME}"
 	-DMOTOR_PROJECT_VERSION="${PROJECT_VERSION}"
 	-DMOTOR_PROJECT_ORG="${PROJECT_ORG}"
@@ -74,5 +79,10 @@ target_link_libraries(motor PUBLIC
 	EnTT::EnTT
 )
 add_backward(motor)
+set_target_properties(motor PROPERTIES
+	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
+	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
+	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
+)
 
 doctest_make_exe_for_static_lib(motor_test motor)

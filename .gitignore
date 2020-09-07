@@ -30,3 +30,10 @@ prebuilt
 # project temporary files
 save
 *.bin
+*.exp
+*.ilk
+*.lib
+*.dll
+*.pdb
+*.so
+*.dylib

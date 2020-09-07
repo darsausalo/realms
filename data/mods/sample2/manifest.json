@@ -1,0 +1,5 @@
+{
+    "name": "sample2",
+    "author": "Auriga Games",
+    "dependencies": ["core"]
+}
