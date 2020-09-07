@@ -13,7 +13,7 @@ namespace motor {
 
 class system_dispatcher final {
 public:
-    system_dispatcher(entt::registry& reg) noexcept : reg(reg) {}
+    system_dispatcher(entt::registry& reg) noexcept : reg{reg} {}
     system_dispatcher(system_dispatcher&) = delete;
     system_dispatcher(system_dispatcher&&) = delete;
 

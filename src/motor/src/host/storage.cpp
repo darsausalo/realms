@@ -7,7 +7,7 @@ namespace motor {
 storage::storage(const std::filesystem::path& base_path,
                  const std::filesystem::path& data_path,
                  const std::filesystem::path& user_path) noexcept
-    : base_path(base_path), data_path(data_path), user_path(user_path) {
+    : base_path{base_path}, data_path{data_path}, user_path{user_path} {
 }
 
 void storage::set_data_path(const std::filesystem::path& path) {

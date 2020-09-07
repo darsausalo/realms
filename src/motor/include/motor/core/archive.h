@@ -54,7 +54,7 @@ public:
 protected:
     const archive_type* self;
 
-    output_archive(const archive_type* derived) noexcept : self(derived) {}
+    output_archive(const archive_type* derived) noexcept : self{derived} {}
 
 private:
     template<typename T>
@@ -89,7 +89,7 @@ public:
     }
 
 protected:
-    input_archive(const archive_type* derived) noexcept : self(derived) {}
+    input_archive(const archive_type* derived) noexcept : self{derived} {}
 
     template<typename T>
     void process(T& value) {
