@@ -1,7 +1,8 @@
 #include "plugin_system.h"
 #include "motor/host/plugin_context.h"
-#include "motor/host/storage.h"
 #include "motor/platform/dynamic_library.h"
+#include "motor/services/files_service.h"
+#include "motor/services/locator.h"
 #include <entt/entity/registry.hpp>
 #include <filesystem>
 #include <spdlog/spdlog.h>
@@ -14,8 +15,7 @@ plugin_system::~plugin_system() {
 }
 
 void plugin_system::on_start(entt::registry& reg) {
-    auto& stg = reg.ctx<storage>();
-    auto& search_path = stg.get_data_path() / MOTOR_MODS_DIR;
+    auto& search_path = locator::files::ref().get_data_path() / MOTOR_MODS_DIR;
 
     search_path.make_preferred();
 
@@ -26,7 +26,7 @@ void plugin_system::on_start(entt::registry& reg) {
 
     for (auto& p : std::filesystem::directory_iterator(search_path)) {
         libs.push_back(std::make_unique<dynamic_library>(
-                p.path().filename().string(), stg));
+                p.path().filename().string()));
         auto& dl = *libs.back().get();
 
         if (!dl.exists()) {

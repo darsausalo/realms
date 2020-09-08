@@ -1,8 +1,10 @@
 #include "config_system.h"
-#include "../platform/platform.h"
-#include "motor/host/storage.h"
+#include "motor/services/files_service.h"
+#include "motor/services/locator.h"
+#include "platform/platform.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
+#include <filesystem>
 #include <fstream>
 #include <mimalloc.h>
 #include <spdlog/cfg/env.h>
@@ -53,14 +55,7 @@ static void add_option(nlohmann::json& j, std::string_view key,
 }
 
 config_system::config_system() {
-    base_path = SDL_GetBasePath();
-    data_path = base_path / MOTOR_DATA_DIR;
-    user_path = SDL_GetPrefPath(MOTOR_PROJECT_ORG, MOTOR_PROJECT_NAME);
-
     platform::setup_crash_handling(SDL_GetBasePath());
-}
-
-config_system::~config_system() {
 }
 
 void config_system::on_start(entt::registry& reg) {
@@ -85,19 +80,18 @@ void config_system::on_start(entt::registry& reg) {
 
     reg.unset<arg_list>();
 
-    auto& stg = reg.set<storage>(base_path, data_path, user_path);
+    std::filesystem::path base_path = SDL_GetBasePath();
+    std::filesystem::path data_path = base_path / MOTOR_DATA_DIR;
+    std::filesystem::path user_path =
+            SDL_GetPrefPath(MOTOR_PROJECT_ORG, MOTOR_PROJECT_NAME);
 
     if (cli_config.contains("/fs/data_path"_json_pointer)) {
-        stg.set_data_path(
-                cli_config["/fs/data_path"_json_pointer].get<std::string>());
+        data_path = cli_config["/fs/data_path"_json_pointer].get<std::string>();
     }
 
     if (cli_config.contains("/fs/user_path"_json_pointer)) {
-        stg.set_user_path(
-                cli_config["/fs/user_path"_json_pointer].get<std::string>());
+        user_path = cli_config["/fs/user_path"_json_pointer].get<std::string>();
     }
-
-    auto user_path = stg.get_user_path();
 
     SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0) {
@@ -108,13 +102,11 @@ void config_system::on_start(entt::registry& reg) {
     spdlog::info("{} v{} started", MOTOR_PROJECT_TITLE, MOTOR_PROJECT_VERSION);
     spdlog::info("mimalloc: {}", mi_version());
 
-    spdlog::info("base path: {}", stg.get_base_path().string());
-    spdlog::info("data path: {}", stg.get_data_path().string());
-    spdlog::info("user path: {}", stg.get_user_path().string());
+    locator::files::set<files_service>(base_path, data_path, user_path);
 
     auto& config = reg.set<core_config>();
 
-    std::ifstream cfg_file(stg.get_full_path("config.json"));
+    std::ifstream cfg_file(locator::files::ref().get_full_path("config.json"));
     try {
         cfg_file >> config;
     } catch (nlohmann::json::exception& e) {
@@ -138,15 +130,18 @@ void config_system::on_start(entt::registry& reg) {
 }
 
 void config_system::on_stop(entt::registry& reg) {
+    locator::files::reset();
+
     SDL_Quit();
+
     spdlog::info("config_system::stopped");
 }
 
 void config_system::update(entt::registry& reg) {
     if (modified) {
         try {
-            auto& stg = reg.ctx<storage>();
-            std::ofstream cfg_file(stg.get_full_path("config.json", true));
+            std::ofstream cfg_file(
+                    locator::files::ref().get_full_path("config.json", true));
             cfg_file << std::setw(4) << reg.ctx<core_config>();
         } catch (std::exception& e) {
             spdlog::error("failed to write config.json save: {}", e.what());

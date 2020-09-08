@@ -1,4 +1,6 @@
 #include "motor/platform/dynamic_library.h"
+#include "motor/services/files_service.h"
+#include "motor/services/locator.h"
 #include <chrono>
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
@@ -21,9 +23,9 @@ std::time_t to_time_t(TP tp) {
 
 class dynamic_library::impl {
 public:
-    explicit impl(std::string_view name, storage& stg) noexcept
-        : name{name}, stg{&stg}, original_path{(stg.get_data_path() /
-                                                MOTOR_MODS_DIR / name / name)} {
+    explicit impl(std::string_view name) noexcept
+        : name{name}, original_path{(locator::files::ref().get_data_path() /
+                                     MOTOR_MODS_DIR / name / name)} {
         original_pdb_path = original_path;
         original_pdb_path += ".pdb";
         original_pdb_path.make_preferred();
@@ -62,9 +64,11 @@ public:
         timestamp += std::chrono::seconds(3);
 
         std::filesystem::path target_path{fmt::format(
-                "{}\\{}-{}.dll", stg->get_base_path().string(), name, version)};
+                "{}\\{}-{}.dll", locator::files::ref().get_base_path().string(),
+                name, version)};
         std::filesystem::path target_pdb_path{fmt::format(
-                "{}\\{}-{}.pdb", stg->get_base_path().string(), name, version)};
+                "{}\\{}-{}.pdb", locator::files::ref().get_base_path().string(),
+                name, version)};
 
         if (!try_copy_file(original_path, target_path, ec)) {
             spdlog::error("can't load \"{}\": {}", target_path.string(),
@@ -96,7 +100,6 @@ private:
     std::filesystem::path original_path{};
     std::filesystem::path original_pdb_path{};
     std::filesystem::file_time_type timestamp{};
-    storage* stg{};
     HMODULE handle{};
 
     bool try_copy_file(const std::filesystem::path& from,
@@ -120,8 +123,8 @@ private:
 };
 
 
-dynamic_library::dynamic_library(std::string_view inname, storage& stg) noexcept
-    : name{inname}, p{std::make_unique<dynamic_library::impl>(name, stg)} {
+dynamic_library::dynamic_library(std::string_view inname) noexcept
+    : name{inname}, p{std::make_unique<dynamic_library::impl>(name)} {
 }
 
 dynamic_library::~dynamic_library() {

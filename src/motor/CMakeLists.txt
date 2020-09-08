@@ -7,10 +7,12 @@ set(SOURCES
 	"src/core/json_archive.cpp"
 	"src/core/prefab_loader.cpp"
 
+	# services
+	"src/services/files_service.cpp"
+
 	# host
 	"src/host/game_state.cpp"
 	"src/host/state_machine.cpp"
-	"src/host/storage.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
 	"src/host/plugin_system.cpp"
@@ -38,10 +40,12 @@ set(HEADERS
 	"include/motor/core/prefab_loader.h"
 	"include/motor/core/system_module.h"
 
+	# services
+	"include/motor/services/files_service.h"
+
 	# host
 	"include/motor/host/transition.h"
 	"include/motor/host/game_state.h"
-	"include/motor/host/storage.h"
 	"include/motor/host/plugin_context.h"
 	"include/motor/host/application.h"
 

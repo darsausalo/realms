@@ -38,15 +38,15 @@ protected:
 
 class system_module {
 public:
-    system_module(system_module&&) = default;
-    system_module& operator=(system_module&&) = default;
-    virtual ~system_module() = default;
+    system_module(system_module&&) noexcept = default;
+    system_module& operator=(system_module&&) noexcept = default;
+    virtual ~system_module() noexcept = default;
 
 protected:
-    system_module() = default;
+    system_module() noexcept = default;
 
     template<typename... Component>
-    void component() {
+    void component() noexcept {
         prefab_loaders.push_back(
                 [](auto& loader) { loader.component<Component...>(); });
         snapshot_loaders.push_back([](auto& ss_loader, auto& ar) {
@@ -57,7 +57,7 @@ protected:
     }
 
     template<typename System, typename... Dependencies>
-    void system() {
+    void system() noexcept {
         system_adders.push_back(
                 [](auto& d) { d.add_system<System, Dependencies...>(); });
         system_removers.push_back([](auto& d) { d.remove_system<System>(); });
