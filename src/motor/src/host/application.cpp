@@ -1,7 +1,7 @@
 #include "motor/host/application.h"
 #include "host/config_system.h"
 #include "host/event_system.h"
-#include "host/plugin_system.h"
+#include "host/mods_system.h"
 #include "host/window_system.h"
 #include "motor/core/system_dispatcher.h"
 #include "platform/platform.h"
@@ -31,13 +31,13 @@ void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
 
     dispatcher.add_system<config_system>();
     dispatcher.add_system<window_system>();
-    dispatcher.add_system<plugin_system>();
+    dispatcher.add_system<mods_system>();
     dispatcher.add_system<event_system>();
 
-    state_machine states{reg, std::move(initial_state)};
+    state_machine states{reg, dispatcher, std::move(initial_state)};
     while (states.is_running() && !should_close()) {
-        dispatcher.update();
         states.update();
+        dispatcher.update();
     }
 }
 

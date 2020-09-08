@@ -5,6 +5,7 @@
 #include "motor/core/plugin_context.h"
 #include "motor/core/prefab_loader.h"
 #include "motor/core/system_dispatcher.h"
+#include "motor/platform/dynamic_library.h"
 #include <entt/entity/fwd.hpp>
 #include <string_view>
 
@@ -12,8 +13,16 @@ namespace motor {
 
 class mod : public plugin_context {
 public:
-    mod() noexcept = default;
-    ~mod() noexcept = default;
+    mod(std::string_view name) noexcept : name{name}, dl{name} {}
+    ~mod() noexcept;
+
+    std::string get_name() const { return name; }
+
+    bool is_valid() const noexcept;
+    bool is_changed() const noexcept;
+
+    bool load_plugin() noexcept;
+    void unload_plugin() noexcept;
 
     void add_systems(system_dispatcher& dispatcher);
     void remove_systems(system_dispatcher& dispatcher);
@@ -31,8 +40,8 @@ protected:
 
 private:
     struct module_desc {
-        std::string name;
-        std::unique_ptr<system_module> instance;
+        std::string name{};
+        std::unique_ptr<system_module> instance{};
 
         module_desc() = default;
         module_desc(std::string_view name,
@@ -40,7 +49,12 @@ private:
             : name{name}, instance{std::move(instance)} {}
     };
 
-    std::vector<module_desc> modules;
+    dynamic_library dl;
+
+    std::string name{};
+    std::vector<std::string> dependencies{};
+    std::vector<module_desc> modules{};
+    bool valid{};
 };
 
 } // namespace motor

@@ -6,14 +6,18 @@
 
 namespace motor {
 
+class system_dispatcher;
+
 class game_state {
 public:
     game_state() noexcept = default;
     virtual ~game_state() noexcept = default;
 
-    virtual void on_start(entt::registry& reg) {}
-    virtual void on_stop(entt::registry& reg) {}
-    virtual transition update(entt::registry& reg) { return transition_none{}; }
+    virtual void on_start(entt::registry& reg, system_dispatcher& disp) {}
+    virtual void on_stop(entt::registry& reg, system_dispatcher& disp) {}
+    virtual transition update(entt::registry& reg, system_dispatcher& disp) {
+        return transition_none{};
+    }
 };
 
 } // namespace motor

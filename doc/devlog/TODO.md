@@ -2,13 +2,14 @@
 - [x] Serialization - json + binary
 - [x] System modules
 - [x] Systems dependencies
-- [ ] Move game logic to separate dll
+- [x] Move game logic to separate dll
 - [ ] Input events + basic input in game side
-- [ ] Mods management + json merge/inheritance resolve
+- [ ] Mods management: manifests, dependencies, systems sorting, prefab loading, snapshots
+- [ ] Mods prefabs: merging, inheritance
 - [ ] Binary cache
 - [ ] Save files consistency
-- [ ] DynamicLibrary
-- [ ] Hot Reload
+- [x] DynamicLibrary
+- [x] Hot Reload
 - [ ] Resource background loading
 - [ ] Graphics - sokol
 - [ ] Code cleanup: review, refine cmake (version etc), CI

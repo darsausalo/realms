@@ -53,6 +53,7 @@ public:
     }
 
     bool load() {
+        handle = {};
         version++;
 
         std::error_code ec;
@@ -86,7 +87,9 @@ public:
     }
 
     void unload() {
-        FreeLibrary(handle);
+        if (handle) {
+            FreeLibrary(handle);
+        }
         handle = {};
     }
 

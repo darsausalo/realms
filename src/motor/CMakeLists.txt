@@ -9,13 +9,14 @@ set(SOURCES
 
 	# services
 	"src/services/files_service.cpp"
+	"src/services/mods_service.cpp"
 
 	# host
 	"src/host/game_state.cpp"
 	"src/host/state_machine.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
-	"src/host/plugin_system.cpp"
+	"src/host/mods_system.cpp"
 	"src/host/event_system.cpp"
 	"src/host/mod.cpp"
 	"src/host/application.cpp"
@@ -43,6 +44,7 @@ set(HEADERS
 
 	# services
 	"include/motor/services/files_service.h"
+	"include/motor/services/mods_service.h"
 
 	# host
 	"include/motor/host/transition.h"
@@ -52,7 +54,7 @@ set(HEADERS
 
 	"src/host/config_system.h"
 	"src/host/window_system.h"
-	"src/host/plugin_system.h"
+	"src/host/mods_system.h"
 	"src/host/event_system.h"
 
 	"src/host/state_machine.h"

@@ -8,9 +8,11 @@
 
 namespace motor {
 
+class system_dispatcher;
+
 class state_machine {
 public:
-    state_machine(entt::registry& reg,
+    state_machine(entt::registry& reg, system_dispatcher& disp,
                   const std::shared_ptr<game_state>&& initial_state);
     ~state_machine();
 
@@ -22,7 +24,8 @@ private:
     bool running;
 
     entt::registry& reg;
-    std::vector<std::shared_ptr<game_state>> state_stack;
+    system_dispatcher& disp;
+    std::vector<std::shared_ptr<game_state>> state_stack{};
 };
 
 } // namespace motor

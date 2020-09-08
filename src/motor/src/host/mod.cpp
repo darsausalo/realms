@@ -3,6 +3,53 @@
 
 namespace motor {
 
+typedef void (*plugin_entry_func)(plugin_context* ctx);
+
+mod::~mod() {
+    unload_plugin();
+}
+
+bool mod::is_valid() const noexcept {
+    return valid;
+}
+
+bool mod::is_changed() const noexcept {
+    return valid && dl.is_changed();
+}
+
+bool mod::load_plugin() noexcept {
+    if (dl.is_loaded()) {
+        return true;
+    }
+
+    valid = dl.load();
+    if (!valid) {
+        return false;
+    }
+    auto entry =
+            reinterpret_cast<plugin_entry_func>(dl.get_symbol("plugin_entry"));
+    if (!entry) {
+        unload_plugin();
+        valid = false;
+        spdlog::error("plugin_entry not found in '{}'", name);
+        return false;
+    }
+
+    spdlog::debug("mod '{}' loaded", name);
+
+    entry(this);
+
+    return true;
+}
+
+void mod::unload_plugin() noexcept {
+    modules.clear();
+    if (dl.is_loaded()) {
+        dl.unload();
+        spdlog::debug("mod '{}' unloaded", name);
+    }
+}
+
 void mod::add_systems(system_dispatcher& dispatcher) {
     for (auto& m : modules) {
         for (auto& f : m.instance->system_adders) {
@@ -167,10 +214,10 @@ TEST_CASE("mod: components") {
 
     nlohmann::json j = nlohmann::json::parse(json_text);
 
-    motor::mod ctx;
+    motor::mod m{"test"};
 
-    ctx.register_module<module_a>();
-    ctx.load_prefabs(loader.entities(j));
+    m.module<module_a>();
+    m.load_prefabs(loader.entities(j));
 
     CHECK(prefab_reg.view<id, position>().size() == 3);
     CHECK(prefab_reg.view<position>().size() == 3);
@@ -184,7 +231,7 @@ TEST_CASE("mod: components") {
         motor::binary_output_archive output{data};
         entt::snapshot ss{prefab_reg};
 
-        ctx.save_snapshot(ss.entities(output), output);
+        m.save_snapshot(ss.entities(output), output);
     }
 
     entt::registry reg;
@@ -192,7 +239,7 @@ TEST_CASE("mod: components") {
         motor::binary_input_archive input{data};
         entt::snapshot_loader ss_loader{reg};
 
-        ctx.load_snapshot(ss_loader.entities(input), input);
+        m.load_snapshot(ss_loader.entities(input), input);
     }
 
     CHECK(reg.view<id, position>().size() == 3);
@@ -215,4 +262,35 @@ TEST_CASE("mod: components") {
         auto jv = get_j(j, id, motor::nameof_type<health>());
         CHECK(h.max == jv["max"].get<int>());
     });
+}
+
+TEST_CASE("mod: systems") {
+    using namespace motor::test::mod;
+
+    entt::registry reg;
+
+    motor::mod m{"test"};
+    m.module<module_a>();
+
+    motor::system_dispatcher dispatcher{reg};
+
+    m.add_systems(dispatcher);
+    dispatcher.update();
+
+    auto dump = dispatcher.dump();
+
+    CHECK(dump.size() == 7);
+    CHECK(dump[0].first == "motor::test::mod::system_a1");
+    CHECK(dump[1].first == "motor::test::mod::system_a");
+    CHECK(dump[2].first == "motor::test::mod::system_b");
+    CHECK(dump[3].first == "motor::test::mod::system_c");
+    CHECK(dump[4].first == "motor::test::mod::system_d");
+    CHECK(dump[5].first == "motor::test::mod::system_e");
+    CHECK(dump[6].first == "motor::test::mod::system_a2");
+
+    m.remove_systems(dispatcher);
+
+    dump = dispatcher.dump();
+
+    CHECK(dump.size() == 0);
 }
