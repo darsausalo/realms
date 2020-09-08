@@ -1,5 +1,5 @@
-#ifndef MOTOR_PLUGIN_CONTEXT_H
-#define MOTOR_PLUGIN_CONTEXT_H
+#ifndef MOTOR_MOD_H
+#define MOTOR_MOD_H
 
 #include "motor/core/binary_archive.h"
 #include "motor/core/prefab_loader.h"
@@ -10,10 +10,10 @@
 
 namespace motor {
 
-class plugin_context : public system_module_context {
+class mod : public system_module_context {
 public:
-    plugin_context() = default;
-    ~plugin_context() = default;
+    mod() noexcept = default;
+    ~mod() noexcept = default;
 
     void add_systems(system_dispatcher& dispatcher);
     void remove_systems(system_dispatcher& dispatcher);
@@ -45,4 +45,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_PLUGIN_CONTEXT_H
+#endif // MOTOR_MOD_H

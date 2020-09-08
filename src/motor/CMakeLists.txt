@@ -17,7 +17,7 @@ set(SOURCES
 	"src/host/window_system.cpp"
 	"src/host/plugin_system.cpp"
 	"src/host/event_system.cpp"
-	"src/host/plugin_context.cpp"
+	"src/host/mod.cpp"
 	"src/host/application.cpp"
 
 	# platform
@@ -46,7 +46,7 @@ set(HEADERS
 	# host
 	"include/motor/host/transition.h"
 	"include/motor/host/game_state.h"
-	"include/motor/host/plugin_context.h"
+	"include/motor/host/mod.h"
 	"include/motor/host/application.h"
 
 	"src/host/config_system.h"

@@ -64,7 +64,7 @@ protected:
     }
 
 private:
-    friend class plugin_context;
+    friend class mod;
 
     using load_prefabs_func = std::function<void(prefab_loader&)>;
     using load_snapshot_func = std::function<void(const entt::snapshot_loader&,

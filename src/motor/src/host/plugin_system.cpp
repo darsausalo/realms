@@ -1,5 +1,5 @@
 #include "plugin_system.h"
-#include "motor/host/plugin_context.h"
+#include "motor/host/mod.h"
 #include "motor/platform/dynamic_library.h"
 #include "motor/services/files_service.h"
 #include "motor/services/locator.h"
@@ -41,7 +41,7 @@ void plugin_system::on_start(entt::registry& reg) {
         auto entry = reinterpret_cast<plugin_entry_func>(
                 dl.get_symbol("plugin_entry"));
         if (entry) {
-            plugin_context ctx;
+            mod ctx;
             entry(&ctx);
         } else {
             spdlog::warn("not found entry");
@@ -63,7 +63,7 @@ void plugin_system::update(entt::registry& reg) {
                 auto entry = reinterpret_cast<plugin_entry_func>(
                         dl->get_symbol("plugin_entry"));
                 if (entry) {
-                    plugin_context ctx;
+                    mod ctx;
                     entry(&ctx);
                 } else {
                     spdlog::warn("not found entry");
