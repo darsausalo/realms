@@ -39,6 +39,7 @@ set(HEADERS
 	"include/motor/core/json_archive.h"
 	"include/motor/core/prefab_loader.h"
 	"include/motor/core/system_module.h"
+	"include/motor/core/plugin_context.h"
 
 	# services
 	"include/motor/services/files_service.h"

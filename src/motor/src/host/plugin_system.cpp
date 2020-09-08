@@ -9,7 +9,7 @@
 
 namespace motor {
 
-typedef void (*plugin_entry_func)(system_module_context* ctx);
+typedef void (*plugin_entry_func)(plugin_context* ctx);
 
 plugin_system::~plugin_system() {
 }

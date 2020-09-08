@@ -2,15 +2,15 @@
 #define MOTOR_MOD_H
 
 #include "motor/core/binary_archive.h"
+#include "motor/core/plugin_context.h"
 #include "motor/core/prefab_loader.h"
 #include "motor/core/system_dispatcher.h"
-#include "motor/core/system_module.h"
 #include <entt/entity/fwd.hpp>
 #include <string_view>
 
 namespace motor {
 
-class mod : public system_module_context {
+class mod : public plugin_context {
 public:
     mod() noexcept = default;
     ~mod() noexcept = default;

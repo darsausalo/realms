@@ -12,30 +12,6 @@
 
 namespace motor {
 
-class system_module;
-
-class system_module_context {
-public:
-    virtual ~system_module_context() = default;
-
-    template<typename Module>
-    void register_module() {
-        static_assert(
-                std::is_base_of_v<system_module, Module>,
-                "System module should be derived from motor::system_module");
-        add_module(nameof_type<Module>(), std::make_unique<Module>());
-    }
-
-    virtual std::shared_ptr<spdlog::logger> get_logger() const = 0;
-
-protected:
-    system_module_context() = default;
-
-    virtual void
-    add_module(std::string_view module_name,
-               std::unique_ptr<system_module>&& module_instance) = 0;
-};
-
 class system_module {
 public:
     system_module(system_module&&) noexcept = default;
