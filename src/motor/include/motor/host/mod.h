@@ -7,13 +7,15 @@
 #include "motor/core/system_dispatcher.h"
 #include "motor/platform/dynamic_library.h"
 #include <entt/entity/fwd.hpp>
+#include <filesystem>
 #include <string_view>
 
 namespace motor {
 
 class mod : public plugin_context {
 public:
-    mod(std::string_view name) noexcept : name{name}, dl{name} {}
+    mod(std::string_view name, const std::filesystem::path& dir) noexcept
+        : name{name}, dl{name, dir} {}
     ~mod() noexcept;
 
     std::string get_name() const { return name; }

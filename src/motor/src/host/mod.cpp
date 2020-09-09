@@ -35,7 +35,7 @@ bool mod::load_plugin() noexcept {
         return false;
     }
 
-    spdlog::debug("mod '{}' loaded", name);
+    spdlog::info("mod '{}' loaded", name);
 
     entry(this);
 
@@ -46,7 +46,7 @@ void mod::unload_plugin() noexcept {
     modules.clear();
     if (dl.is_loaded()) {
         dl.unload();
-        spdlog::debug("mod '{}' unloaded", name);
+        spdlog::info("mod '{}' unloaded", name);
     }
 }
 
@@ -219,7 +219,7 @@ TEST_CASE("mod: components") {
 
     nlohmann::json j = nlohmann::json::parse(json_text);
 
-    motor::mod m{"test"};
+    motor::mod m{"test", "test"};
 
     m.module<module_a>();
     m.load_prefabs(loader.entities(j));
@@ -279,7 +279,7 @@ TEST_CASE("mod: systems") {
 
     entt::registry reg;
 
-    motor::mod m{"test"};
+    motor::mod m{"test", "test"};
     m.module<module_a>();
 
     motor::system_dispatcher dispatcher{reg};

@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <filesystem>
 #include <fmt/core.h>
-#include <spdlog/spdlog.h>
 #include <stdexcept>
+
+#include <spdlog/spdlog.h>
 
 namespace motor {
 
@@ -13,15 +14,47 @@ mods_service::mods_service() {
     auto& mods_path = locator::files::ref().get_data_path() / MOTOR_MODS_DIR;
 
     if (!std::filesystem::exists(mods_path)) {
-        spdlog::error("mods not found"); // TODO: exception?
-        return;
+        throw std::runtime_error(fmt::format("mods directory '{}' not found",
+                                             mods_path.string()));
     }
 
+
+    using mod_desc = std::pair<std::string, std::filesystem::path>;
+    std::vector<mod_desc> mod_descs;
+
     for (auto& p : std::filesystem::directory_iterator(mods_path)) {
-        mods.push_back(std::make_unique<mod>(p.path().filename().string()));
+        auto path = p.path();
+        auto name = path.filename().string();
+        path.remove_filename();
+        mod_descs.push_back(std::make_pair(name, path));
+    }
+
+    mods_path = locator::files::ref().get_user_path() / MOTOR_MODS_DIR;
+    if (std::filesystem::exists(mods_path)) {
+        for (auto& p : std::filesystem::directory_iterator(mods_path)) {
+            auto path = p.path();
+            auto name = path.filename().string();
+            path.remove_filename();
+
+            auto it = std::find_if(
+                    mod_descs.begin(), mod_descs.end(),
+                    [&name](auto&& md) { return md.first == name; });
+            if (it != mod_descs.end()) {
+                it->second = path;
+            } else {
+                mod_descs.push_back(std::make_pair(name, path));
+            }
+        }
     }
 
     // TODO: topology sort mods
+
+    for (auto&& mod_descs : mod_descs) {
+        spdlog::debug("mod: name = {}, dir = {}", mod_descs.first,
+                      mod_descs.second.string());
+        mods.push_back(
+                std::make_unique<mod>(mod_descs.first, mod_descs.second));
+    }
 }
 
 mods_service::~mods_service() {

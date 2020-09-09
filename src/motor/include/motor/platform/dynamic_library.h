@@ -1,6 +1,7 @@
 #ifndef MOTOR_DYNAMIC_LIBRARY_H
 #define MOTOR_DYNAMIC_LIBRARY_H
 
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -9,7 +10,8 @@ namespace motor {
 
 class dynamic_library {
 public:
-    dynamic_library(std::string_view name) noexcept;
+    dynamic_library(std::string_view name,
+                    const std::filesystem::path& dir) noexcept;
     ~dynamic_library() noexcept;
 
     std::string get_name() const { return name; }
@@ -28,6 +30,7 @@ private:
     struct impl;
 
     std::string name{};
+    std::filesystem::path dir{};
     std::unique_ptr<impl> p{};
 };
 

@@ -23,9 +23,9 @@ std::time_t to_time_t(TP tp) {
 
 class dynamic_library::impl {
 public:
-    explicit impl(std::string_view name) noexcept
-        : name{name}, original_path{(locator::files::ref().get_data_path() /
-                                     MOTOR_MODS_DIR / name / name)} {
+    explicit impl(std::string_view name,
+                  const std::filesystem::path& dir) noexcept
+        : name{name}, original_path{dir / name / name} {
         original_pdb_path = original_path;
         original_pdb_path += ".pdb";
         original_pdb_path.make_preferred();
@@ -65,17 +65,23 @@ public:
         timestamp += std::chrono::seconds(3);
 
         std::filesystem::path target_path{fmt::format(
-                "{}\\{}-{}.dll", locator::files::ref().get_base_path().string(),
-                name, version)};
+                "{}-{}.dll",
+                (locator::files::ref().get_base_path() / name).string(),
+                version)};
         std::filesystem::path target_pdb_path{fmt::format(
-                "{}\\{}-{}.pdb", locator::files::ref().get_base_path().string(),
-                name, version)};
+                "{}-{}.pdb",
+                (locator::files::ref().get_base_path() / name).string(),
+                version)};
 
+        spdlog::debug("copy: {} -> {}", original_path.string(),
+                      target_path.string());
         if (!try_copy_file(original_path, target_path, ec)) {
             spdlog::error("can't load \"{}\": {}", target_path.string(),
                           ec.message());
             return false;
         }
+        spdlog::debug("copy: {} -> {}", original_pdb_path.string(),
+                      target_pdb_path.string());
         if (!try_copy_file(original_pdb_path, target_pdb_path, ec)) {
             spdlog::error("can't load \"{}\": {}", target_pdb_path.string(),
                           ec.message());
@@ -99,7 +105,7 @@ public:
 
 private:
     std::size_t version{};
-    std::string_view name{};
+    std::string name{};
     std::filesystem::path original_path{};
     std::filesystem::path original_pdb_path{};
     std::filesystem::file_time_type timestamp{};
@@ -126,8 +132,9 @@ private:
 };
 
 
-dynamic_library::dynamic_library(std::string_view inname) noexcept
-    : name{inname}, p{std::make_unique<dynamic_library::impl>(name)} {
+dynamic_library::dynamic_library(std::string_view name,
+                                 const std::filesystem::path& dir) noexcept
+    : name{name}, p{std::make_unique<dynamic_library::impl>(name, dir)} {
 }
 
 dynamic_library::~dynamic_library() {
