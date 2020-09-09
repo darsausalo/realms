@@ -20,7 +20,7 @@ public:
 
     ~mods_service();
 
-    void load_plugins() noexcept;
+    void load_plugins();
 
     void start_plugins(system_dispatcher& dispatcher);
     void stop_plugins(system_dispatcher& dispatcher);

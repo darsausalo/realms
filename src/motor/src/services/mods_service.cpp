@@ -63,9 +63,12 @@ mods_service::~mods_service() {
     }
 }
 
-void mods_service::load_plugins() noexcept {
+void mods_service::load_plugins() {
     for (auto&& m : mods) {
-        m->load_plugin();
+        if (!m->load_plugin()) {
+            throw std::runtime_error(
+                    fmt::format("can't load mod plugin '{}'", m->get_name()));
+        }
     }
 }
 
