@@ -105,6 +105,8 @@ std::shared_ptr<spdlog::logger> mod::get_logger() const {
 //==============================================================================
 // TEST
 
+#include "motor/services/files_service.h"
+#include "motor/services/locator.h"
 #include <doctest/doctest.h>
 #include <sstream>
 
@@ -209,6 +211,9 @@ REFL_AUTO(type(motor::test::mod::module_a));
 TEST_CASE("mod: components") {
     using namespace motor::test::mod;
 
+    motor::locator::files::set(MOTOR_TEST_BASE_DIR, MOTOR_TEST_BASE_DIR,
+                               MOTOR_TEST_BASE_DIR);
+
     entt::registry prefab_reg;
     motor::prefab_loader loader{prefab_reg};
 
@@ -262,10 +267,15 @@ TEST_CASE("mod: components") {
         auto jv = get_j(j, id, motor::nameof_type<health>());
         CHECK(h.max == jv["max"].get<int>());
     });
+
+    motor::locator::files::reset();
 }
 
 TEST_CASE("mod: systems") {
     using namespace motor::test::mod;
+
+    motor::locator::files::set(MOTOR_TEST_BASE_DIR, MOTOR_TEST_BASE_DIR,
+                               MOTOR_TEST_BASE_DIR);
 
     entt::registry reg;
 
@@ -293,4 +303,6 @@ TEST_CASE("mod: systems") {
     dump = dispatcher.dump();
 
     CHECK(dump.size() == 0);
+
+    motor::locator::files::reset();
 }

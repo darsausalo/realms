@@ -24,10 +24,6 @@ files_service::files_service(const std::filesystem::path& base_path,
                           this->user_path.string(), ec.message());
         }
     }
-
-    spdlog::info("base path: {}", this->base_path.string());
-    spdlog::info("data path: {}", this->data_path.string());
-    spdlog::info("user path: {}", this->user_path.string());
 }
 
 std::filesystem::path

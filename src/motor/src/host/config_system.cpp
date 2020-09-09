@@ -103,6 +103,11 @@ void config_system::on_start(entt::registry& reg) {
     spdlog::info("mimalloc: {}", mi_version());
 
     locator::files::set<files_service>(base_path, data_path, user_path);
+    auto& files = locator::files::ref();
+
+    spdlog::info("base path: {}", files.get_base_path().string());
+    spdlog::info("data path: {}", files.get_data_path().string());
+    spdlog::info("user path: {}", files.get_user_path().string());
 
     auto& config = reg.set<core_config>();
 
