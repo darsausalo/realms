@@ -27,11 +27,12 @@ public:
     void* get_symbol(std::string_view name) const;
 
 private:
-    struct impl;
-
     std::string name{};
-    std::filesystem::path dir{};
-    std::unique_ptr<impl> p{};
+    std::filesystem::path original_path{};
+    std::filesystem::path original_pdb_path{};
+    std::filesystem::file_time_type timestamp{};
+    std::size_t version{};
+    void* handle{};
 };
 
 } // namespace motor

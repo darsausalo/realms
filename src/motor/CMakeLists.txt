@@ -23,9 +23,8 @@ set(SOURCES
 
 	# platform
 	"src/platform/backward.cpp"
-
-	"src/platform/platform_windows.cpp"
-	"src/platform/dynamic_library_windows.cpp"
+	"src/platform/platform.cpp"
+	"src/platform/dynamic_library.cpp"
 )
 
 set(HEADERS
