@@ -15,6 +15,12 @@ struct is_array<std::array<T, N>> : std::true_type {};
 template<typename T>
 inline constexpr bool is_array_v = is_array<T>::value;
 
+template<typename T>
+struct is_host_type : std::false_type {};
+
+template<typename T>
+inline constexpr bool is_host_type_v = is_host_type<T>::value;
+
 } // namespace motor
 
 #endif // MOTOR_TYPE_TRAITS_H

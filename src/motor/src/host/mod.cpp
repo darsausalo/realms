@@ -162,14 +162,14 @@ static nlohmann::json get_j(const nlohmann::json& j, motor::test::mod::id id,
     return {};
 };
 
-class system_a : public motor::system {};
-class system_b : public motor::system {};
-class system_c : public motor::system {};
-class system_d : public motor::system {};
-class system_e : public motor::system {};
+class system_a : public motor::sim_system {};
+class system_b : public motor::sim_system {};
+class system_c : public motor::sim_system {};
+class system_d : public motor::sim_system {};
+class system_e : public motor::sim_system {};
 
-class system_a1 : public motor::system {};
-class system_a2 : public motor::system {};
+class system_a1 : public motor::sim_system {};
+class system_a2 : public motor::sim_system {};
 
 class module_a : public motor::system_module {
 public:

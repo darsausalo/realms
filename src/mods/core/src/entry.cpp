@@ -9,7 +9,7 @@
 
 namespace core {
 
-class test_system : public motor::system {
+class test_system : public motor::sim_system {
 public:
     void on_start(entt::registry& reg) override {
         spdlog::info("test_system: start[1]");

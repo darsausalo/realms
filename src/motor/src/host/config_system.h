@@ -2,6 +2,7 @@
 #define CONFIG_SYSTEM_H
 
 #include "motor/core/system.h"
+#include "motor/core/type_traits.h"
 #include <nlohmann/json.hpp>
 #include <refl.hpp>
 #include <string>
@@ -21,7 +22,7 @@ struct config_changed {
 
 } // namespace event
 
-class config_system : public system {
+class config_system : public init_system {
 public:
     config_system();
 
@@ -34,6 +35,9 @@ private:
 
     void receive_config_changed(const event::config_changed&);
 };
+
+template<>
+struct is_host_type<config_system> : std::true_type {};
 
 } // namespace motor
 

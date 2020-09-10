@@ -5,6 +5,8 @@
 
 namespace motor {
 
+enum class system_group { init, sim, present };
+
 class system {
 public:
     system() noexcept = default;
@@ -13,6 +15,21 @@ public:
     virtual void on_start(entt::registry& reg) {}
     virtual void on_stop(entt::registry& reg) {}
     virtual void update(entt::registry& reg) {}
+};
+
+class init_system : public system {
+public:
+    static constexpr auto group = system_group::init;
+};
+
+class sim_system : public system {
+public:
+    static constexpr auto group = system_group::sim;
+};
+
+class present_system : public system {
+public:
+    static constexpr auto group = system_group::present;
 };
 
 } // namespace motor
