@@ -32,7 +32,8 @@ public:
     void save_snapshot(entt::registry& reg);
 
 private:
-    std::vector<std::unique_ptr<mod>> mods{};
+    std::vector<mod> mods{};
+    std::vector<mod> broken_mods{};
 };
 
 } // namespace motor

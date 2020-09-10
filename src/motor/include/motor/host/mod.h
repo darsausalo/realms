@@ -9,16 +9,36 @@
 #include <entt/entity/fwd.hpp>
 #include <filesystem>
 #include <string_view>
+#include <vector>
 
 namespace motor {
 
+struct mod_manifest {
+    std::vector<std::string> dependencies{};
+
+    std::string author{};
+    std::string description{};
+};
+
 class mod : public plugin_context {
 public:
-    mod(std::string_view name, const std::filesystem::path& dir) noexcept
-        : name{name}, dl{name, dir} {}
+    mod(std::string_view name, const std::filesystem::path& dir,
+        const mod_manifest& manifest) noexcept
+        : name{name}, dl{name, std::move(dir)}, manifest{std::move(manifest)} {}
+
+    mod(const mod&) = delete;
+    mod(mod&&) = default;
+
+    mod& operator=(mod&) = delete;
+    mod& operator=(mod&&) = default;
+
     ~mod() noexcept;
 
-    std::string get_name() const { return name; }
+    const std::string& get_name() const { return name; }
+    const mod_manifest& get_manifest() const { return manifest; }
+    const std::vector<std::string>& get_dependencies() const {
+        return manifest.dependencies;
+    }
 
     bool is_valid() const noexcept;
     bool is_changed() const noexcept;
@@ -54,6 +74,7 @@ private:
     dynamic_library dl;
 
     std::string name{};
+    mod_manifest manifest{};
     std::vector<std::string> dependencies{};
     std::vector<module_desc> modules{};
     bool valid{};

@@ -219,7 +219,7 @@ TEST_CASE("mod: components") {
 
     nlohmann::json j = nlohmann::json::parse(json_text);
 
-    motor::mod m{"test", "test"};
+    motor::mod m{"test", "test", motor::mod_manifest{}};
 
     m.module<module_a>();
     m.load_prefabs(loader.entities(j));
@@ -279,7 +279,7 @@ TEST_CASE("mod: systems") {
 
     entt::registry reg;
 
-    motor::mod m{"test", "test"};
+    motor::mod m{"test", "test", motor::mod_manifest{}};
     m.module<module_a>();
 
     motor::system_dispatcher dispatcher{reg};
