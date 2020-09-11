@@ -8,7 +8,7 @@
 
 namespace motor {
 
-/* binary output archive */
+// binary output archive
 
 class binary_output_archive : public output_archive<binary_output_archive> {
 public:
@@ -31,7 +31,7 @@ private:
     std::ostream& stream;
 };
 
-/* binary input archive */
+// binary input archive
 
 class binary_input_archive : public input_archive<binary_input_archive> {
 public:

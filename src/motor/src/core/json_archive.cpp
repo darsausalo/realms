@@ -16,17 +16,35 @@ struct bullet {
     float damage;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, bullet& b) {
+    ar.member(M(b.damage));
+}
+
 struct weapon {
     float damage;
     float crit;
     std::array<bullet, 3> bullets;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, weapon& w) {
+    ar.member(M(w.damage));
+    ar.member(M(w.crit));
+}
+
 struct monster {
     int max_health;
     weapon weapon;
     std::array<int, 3> inventory;
 };
+
+template<typename Archive>
+void serialize(Archive& ar, monster& m) {
+    ar.member(M(m.max_health));
+    ar.member(M(m.weapon));
+    ar.member(M(m.inventory));
+}
 
 static const char* json_text = R"({
     "weapon": {
@@ -39,11 +57,6 @@ static const char* json_text = R"({
 })";
 
 } // namespace motor::test::json_archive
-
-REFL_AUTO(type(motor::test::json_archive::bullet), field(damage));
-REFL_AUTO(type(motor::test::json_archive::weapon), field(damage), field(crit));
-REFL_AUTO(type(motor::test::json_archive::monster), field(max_health),
-          field(weapon), field(inventory));
 
 TEST_CASE("json deserialization: struct") {
     using namespace motor::test::json_archive;

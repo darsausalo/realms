@@ -156,19 +156,6 @@ struct is_host_type<motor::test::system_dispatcher::system_host_present_a>
 
 } // namespace motor
 
-REFL_AUTO(type(motor::test::system_dispatcher::system_init_a));
-REFL_AUTO(type(motor::test::system_dispatcher::system_host_init_a));
-REFL_AUTO(type(motor::test::system_dispatcher::system_present_a));
-REFL_AUTO(type(motor::test::system_dispatcher::system_present_b));
-REFL_AUTO(type(motor::test::system_dispatcher::system_host_present_a));
-REFL_AUTO(type(motor::test::system_dispatcher::system_a));
-REFL_AUTO(type(motor::test::system_dispatcher::system_b));
-REFL_AUTO(type(motor::test::system_dispatcher::system_c));
-REFL_AUTO(type(motor::test::system_dispatcher::system_d));
-REFL_AUTO(type(motor::test::system_dispatcher::system_e));
-REFL_AUTO(type(motor::test::system_dispatcher::system_a1));
-REFL_AUTO(type(motor::test::system_dispatcher::system_a2));
-
 TEST_CASE("system dispatcher: topology sorting") {
     using namespace motor::test::system_dispatcher;
 

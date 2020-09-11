@@ -2,12 +2,24 @@
 #define MOTOR_ARCHIVE_H
 
 #include "motor/core/type_traits.h"
-#include <refl.hpp>
+#include <nameof.hpp>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 
 namespace motor {
+
+// member serialization macro
+// example:
+//
+//      template<typename Archive>
+//      void serialize(Archive& ar, position& p) {
+//          ar.member(M(p.x));
+//          ar.member(M(p.y));
+//      }
+//
+
+#define M(member) NAMEOF(member), member
 
 // errors
 
@@ -101,16 +113,6 @@ protected:
 private:
     const archive_type* self;
 };
-
-// serialization specification
-
-template<typename Archive, typename T>
-auto serialize(Archive& ar, T& value)
-        -> std::enable_if_t<std::is_class_v<T>, void> {
-    for_each(refl::reflect(value).members, [&](auto member) {
-        ar.member(get_display_name(member), member(value));
-    });
-}
 
 } // namespace motor
 

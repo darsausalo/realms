@@ -6,7 +6,6 @@
 #include "motor/core/utility.h"
 #include <entt/entity/registry.hpp>
 #include <nlohmann/json.hpp>
-#include <refl.hpp>
 #include <string_view>
 #include <unordered_map>
 
@@ -24,7 +23,7 @@ class basic_prefab_loader {
 
     template<typename Component>
     void load_component() const {
-        auto component_name = refl::reflect<Component>().name.c_str();
+        auto component_name = nameof_type<Component>();
         for (auto& [name, desc] : descs) {
             if (auto& it = desc.components.find(component_name);
                 it != desc.components.end()) {

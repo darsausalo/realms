@@ -4,7 +4,6 @@
 #include "motor/core/system.h"
 #include "motor/core/type_traits.h"
 #include <memory>
-#include <refl.hpp>
 #include <vector>
 
 namespace motor {
@@ -19,7 +18,5 @@ template<>
 struct is_host_type<mods_system> : std::true_type {};
 
 } // namespace motor
-
-REFL_AUTO(type(motor::mods_system));
 
 #endif // MOTOR_MODS_SYSTEM_H

@@ -3,6 +3,7 @@
 #include <memory>
 #include <motor/core/attribute.h>
 #include <motor/core/plugin_context.h>
+#include <nameof.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <unordered_map>
@@ -27,9 +28,6 @@ public:
 };
 
 } // namespace core
-
-REFL_AUTO(type(core::test_system));
-REFL_AUTO(type(core::core_module));
 
 namespace core {
 

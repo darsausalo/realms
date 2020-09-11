@@ -64,7 +64,6 @@ set(HEADERS
 )
 
 add_library(motor STATIC ${SOURCES} ${HEADERS})
-target_include_directories(motor PUBLIC ${REFL_CPP_INCLUDE_DIRS})
 target_compile_definitions(motor PRIVATE
 	-DMOTOR_DATA_DIR="${PROJECT_DATA}"
 	-DMOTOR_MODS_DIR="${PROJECT_MODS}"
@@ -81,6 +80,7 @@ target_link_libraries(motor PRIVATE
 	SDL2::SDL2
 )
 target_link_libraries(motor PUBLIC
+	nameof::nameof
 	fmt::fmt
 	spdlog::spdlog
 	EnTT::EnTT

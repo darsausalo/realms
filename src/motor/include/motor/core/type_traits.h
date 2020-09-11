@@ -21,6 +21,9 @@ struct is_host_type : std::false_type {};
 template<typename T>
 inline constexpr bool is_host_type_v = is_host_type<T>::value;
 
+template<typename T>
+struct type_name : std::false_type {};
+
 } // namespace motor
 
 #endif // MOTOR_TYPE_TRAITS_H

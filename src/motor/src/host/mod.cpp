@@ -119,15 +119,33 @@ struct position {
     float y;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, position& p) {
+    ar.member(M(p.x));
+    ar.member(M(p.y));
+}
+
 struct timer {
     int duration;
     int elapsed;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, timer& t) {
+    ar.member(M(t.duration));
+    ar.member(M(t.elapsed));
+}
+
 struct health {
     int max;
     int value;
 };
+
+template<typename Archive>
+void serialize(Archive& ar, health& h) {
+    ar.member(M(h.max));
+    ar.member(M(h.value));
+}
 
 struct prefab_tag {};
 
@@ -142,8 +160,7 @@ static const char* json_text = R"({
     "entity2": {
         "motor::test::mod::id": 2,
         "motor::test::mod::position": { "x": 102, "y": 202 },
-        "motor::test::mod::health": { "max": 102 },
-        "entt::tag<\"mod\"_hs>": {}
+        "motor::test::mod::health": { "max": 102 }
     },
     "entity3": {
         "motor::test::mod::id": 3,
@@ -175,7 +192,7 @@ class module_a : public motor::system_module {
 public:
     module_a() {
         component<id, position, timer, health>();
-        component<prefab_tag, entt::tag<"mod"_hs>>();
+        component<prefab_tag>();
 
         system<system_a1>();
 
@@ -191,22 +208,6 @@ public:
 };
 
 } // namespace motor::test::mod
-
-REFL_AUTO(type(motor::test::mod::id));
-REFL_AUTO(type(motor::test::mod::position), field(x), field(y));
-REFL_AUTO(type(motor::test::mod::timer), field(duration), field(elapsed));
-REFL_AUTO(type(motor::test::mod::health), field(max), field(value));
-REFL_AUTO(type(motor::test::mod::prefab_tag));
-REFL_AUTO(type(entt::tag<"mod"_hs>));
-
-REFL_AUTO(type(motor::test::mod::system_a));
-REFL_AUTO(type(motor::test::mod::system_b));
-REFL_AUTO(type(motor::test::mod::system_c));
-REFL_AUTO(type(motor::test::mod::system_d));
-REFL_AUTO(type(motor::test::mod::system_e));
-REFL_AUTO(type(motor::test::mod::system_a1));
-REFL_AUTO(type(motor::test::mod::system_a2));
-REFL_AUTO(type(motor::test::mod::module_a));
 
 TEST_CASE("mod: components") {
     using namespace motor::test::mod;
@@ -229,7 +230,6 @@ TEST_CASE("mod: components") {
     CHECK(prefab_reg.view<health>().size() == 2);
     CHECK(prefab_reg.view<timer>().size() == 2);
     CHECK(prefab_reg.view<prefab_tag>().size() == 1);
-    CHECK(prefab_reg.view<entt::tag<"mod"_hs>>().size() == 1);
 
     std::stringstream data;
     {
@@ -252,7 +252,6 @@ TEST_CASE("mod: components") {
     CHECK(reg.view<health>().size() == 2);
     CHECK(reg.view<timer>().size() == 2);
     CHECK(reg.view<prefab_tag>().size() == 1);
-    CHECK(reg.view<entt::tag<"mod"_hs>>().size() == 1);
 
     reg.view<id, position>().each([&j](const auto& id, const auto& p) {
         auto jv = get_j(j, id, motor::nameof_type<position>());

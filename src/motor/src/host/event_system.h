@@ -3,7 +3,6 @@
 
 #include "motor/core/system.h"
 #include "motor/core/type_traits.h"
-#include <refl.hpp>
 
 namespace motor {
 
@@ -18,7 +17,5 @@ template<>
 struct is_host_type<event_system> : std::true_type {};
 
 } // namespace motor
-
-REFL_AUTO(type(motor::event_system));
 
 #endif // MOTOR_EVENT_SYSTEM_H

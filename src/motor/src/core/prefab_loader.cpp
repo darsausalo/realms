@@ -21,15 +21,33 @@ struct position {
     float y;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, position& p) {
+    ar.member(M(p.x));
+    ar.member(M(p.y));
+}
+
 struct timer {
     int duration;
     int elapsed;
 };
 
+template<typename Archive>
+void serialize(Archive& ar, timer& t) {
+    ar.member(M(t.duration));
+    ar.member(M(t.elapsed));
+}
+
 struct health {
     int max;
     int value;
 };
+
+template<typename Archive>
+void serialize(Archive& ar, health& h) {
+    ar.member(M(h.max));
+    ar.member(M(h.value));
+}
 
 struct prefab_tag {};
 
@@ -44,8 +62,7 @@ static const char* json_text = R"({
     "entity2": {
         "motor::test::prefab_loader::id": 2,
         "motor::test::prefab_loader::position": { "x": 102, "y": 202 },
-        "motor::test::prefab_loader::health": { "max": 102 },
-        "entt::tag<\"prefab_loader\"_hs>": {}
+        "motor::test::prefab_loader::health": { "max": 102 }
     },
     "entity3": {
         "motor::test::prefab_loader::id": 3,
@@ -68,14 +85,6 @@ static nlohmann::json get_j(const nlohmann::json& j,
 
 } // namespace motor::test::prefab_loader
 
-REFL_AUTO(type(motor::test::prefab_loader::id));
-REFL_AUTO(type(motor::test::prefab_loader::position), field(x), field(y));
-REFL_AUTO(type(motor::test::prefab_loader::timer), field(duration),
-          field(elapsed));
-REFL_AUTO(type(motor::test::prefab_loader::health), field(max), field(value));
-REFL_AUTO(type(motor::test::prefab_loader::prefab_tag));
-REFL_AUTO(type(entt::tag<"prefab_loader"_hs>));
-
 TEST_CASE("prefab_loader: load from json") {
     using namespace motor::test::prefab_loader;
 
@@ -86,13 +95,12 @@ TEST_CASE("prefab_loader: load from json") {
 
     loader.entities(j)
             .component<id, position, timer, health>()
-            .component<prefab_tag, entt::tag<"prefab_loader"_hs>>();
+            .component<prefab_tag>();
     CHECK(reg.view<id, position>().size() == 3);
     CHECK(reg.view<position>().size() == 3);
     CHECK(reg.view<health>().size() == 2);
     CHECK(reg.view<timer>().size() == 2);
     CHECK(reg.view<prefab_tag>().size() == 1);
-    CHECK(reg.view<entt::tag<"prefab_loader"_hs>>().size() == 1);
 
     reg.view<id, position>().each([&j](const auto& id, const auto& p) {
         auto jv = get_j(j, id, motor::nameof_type<position>());

@@ -4,7 +4,6 @@
 #include "motor/core/system.h"
 #include "motor/core/type_traits.h"
 #include <SDL.h>
-#include <refl.hpp>
 #include <string>
 
 namespace motor {
@@ -43,7 +42,5 @@ template<>
 struct is_host_type<window_system> : std::true_type {};
 
 } // namespace motor
-
-REFL_AUTO(type(motor::window_system));
 
 #endif // MOTOR_WINDOW_SYSTEM_H

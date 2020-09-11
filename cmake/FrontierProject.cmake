@@ -14,8 +14,6 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 
-find_path(REFL_CPP_INCLUDE_DIRS "refl.hpp")
-
 find_package(doctest CONFIG REQUIRED)
 
 # Compiler-specific flags

@@ -4,7 +4,6 @@
 #include "motor/core/system.h"
 #include "motor/core/type_traits.h"
 #include <nlohmann/json.hpp>
-#include <refl.hpp>
 #include <string>
 #include <vector>
 
@@ -40,7 +39,5 @@ template<>
 struct is_host_type<config_system> : std::true_type {};
 
 } // namespace motor
-
-REFL_AUTO(type(motor::config_system));
 
 #endif // CONFIG_SYSTEM_H
