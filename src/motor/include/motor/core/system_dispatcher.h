@@ -34,9 +34,10 @@ public:
         static_assert(std::is_base_of_v<system, System>,
                       "System should be derived from motor::system");
         (is_same_group<System, Dependencies>(), ...);
-        auto it = std::find_if(systems.cbegin(), systems.cend(), [](auto&& sd) {
-            return sd.type_id == entt::type_info<System>::id();
-        });
+        auto it = std::find_if(
+                std::cbegin(systems), std::cend(systems), [](auto&& sd) {
+                    return sd.type_id == entt::type_info<System>::id();
+                });
         systems.push_back(system_desc{entt::type_info<System>::id(),
                                       System::group,
                                       is_host_type_v<System>,
@@ -53,9 +54,10 @@ public:
     void remove_system() {
         static_assert(std::is_base_of_v<system, System>,
                       "System should be derived from motor::system");
-        auto it = std::find_if(systems.cbegin(), systems.cend(), [](auto&& sd) {
-            return sd.type_id == entt::type_info<System>::id();
-        });
+        auto it = std::find_if(
+                std::cbegin(systems), std::cend(systems), [](auto&& sd) {
+                    return sd.type_id == entt::type_info<System>::id();
+                });
         if (it != systems.end()) {
             it->instance->on_stop(reg);
             systems.erase(it);

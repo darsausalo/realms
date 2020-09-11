@@ -24,26 +24,25 @@ void system_dispatcher::update() {
 
 void system_dispatcher::sort() {
     std::stable_sort(
-            systems.begin(), systems.end(),
+            std::begin(systems), std::end(systems),
             [](auto&& lhs, auto&& rhs) { return lhs.group < rhs.group; });
 
     {
-        auto it =
-                std::find_if_not(systems.begin(), systems.end(), [](auto&& sd) {
-                    return sd.group == system_group::init;
-                });
-        if (it != systems.end()) {
-            std::stable_sort(systems.begin(), it, [](auto&& lhs, auto&& rhs) {
-                return lhs.host > rhs.host;
-            });
+        auto it = std::find_if_not(
+                std::begin(systems), std::end(systems),
+                [](auto&& sd) { return sd.group == system_group::init; });
+        if (it != std::end(systems)) {
+            std::stable_sort(
+                    std::begin(systems), it,
+                    [](auto&& lhs, auto&& rhs) { return lhs.host > rhs.host; });
         }
     }
     {
-        auto it = std::find_if(systems.begin(), systems.end(), [](auto&& sd) {
-            return sd.group == system_group::present;
-        });
-        if (it != systems.end()) {
-            std::stable_sort(it, systems.end(), [](auto&& lhs, auto&& rhs) {
+        auto it = std::find_if(
+                std::begin(systems), std::end(systems),
+                [](auto&& sd) { return sd.group == system_group::present; });
+        if (it != std::end(systems)) {
+            std::stable_sort(it, std::end(systems), [](auto&& lhs, auto&& rhs) {
                 return lhs.host < rhs.host;
             });
         }
@@ -67,7 +66,7 @@ void system_dispatcher::sort() {
     }
     std::vector<bool> visited;
     visited.resize(all_dependencies.size());
-    std::fill(visited.begin(), visited.end(), false);
+    std::fill(std::begin(visited), std::end(visited), false);
 
     std::vector<system_desc> sorted;
 
@@ -101,7 +100,7 @@ std::vector<std::pair<std::string, std::string>> system_dispatcher::dump() {
             auto id = sd.dependencies[i];
             auto it = std::find_if(systems.cbegin(), systems.cend(),
                                    [&id](auto&& s) { return s.type_id == id; });
-            if (it != systems.end()) {
+            if (it != std::end(systems)) {
                 dependencies += it->name;
                 if (i < sd.dependencies.size() - 1) {
                     dependencies += ", ";

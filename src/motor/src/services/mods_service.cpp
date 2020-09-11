@@ -23,16 +23,17 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     for (auto&& m : mods) {
         all_dependencies.push_back({});
         auto& dependencies = all_dependencies.back();
-        std::transform(
-                m.get_dependencies().cbegin(), m.get_dependencies().cend(),
-                std::back_inserter(dependencies),
-                [&mods](auto&& name) -> std::size_t {
-                    auto it = std::find_if(mods.cbegin(), mods.cend(),
-                                           [&name](auto&& dm) {
-                                               return dm.get_name() == name;
-                                           });
-                    return it - mods.cbegin();
-                });
+        std::transform(std::cbegin(m.get_dependencies()),
+                       std::cend(m.get_dependencies()),
+                       std::back_inserter(dependencies),
+                       [&mods](auto&& name) -> std::size_t {
+                           auto it = std::find_if(
+                                   std::cbegin(mods), std::cend(mods),
+                                   [&name](auto&& dm) {
+                                       return dm.get_name() == name;
+                                   });
+                           return it - std::cbegin(mods);
+                       });
     }
 
     std::vector<bool> visited;
@@ -40,9 +41,9 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     std::fill(visited.begin(), visited.end(), false);
 
     auto core_idx =
-            std::find_if(mods.cbegin(), mods.cend(),
+            std::find_if(std::cbegin(mods), std::cend(mods),
                          [](auto&& m) { return m.get_name() == core_name; }) -
-            mods.cbegin();
+            std::cbegin(mods);
 
     visited[core_idx] = true;
 
@@ -52,9 +53,9 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
         visited[v] = true;
         for (auto&& i : all_dependencies[v]) {
             if (i >= visited.size() ||
-                std::find_if(broken.cbegin(), broken.cend(), [i](auto& it) {
-                    return i == it;
-                }) != broken.cend()) {
+                std::find_if(std::cbegin(broken), std::cend(broken),
+                             [i](auto& it) { return i == it; }) !=
+                        std::cend(broken)) {
                 broken.push_back(v);
                 return;
             }
