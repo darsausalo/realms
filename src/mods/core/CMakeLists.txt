@@ -1,4 +1,4 @@
-include_directories("include" "../../motor/include")
+include_directories("include" "../../motor/include" "../../frontier/include")
 
 set(SOURCES
 	"src/entry.cpp"

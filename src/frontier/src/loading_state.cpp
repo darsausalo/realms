@@ -1,5 +1,7 @@
 #include "loading_state.h"
+#include "frontier/components.h"
 #include "main_state.h"
+#include <entt/entity/registry.hpp>
 #include <motor/services/locator.h>
 #include <motor/services/mods_service.h>
 #include <spdlog/spdlog.h>
@@ -11,6 +13,16 @@ void loading_state::on_start(entt::registry& reg,
     spdlog::info("loading: start");
 
     motor::locator::mods::ref().load_plugins();
+
+    auto e1 = reg.create();
+    reg.emplace<position>(e1, 1.0f, 2.0f);
+    reg.emplace<velocity>(e1, 3.0f, 4.0f);
+
+    auto e2 = reg.create();
+    reg.emplace<position>(e2, 4.0f, 5.0f);
+    reg.emplace<velocity>(e2, 6.0f, 7.0f);
+
+    spdlog::info("loading finished: {}", reg.view<position, velocity>().size());
 }
 
 void loading_state::on_stop(entt::registry& reg,

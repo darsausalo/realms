@@ -25,7 +25,7 @@ struct window_config {
     window_size size;
 };
 
-class window_system : public init_system {
+class window_system : public system<system_group::on_load> {
 public:
     window_system() noexcept;
 
@@ -37,9 +37,6 @@ private:
     SDL_Window* window{};
     window_config config{};
 };
-
-template<>
-struct is_host_type<window_system> : std::true_type {};
 
 } // namespace motor
 

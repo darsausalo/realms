@@ -5,31 +5,33 @@
 
 namespace motor {
 
-enum class system_group { init, sim, present };
+enum class system_group {
+    pre_frame,
+    on_load,
+    post_load,
+    pre_update,
+    on_update,
+    on_validate,
+    post_update,
+    pre_store,
+    on_store,
+    post_frame
+};
 
-class system {
+class system_base {
 public:
-    system() noexcept = default;
-    virtual ~system() noexcept = default;
+    system_base() noexcept = default;
+    virtual ~system_base() noexcept = default;
 
     virtual void on_start(entt::registry& reg) {}
     virtual void on_stop(entt::registry& reg) {}
     virtual void update(entt::registry& reg) {}
 };
 
-class init_system : public system {
+template<system_group SystemGroup>
+class system : public system_base {
 public:
-    static constexpr auto group = system_group::init;
-};
-
-class sim_system : public system {
-public:
-    static constexpr auto group = system_group::sim;
-};
-
-class present_system : public system {
-public:
-    static constexpr auto group = system_group::present;
+    static constexpr auto group = SystemGroup;
 };
 
 } // namespace motor

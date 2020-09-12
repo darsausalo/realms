@@ -23,17 +23,17 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     for (auto&& m : mods) {
         all_dependencies.push_back({});
         auto& dependencies = all_dependencies.back();
-        std::transform(std::cbegin(m.get_dependencies()),
-                       std::cend(m.get_dependencies()),
-                       std::back_inserter(dependencies),
-                       [&mods](auto&& name) -> std::size_t {
-                           auto it = std::find_if(
-                                   std::cbegin(mods), std::cend(mods),
-                                   [&name](auto&& dm) {
-                                       return dm.get_name() == name;
-                                   });
-                           return it - std::cbegin(mods);
-                       });
+        auto& mod_dependencies = m.get_manifest().dependencies;
+        std::transform(
+                std::cbegin(mod_dependencies), std::cend(mod_dependencies),
+                std::back_inserter(dependencies),
+                [&mods](auto&& name) -> std::size_t {
+                    auto it = std::find_if(std::cbegin(mods), std::cend(mods),
+                                           [&name](auto&& dm) {
+                                               return dm.get_name() == name;
+                                           });
+                    return it - std::cbegin(mods);
+                });
     }
 
     std::vector<bool> visited;
@@ -98,7 +98,6 @@ mods_service::mods_service() {
         throw std::runtime_error(fmt::format("mods directory '{}' not found",
                                              mods_path.string()));
     }
-
 
     using mod_desc = std::pair<std::string, std::filesystem::path>;
     std::vector<mod_desc> mod_descs;

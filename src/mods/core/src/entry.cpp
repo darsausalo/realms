@@ -1,19 +1,18 @@
-#include <fmt/core.h>
-#include <iostream>
-#include <memory>
-#include <motor/core/attribute.h>
+#include "frontier/components.h"
+#include <entt/entity/registry.hpp>
 #include <motor/core/plugin_context.h>
-#include <nameof.hpp>
+#include <motor/core/system.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <unordered_map>
 
-namespace core {
+namespace frontier {
 
-class test_system : public motor::sim_system {
+class test_system : public motor::system<motor::system_group::on_update> {
 public:
     void on_start(entt::registry& reg) override {
-        spdlog::info("test_system: start[1]");
+        spdlog::info("test_system: start[2]: {}",
+                     reg.view<position, velocity>().size());
     }
     void on_stop(entt::registry& reg) override {
         spdlog::info("test_system: stop");
@@ -22,21 +21,12 @@ public:
     void update(entt::registry& reg) override {}
 };
 
-class core_module : public motor::system_module {
-public:
-    core_module() { system<test_system>(); }
-};
-
-} // namespace core
-
-namespace core {
-
 MOTOR_EXPORT void plugin_entry(motor::plugin_context* ctx) {
     spdlog::set_default_logger(ctx->get_logger());
 
-    ctx->module<core_module>();
+    ctx->system<test_system>();
 
     spdlog::debug("plugin_entry: core[1]");
 }
 
-} // namespace core
+} // namespace frontier

@@ -8,14 +8,11 @@
 
 namespace motor {
 
-class mods_system : public init_system {
+class mods_system : public system<system_group::post_update> {
 public:
     void on_start(entt::registry& reg) override;
     void on_stop(entt::registry& reg) override;
 };
-
-template<>
-struct is_host_type<mods_system> : std::true_type {};
 
 } // namespace motor
 

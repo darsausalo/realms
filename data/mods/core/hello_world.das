@@ -1,4 +1,4 @@
 [export]
 def main()
-    print("Hello, daScript World!!!\n")
+    print("Hello, daScript World!\n")
     return true

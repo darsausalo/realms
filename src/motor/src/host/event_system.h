@@ -6,15 +6,12 @@
 
 namespace motor {
 
-class event_system : public init_system {
+class event_system : public system<system_group::pre_update> {
 public:
     void on_start(entt::registry& reg) override;
     void on_stop(entt::registry& reg) override;
     void update(entt::registry& reg) override;
 };
-
-template<>
-struct is_host_type<event_system> : std::true_type {};
 
 } // namespace motor
 

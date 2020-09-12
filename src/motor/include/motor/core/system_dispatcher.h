@@ -31,7 +31,7 @@ public:
 
     template<typename System, typename... Dependencies>
     System& add_system() {
-        static_assert(std::is_base_of_v<system, System>,
+        static_assert(std::is_base_of_v<system_base, System>,
                       "System should be derived from motor::system");
         (is_same_group<System, Dependencies>(), ...);
         auto it = std::find_if(
@@ -40,7 +40,6 @@ public:
                 });
         systems.push_back(system_desc{entt::type_info<System>::id(),
                                       System::group,
-                                      is_host_type_v<System>,
                                       nameof_type<System>(),
                                       {entt::type_info<Dependencies>::id()...},
                                       std::make_unique<System>()});
@@ -52,7 +51,7 @@ public:
 
     template<typename System>
     void remove_system() {
-        static_assert(std::is_base_of_v<system, System>,
+        static_assert(std::is_base_of_v<system_base, System>,
                       "System should be derived from motor::system");
         auto it = std::find_if(
                 std::cbegin(systems), std::cend(systems), [](auto&& sd) {
@@ -71,12 +70,11 @@ public:
 
 private:
     struct system_desc {
-        entt::id_type type_id;
-        system_group group{system_group::sim};
-        bool host{};
-        std::string_view name;
-        std::vector<entt::id_type> dependencies;
-        std::unique_ptr<system> instance;
+        entt::id_type type_id{};
+        system_group group{system_group::on_update};
+        std::string_view name{};
+        std::vector<entt::id_type> dependencies{};
+        std::unique_ptr<system_base> instance{};
     };
 
     entt::registry& reg;

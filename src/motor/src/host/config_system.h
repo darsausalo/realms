@@ -21,7 +21,7 @@ struct config_changed {
 
 } // namespace event
 
-class config_system : public init_system {
+class config_system : public system<system_group::pre_frame> {
 public:
     config_system();
 
@@ -34,9 +34,6 @@ private:
 
     void receive_config_changed(const event::config_changed&);
 };
-
-template<>
-struct is_host_type<config_system> : std::true_type {};
 
 } // namespace motor
 

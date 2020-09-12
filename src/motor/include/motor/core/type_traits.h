@@ -16,12 +16,6 @@ template<typename T>
 inline constexpr bool is_array_v = is_array<T>::value;
 
 template<typename T>
-struct is_host_type : std::false_type {};
-
-template<typename T>
-inline constexpr bool is_host_type_v = is_host_type<T>::value;
-
-template<typename T>
 struct type_name : std::false_type {};
 
 } // namespace motor
