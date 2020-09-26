@@ -20,7 +20,6 @@ set(SOURCES
 	"src/host/event_system.cpp"
 	"src/host/mod.cpp"
 	"src/host/application.cpp"
-	"src/host/test_dascript.cpp"
 
 	# platform
 	"src/platform/backward.cpp"
@@ -64,7 +63,6 @@ set(HEADERS
 )
 
 add_library(motor STATIC ${SOURCES} ${HEADERS})
-target_include_directories(motor PUBLIC "${CMAKE_SOURCE_DIR}/external/daScript/include")
 target_compile_definitions(motor PRIVATE
 	-DMOTOR_DATA_DIR="${PROJECT_DATA}"
 	-DMOTOR_MODS_DIR="${PROJECT_MODS}"
@@ -74,13 +72,11 @@ target_compile_definitions(motor PRIVATE
 	-DMOTOR_PROJECT_TITLE="${PROJECT_TITLE}"
 	-DMOTOR_TEST_BASE_DIR="${CMAKE_CURRENT_BINARY_DIR}"
 	-DMOTOR_TEST_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/data/mods/core"
-	-DMOTOR_DASCRIPT_ROOT_DIR="${CMAKE_SOURCE_DIR}/external/daScript/daslib"
 )
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
 	nlohmann_json::nlohmann_json
-	libDaScript
 	SDL2::SDL2
 )
 target_link_libraries(motor PUBLIC

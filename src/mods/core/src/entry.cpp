@@ -11,6 +11,9 @@ namespace frontier {
 class test_system : public motor::system<motor::system_group::on_update> {
 public:
     void on_start(entt::registry& reg) override {
+        auto e = reg.create();
+        reg.emplace<frontier::position>(e, 11.0f, 12.0f);
+        reg.emplace<frontier::velocity>(e, 13.0f, 12.0f);
         spdlog::info("test_system: start[2]: {}",
                      reg.view<position, velocity>().size());
     }

@@ -15,5 +15,4 @@ set(PROJECT_LIB "lib")
 set(PROJECT_DATA "data")
 set(PROJECT_MODS "mods")
 
-add_subdirectory(external)
 add_subdirectory(src)
