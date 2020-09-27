@@ -13,6 +13,10 @@ find_package(nameof CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+find_package(sol2 CONFIG REQUIRED)
+
+include(FindLua)
+find_package(Lua REQUIRED)
 
 find_package(doctest CONFIG REQUIRED)
 

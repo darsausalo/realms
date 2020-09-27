@@ -10,6 +10,7 @@ set(SOURCES
 	# services
 	"src/services/files_service.cpp"
 	"src/services/mods_service.cpp"
+	"src/services/scripts_service.cpp"
 
 	# host
 	"src/host/game_state.cpp"
@@ -43,6 +44,7 @@ set(HEADERS
 	# services
 	"include/motor/services/files_service.h"
 	"include/motor/services/mods_service.h"
+	"include/motor/services/scripts_service.h"
 
 	# host
 	"include/motor/host/transition.h"
@@ -73,11 +75,16 @@ target_compile_definitions(motor PRIVATE
 	-DMOTOR_TEST_BASE_DIR="${CMAKE_CURRENT_BINARY_DIR}"
 	-DMOTOR_TEST_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/data/mods/core"
 )
+target_include_directories(motor PRIVATE
+	${LUA_INCLUDE_DIR}
+)
 target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
 	nlohmann_json::nlohmann_json
 	SDL2::SDL2
+	sol2::sol2
+	${LUA_LIBRARIES}
 )
 target_link_libraries(motor PUBLIC
 	nameof::nameof

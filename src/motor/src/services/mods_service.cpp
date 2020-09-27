@@ -149,7 +149,8 @@ mods_service::mods_service() {
             }
         }
 
-        mods.push_back({mod_desc.first, mod_desc.second, manifest});
+        mods.push_back(
+                {mod_desc.first, mod_desc.second / mod_desc.first, manifest});
     }
 
     sort_mods(mods, broken_mods);

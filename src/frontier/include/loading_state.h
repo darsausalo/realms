@@ -1,6 +1,8 @@
 #ifndef FRONTIER_LOADING_STATE_H
 #define FRONTIER_LOADING_STATE_H
 
+#include <future>
+#include <motor/core/template_set.h>
 #include <motor/host/game_state.h>
 
 namespace frontier {
@@ -16,7 +18,7 @@ public:
                              motor::system_dispatcher& disp) override;
 
 private:
-    int progress{};
+    std::future<void> loading_f;
 };
 
 } // namespace frontier

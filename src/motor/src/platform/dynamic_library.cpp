@@ -55,7 +55,7 @@ static bool try_copy_file(const std::filesystem::path& from,
 
 dynamic_library::dynamic_library(std::string_view name,
                                  const std::filesystem::path& dir) noexcept
-    : name{name}, original_path{dir / name / name} {
+    : name{name}, original_path{dir / name} {
     original_pdb_path = original_path;
     original_pdb_path += ".pdb";
     original_pdb_path.make_preferred();

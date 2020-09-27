@@ -27,9 +27,12 @@ public:
 
     void reload_plugins(system_dispatcher& dispatcher);
 
-    void load_prefabs(entt::registry& reg);
-    void load_snapshot(entt::registry& reg);
-    void save_snapshot(entt::registry& reg);
+    template<typename Func>
+    void visit(Func func) const {
+        for (const auto& m : mods) {
+            func(m);
+        }
+    }
 
 private:
     std::vector<mod> mods{};
