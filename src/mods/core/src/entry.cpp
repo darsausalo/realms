@@ -24,7 +24,7 @@ public:
         reg.emplace<frontier::position>(e2, 11.0f, 12.0f);
         reg.emplace<frontier::velocity>(e2, 13.0f, 12.0f);
 
-        spdlog::info("test_system: start[3]: {}, valid: {}",
+        spdlog::info("test_system: start[1]: {}, valid: {}",
                      reg.view<position, velocity>().size(), reg.valid(e2));
     }
     void on_stop(entt::registry& reg) override {

@@ -5,10 +5,6 @@
 
 #include <doctest/doctest.h>
 #include <entt/entity/registry.hpp>
-#include <fmt/core.h>
-#include <iostream>
-#include <nameof.hpp>
-#include <sstream>
 
 namespace motor::test::json_archive {
 

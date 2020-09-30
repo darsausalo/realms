@@ -13,7 +13,5 @@ target_link_libraries(sample1 PRIVATE
 )
 
 set_target_properties(sample1 PROPERTIES
-	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/sample1"
 	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/sample1"
-	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/sample1"
 )

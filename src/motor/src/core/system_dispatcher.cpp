@@ -149,16 +149,16 @@ TEST_CASE("system dispatcher: topology sorting") {
 
     CHECK(dump.size() == 10);
     CHECK(dump[0].first ==
-          "motor::test::system_dispatcher::system_pre_frame_a");
-    CHECK(dump[1].first == "motor::test::system_dispatcher::system_a1");
-    CHECK(dump[2].first == "motor::test::system_dispatcher::system_a");
-    CHECK(dump[3].first == "motor::test::system_dispatcher::system_b");
-    CHECK(dump[4].first == "motor::test::system_dispatcher::system_c");
-    CHECK(dump[5].first == "motor::test::system_dispatcher::system_d");
-    CHECK(dump[6].first == "motor::test::system_dispatcher::system_e");
-    CHECK(dump[7].first == "motor::test::system_dispatcher::system_a2");
+          "class motor::test::system_dispatcher::system_pre_frame_a");
+    CHECK(dump[1].first == "class motor::test::system_dispatcher::system_a1");
+    CHECK(dump[2].first == "class motor::test::system_dispatcher::system_a");
+    CHECK(dump[3].first == "class motor::test::system_dispatcher::system_b");
+    CHECK(dump[4].first == "class motor::test::system_dispatcher::system_c");
+    CHECK(dump[5].first == "class motor::test::system_dispatcher::system_d");
+    CHECK(dump[6].first == "class motor::test::system_dispatcher::system_e");
+    CHECK(dump[7].first == "class motor::test::system_dispatcher::system_a2");
     CHECK(dump[8].first ==
-          "motor::test::system_dispatcher::system_post_frame_a");
+          "class motor::test::system_dispatcher::system_post_frame_a");
     CHECK(dump[9].first ==
-          "motor::test::system_dispatcher::system_post_frame_b");
+          "class motor::test::system_dispatcher::system_post_frame_b");
 }

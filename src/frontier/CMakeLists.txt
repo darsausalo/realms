@@ -9,6 +9,8 @@ set(SOURCES
 set (HEADERS
 	"include/loading_state.h"
 	"include/main_state.h"
+
+	"src/component_serialization.h"
 )
 
 add_executable(frontier ${SOURCES} ${HEADERS})
@@ -17,8 +19,6 @@ target_link_libraries(frontier PRIVATE
 )
 
 set_target_properties(frontier PROPERTIES
-	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
-	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
 	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
 )
 

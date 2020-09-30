@@ -121,15 +121,15 @@ TEST_CASE("mod: systems") {
     auto dump = dispatcher.dump();
 
     CHECK(dump.size() == 9);
-    CHECK(dump[0].first == "motor::test::mod::system_a1");
-    CHECK(dump[1].first == "motor::test::mod::system_a");
-    CHECK(dump[2].first == "motor::test::mod::system_b");
-    CHECK(dump[3].first == "motor::test::mod::system_c");
-    CHECK(dump[4].first == "motor::test::mod::system_d");
-    CHECK(dump[5].first == "motor::test::mod::system_e");
-    CHECK(dump[6].first == "motor::test::mod::system_a2");
-    CHECK(dump[7].first == "motor::test::mod::system_b1");
-    CHECK(dump[8].first == "motor::test::mod::system_b2");
+    CHECK(dump[0].first == "class motor::test::mod::system_a1");
+    CHECK(dump[1].first == "class motor::test::mod::system_a");
+    CHECK(dump[2].first == "class motor::test::mod::system_b");
+    CHECK(dump[3].first == "class motor::test::mod::system_c");
+    CHECK(dump[4].first == "class motor::test::mod::system_d");
+    CHECK(dump[5].first == "class motor::test::mod::system_e");
+    CHECK(dump[6].first == "class motor::test::mod::system_a2");
+    CHECK(dump[7].first == "class motor::test::mod::system_b1");
+    CHECK(dump[8].first == "class motor::test::mod::system_b2");
 
     m.remove_systems(dispatcher);
 

@@ -1,0 +1,39 @@
+#ifndef FRONTIER_COMPONENT_SERIALIZATION_H
+#define FRONTIER_COMPONENT_SERIALIZATION_H
+
+#include "frontier/components.h"
+#include <motor/core/archive.h>
+#include <spdlog/spdlog.h>
+
+namespace frontier {
+
+template<typename Archive>
+void serialize(Archive& ar, position& value) {
+    ar.member(M(value.x));
+    ar.member(M(value.y));
+}
+
+template<typename Archive>
+void serialize(Archive& ar, velocity& value) {
+    ar.member(M(value.dx));
+    ar.member(M(value.dy));
+}
+
+template<typename Archive>
+void serialize(Archive& ar, health& value) {
+    ar.member(M(value.max));
+    ar.member(M(value.value));
+}
+
+template<typename Archive>
+void serialize(Archive& ar, sprite& value) {
+    std::string sprite_resource;
+    // ar.member("resource", sprite_resource);
+    ar(sprite_resource);
+    spdlog::debug("sprite_resource: {}", sprite_resource);
+    value.resource = sprite_resource;
+}
+
+} // namespace frontier
+
+#endif // FRONTIER_COMPONENT_SERIALIZATION_H

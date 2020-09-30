@@ -12,14 +12,6 @@ class plugin_context {
 public:
     virtual ~plugin_context() noexcept = default;
 
-    template<typename Module>
-    void module() {
-        static_assert(
-                std::is_base_of_v<system_module, Module>,
-                "System module should be derived from motor::system_module");
-        add_module(nameof_type<Module>(), std::make_unique<Module>());
-    }
-
     template<typename System, typename... Dependencies>
     void system() noexcept {
         system_adders.push_back(

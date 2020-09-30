@@ -7,11 +7,13 @@ namespace motor {
 
 class files_service;
 class mods_service;
+class components_service;
 class scripts_service;
 
 struct locator {
     using files = entt::service_locator<files_service>;
     using mods = entt::service_locator<mods_service>;
+    using components = entt::service_locator<components_service>;
     using scripts = entt::service_locator<scripts_service>;
 };
 

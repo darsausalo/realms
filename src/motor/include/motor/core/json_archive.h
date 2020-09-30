@@ -2,14 +2,13 @@
 #define MOTOR_JSON_ARCHIVE_H
 
 #include "motor/core/archive.h"
-#include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
 namespace motor {
 
 class json_input_archive : public input_archive<json_input_archive> {
 public:
-    json_input_archive(const nlohmann::json& j) noexcept
+    explicit json_input_archive(const nlohmann::json& j) noexcept
         : input_archive{this}, current_member{} {
         node_stack.push_back(&j);
     }

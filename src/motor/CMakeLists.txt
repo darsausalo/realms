@@ -5,7 +5,8 @@ set(SOURCES
 	"src/core/system_dispatcher.cpp"
 	"src/core/binary_archive.cpp"
 	"src/core/json_archive.cpp"
-	"src/core/prefab_loader.cpp"
+	"src/core/lua_archive.cpp"
+	"src/core/prototype_registry.cpp"
 
 	# services
 	"src/services/files_service.cpp"
@@ -38,8 +39,9 @@ set(HEADERS
 	"include/motor/core/archive.h"
 	"include/motor/core/binary_archive.h"
 	"include/motor/core/json_archive.h"
-	"include/motor/core/prefab_loader.h"
+	"include/motor/core/lua_archive.h"
 	"include/motor/core/plugin_context.h"
+	"include/motor/core/prototype_registry.h"
 
 	# services
 	"include/motor/services/files_service.h"
@@ -93,10 +95,5 @@ target_link_libraries(motor PUBLIC
 	EnTT::EnTT
 )
 add_backward(motor)
-set_target_properties(motor PROPERTIES
-	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
-	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
-	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
-)
 
 doctest_make_exe_for_static_lib(motor_test motor)

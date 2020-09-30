@@ -40,7 +40,7 @@ public:
                 });
         systems.push_back(system_desc{entt::type_info<System>::id(),
                                       System::group,
-                                      nameof_type<System>(),
+                                      nameof::nameof_type<System>(),
                                       {entt::type_info<Dependencies>::id()...},
                                       std::make_unique<System>()});
         systems.back().instance->on_start(reg);

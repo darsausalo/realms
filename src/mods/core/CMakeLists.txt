@@ -13,7 +13,5 @@ target_link_libraries(core PRIVATE
 )
 
 set_target_properties(core PROPERTIES
-	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
 	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
-	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/data/mods/core"
 )
