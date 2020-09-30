@@ -2,7 +2,6 @@
 #define FRONTIER_LOADING_STATE_H
 
 #include <future>
-#include <motor/core/template_set.h>
 #include <motor/host/game_state.h>
 
 namespace frontier {

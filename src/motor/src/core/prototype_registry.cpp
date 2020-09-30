@@ -101,9 +101,9 @@ struct position {
 };
 
 template<typename Archive>
-void serialize(Archive& ar, position& p) {
-    ar.member(M(p.x));
-    ar.member(M(p.y));
+void serialize(Archive& ar, position& value) {
+    ar.member(M(value.x));
+    ar.member(M(value.y));
 }
 
 struct timer {
@@ -112,9 +112,9 @@ struct timer {
 };
 
 template<typename Archive>
-void serialize(Archive& ar, timer& t) {
-    ar.member(M(t.duration));
-    ar.member(M(t.elapsed));
+void serialize(Archive& ar, timer& value) {
+    ar.member(M(value.duration));
+    ar.member(M(value.elapsed));
 }
 
 struct health {
@@ -123,9 +123,27 @@ struct health {
 };
 
 template<typename Archive>
-void serialize(Archive& ar, health& h) {
-    ar.member(M(h.max));
-    ar.member(M(h.value));
+void serialize(Archive& ar, health& value) {
+    ar.member(M(value.max));
+    ar.member(M(value.value));
+}
+
+struct sprite {
+    std::string ref;
+};
+
+template<typename Archive>
+void serialize(Archive& ar, sprite& value) {
+    ar(value.ref);
+}
+
+struct struct_sprite {
+    std::string ref;
+};
+
+template<typename Archive>
+void serialize(Archive& ar, struct_sprite& value) {
+    ar.member(M(value.ref));
 }
 
 struct tag1 {};
@@ -137,6 +155,7 @@ defs = {
         position = { x = 101, y = 201 },
         timer = { duration = 1001 },
         health = { max = 101 },
+        -- just ignore unknown tag
         tags = {"enemy", "ingored_tag", "tag1"}
     },
     entity2 = {
@@ -144,15 +163,28 @@ defs = {
         position = { x = 102, y = 202 },
         health = { max = 102 },
         tag1 = {},
-        ingored_comp = {}
+        ingored_comp = {} -- just ignore unknown component
     },
     entity3 = {
         id = 3,
         position = { x = 103, y = 203 },
         timer = { duration = 1003 },
-        tags = "enemy"
+        tags = "enemy",
+        sprite = "/assets/sprite_1.png"
     }
 })";
+
+static const char* bad_script = R"(
+defs = {
+    entity1 = {
+        id = "bad id",
+        position = "bad position",
+        timer = { duration = "bad timer" },
+        health = { max = { "bad health" } },
+        tags = { { "bad tag" }, { "bad tag2" } }
+    }
+}
+)";
 
 } // namespace motor::test::prototype_registry
 
@@ -162,7 +194,7 @@ TEST_CASE("prototype_registry: transpire components") {
     motor::locator::components::set<motor::components_service>();
 
     motor::locator::components::ref()
-            .component<id, position, timer, health, tag1>();
+            .component<id, position, timer, health, sprite, tag1>();
     motor::locator::components::ref().tag<"enemy"_hs>();
 
     sol::state lua{};
@@ -183,25 +215,66 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK((e3 != entt::null));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 1);
+    CHECK(reg.has<position>(e1));
     CHECK(reg.get<position>(e1).x == 101);
     CHECK(reg.get<position>(e1).y == 201);
+    CHECK(reg.has<timer>(e1));
     CHECK(reg.get<timer>(e1).duration == 1001);
+    CHECK(reg.has<health>(e1));
     CHECK(reg.get<health>(e1).max == 101);
+    CHECK(reg.has<entt::tag<"enemy"_hs>>(e1));
+    CHECK(reg.has<tag1>(e1));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e2)) == 2);
+    CHECK(reg.has<position>(e2));
     CHECK(reg.get<position>(e2).x == 102);
     CHECK(reg.get<position>(e2).y == 202);
+    CHECK(reg.has<health>(e2));
     CHECK(reg.get<health>(e2).max == 102);
+    CHECK(reg.has<tag1>(e2));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e3)) == 3);
+    CHECK(reg.has<position>(e3));
     CHECK(reg.get<position>(e3).x == 103);
     CHECK(reg.get<position>(e3).y == 203);
+    CHECK(reg.has<timer>(e3));
     CHECK(reg.get<timer>(e3).duration == 1003);
-
-    CHECK(reg.view<tag1>().size() == 2);
-    CHECK(reg.view<entt::tag<"enemy"_hs>>().size() == 2);
+    CHECK(reg.has<sprite>(e3));
+    CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_1.png");
+    CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
 
     motor::locator::components::reset();
 }
 
-// TODO: bad scenario tests
+TEST_CASE("prototype_registry: ignore bad values") {
+    using namespace motor::test::prototype_registry;
+
+    motor::locator::components::set<motor::components_service>();
+
+    motor::locator::components::ref()
+            .component<id, position, timer, health, sprite, tag1>();
+    motor::locator::components::ref().tag<"enemy"_hs>();
+
+    sol::state lua{};
+    lua.script(bad_script);
+
+    sol::table tbl = lua["defs"];
+
+    motor::prototype_registry prototypes{tbl};
+
+    entt::registry reg{};
+
+    auto e1 = prototypes.spawn(reg, "entity1"_hs);
+
+    CHECK((e1 != entt::null));
+    CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 0);
+    CHECK(reg.has<position>(e1));
+    CHECK(reg.get<position>(e1).x == 0);
+    CHECK(reg.get<position>(e1).y == 0);
+    CHECK(reg.has<timer>(e1));
+    CHECK(reg.get<timer>(e1).duration == 0);
+    CHECK(reg.has<health>(e1));
+    CHECK(reg.get<health>(e1).max == 0);
+    CHECK(!reg.has<entt::tag<"enemy"_hs>>(e1));
+    CHECK(!reg.has<tag1>(e1));
+}

@@ -2,7 +2,6 @@
 #include "component_serialization.h"
 #include "frontier/components.h"
 #include "main_state.h"
-#include "meta.h"
 #include "motor/core/prototype_registry.h"
 #include <chrono>
 #include <entt/entity/registry.hpp>
@@ -31,8 +30,6 @@ void loading_state::on_start(entt::registry& reg,
     auto e2 = reg.create();
     reg.emplace<position>(e2, 4.0f, 5.0f);
     reg.emplace<velocity>(e2, 6.0f, 7.0f);
-
-    reg.set<motor::template_set>();
 
     // TODO: exception handling in async
 
