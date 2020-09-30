@@ -16,7 +16,6 @@ prototype_registry::prototype_registry(const sol::table& defs) {
             auto def_id = entt::hashed_string::value(std::data(def_name));
             auto def_e = get_or_create(def_id);
             auto def = value.as<sol::table>();
-            spdlog::debug("created {}({})", def_name, def_id);
             def.for_each([this, &def_e, &def_name](const auto& key,
                                                    const auto& value) {
                 if (key.is<std::string>()) {
@@ -44,8 +43,6 @@ prototype_registry::prototype_registry(const sol::table& defs) {
                     if (!locator::components::ref().exists(comp_id)) {
                         return;
                     }
-
-                    spdlog::debug("transpire {}.{}", def_name, comp_name);
 
                     locator::components::ref().transpire(
                             reg, def_e, lua_input_archive{value}, comp_id);

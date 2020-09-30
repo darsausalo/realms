@@ -16,24 +16,14 @@ namespace frontier {
 
 void loading_state::on_start(entt::registry& reg,
                              motor::system_dispatcher& disp) {
-    spdlog::info("loading: start");
-
     motor::locator::components::ref()
             .component<position, velocity, health, sprite>();
 
     motor::locator::mods::ref().load_plugins();
 
-    auto e1 = reg.create();
-    reg.emplace<position>(e1, 1.0f, 2.0f);
-    reg.emplace<velocity>(e1, 3.0f, 4.0f);
+    thread = std::thread([this, &reg] {
+        progress.update("loading prototypes");
 
-    auto e2 = reg.create();
-    reg.emplace<position>(e2, 4.0f, 5.0f);
-    reg.emplace<velocity>(e2, 6.0f, 7.0f);
-
-    // TODO: exception handling in async
-
-    loading_f = std::async(std::launch::async, [&reg] {
         sol::state lua{};
         reg.set<motor::prototype_registry>(
                 motor::locator::scripts::ref().load_prototypes(lua));
@@ -47,23 +37,25 @@ void loading_state::on_start(entt::registry& reg,
         }
 
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(0.1s);
-    });
+        std::this_thread::sleep_for(2.1s);
 
-    spdlog::info("loading: started {}", reg.view<position, velocity>().size());
+        progress.complete();
+    });
 }
 
 void loading_state::on_stop(entt::registry& reg,
                             motor::system_dispatcher& disp) {
-    spdlog::info("loading: stop");
+    if (thread.joinable()) {
+        thread.join();
+    }
 }
 
 motor::transition loading_state::update(entt::registry& reg,
                                         motor::system_dispatcher& disp) {
-    using namespace std::chrono_literals;
-    if (loading_f.wait_for(0s) == std::future_status::ready) {
-        loading_f.get(); // TODO: exception handling in async?
-        spdlog::debug("done");
+    if (progress.is_completed()) {
+        if (thread.joinable()) {
+            thread.join();
+        }
         return motor::transition_switch{std::make_shared<main_state>()};
     }
 

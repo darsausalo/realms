@@ -52,6 +52,7 @@ set(HEADERS
 	"include/motor/host/transition.h"
 	"include/motor/host/game_state.h"
 	"include/motor/host/mod.h"
+	"include/motor/host/progress.h"
 	"include/motor/host/application.h"
 
 	"src/host/config_system.h"
