@@ -1,15 +1,9 @@
-- [x] context
-- [x] Serialization - json + binary
-- [x] System modules
-- [x] Systems dependencies
-- [x] Move game logic to separate dll
-- [ ] Input events + basic input in game side
-- [ ] Mods management: manifests, dependencies, systems sorting, prefab loading, snapshots
-- [ ] Mods prefabs: merging, inheritance
-- [ ] Binary cache
-- [ ] Save files consistency
-- [x] DynamicLibrary
-- [x] Hot Reload
-- [ ] Resource background loading
-- [ ] Graphics - sokol
-- [ ] Code cleanup: review, refine cmake (version etc), CI
+- [ ] Refine Flow
+    - [ ] Move system dispatcher to services
+    - [ ] Remove global registry: instantiate registry only in main game state
+- [ ] Prototypes Hot Reload
+- [ ] Resources
+- [ ] Systems Scripting
+- [ ] Input
+- [ ] Graphics
+- [ ] Code review
