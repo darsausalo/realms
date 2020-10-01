@@ -18,6 +18,8 @@ void loading_state::on_start(entt::registry& reg,
     motor::locator::components::ref()
             .component<position, velocity, health, sprite>();
 
+    motor::locator::components::ref().prepare(reg);
+
     motor::locator::mods::ref().load_plugins();
 
     thread = std::thread([this, &reg] {
