@@ -18,11 +18,12 @@ class components_service {
     static void transpire(entt::registry& reg, entt::entity e,
                           lua_input_archive& ar) {
         if constexpr (std::is_empty_v<Component>) {
-            reg.template emplace<Component>(e);
+            reg.template emplace_or_replace<Component>(e);
         } else {
             Component instance{};
             serialize(ar, instance);
-            reg.template emplace<Component>(e, std::as_const(instance));
+            reg.template emplace_or_replace<Component>(e,
+                                                       std::as_const(instance));
         }
     }
 
@@ -61,7 +62,7 @@ class components_service {
     }
 
 public:
-    components_service() noexcept = default;
+    components_service() noexcept;
     components_service(const components_service&) = delete;
     components_service(components_service&&) = delete;
 

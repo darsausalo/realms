@@ -12,6 +12,7 @@ set(SOURCES
 	"src/services/files_service.cpp"
 	"src/services/mods_service.cpp"
 	"src/services/scripts_service.cpp"
+	"src/services/components_service.cpp"
 
 	# host
 	"src/host/game_state.cpp"

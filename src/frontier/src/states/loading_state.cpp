@@ -26,9 +26,10 @@ void loading_state::on_start(entt::registry& reg,
         progress.update("loading prototypes");
 
         sol::state lua{};
-        reg.set<motor::prototype_registry>(
+        reg.set<motor::prototype_registry>().transpire(
                 motor::locator::scripts::ref().load_prototypes(lua));
 
+        // TODO: remove --->>>
         auto& protos = reg.ctx<motor::prototype_registry>();
         if (protos.get("soldier"_hs) != entt::null) {
             spdlog::debug("EXISTS!");
@@ -37,8 +38,9 @@ void loading_state::on_start(entt::registry& reg,
             spdlog::debug("NOT FOUND: {}({})", "soldier", id);
         }
 
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2.1s);
+        // using namespace std::chrono_literals;
+        // std::this_thread::sleep_for(2.1s);
+        // TODO: remove <<<---
 
         progress.complete();
     });

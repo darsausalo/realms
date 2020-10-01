@@ -6,7 +6,7 @@
 
 namespace motor {
 
-prototype_registry::prototype_registry(const sol::table& defs) {
+void prototype_registry::transpire(const sol::table& defs) {
     defs.for_each([this](const auto& key, const auto& value) {
         if (key.is<std::string>() && value.is<sol::table>()) {
             auto def_name = key.as<std::string>();
@@ -57,6 +57,7 @@ entt::entity prototype_registry::spawn(entt::registry& to,
     auto src = get(name_id);
     if (src != entt::null) {
         auto dst = to.create();
+        to.emplace<prototype>(dst, src);
         locator::components::ref().stamp(reg, src, to, dst);
         return dst;
     }
@@ -68,6 +69,15 @@ entt::entity prototype_registry::get(entt::id_type name_id) const {
         return it->second;
     }
     return {entt::null};
+}
+
+void prototype_registry::respawn(entt::registry& to) {
+    to.view<prototype>().each([this, &to](entt::entity dst, auto& p) {
+        auto src = p.value;
+        // TODO: use patch instead stamp
+        // in patch: if has<Component> then patch.../emplace_or_replace...
+        locator::components::ref().stamp(reg, src, to, dst);
+    });
 }
 
 entt::entity prototype_registry::get_or_create(entt::id_type name_id) {
@@ -171,6 +181,32 @@ defs = {
     }
 })";
 
+static const char* script_v1 = R"(
+defs = {
+    entity1 = {
+        id = 1,
+        position = { x = 111, y = 201 },
+        timer = { duration = 1001 },
+        health = { max = 111 },
+        -- just ignore unknown tag
+        tags = {"enemy", "ingored_tag", "tag1"}
+    },
+    entity2 = {
+        id = 2,
+        position = { x = 112, y = 202 },
+        health = { max = 112 },
+        tag1 = {},
+        ingored_comp = {} -- just ignore unknown component
+    },
+    entity3 = {
+        id = 3,
+        position = { x = 113, y = 203 },
+        timer = { duration = 1003 },
+        tags = "enemy",
+        sprite = "/assets/sprite_2.png"
+    }
+})";
+
 static const char* bad_script = R"(
 defs = {
     entity1 = {
@@ -194,12 +230,13 @@ TEST_CASE("prototype_registry: transpire components") {
             .component<id, position, timer, health, sprite, tag1>();
     motor::locator::components::ref().tag<"enemy"_hs>();
 
-    sol::state lua{};
-    lua.script(script);
-
-    sol::table tbl = lua["defs"];
-
-    motor::prototype_registry prototypes{tbl};
+    motor::prototype_registry prototypes;
+    {
+        sol::state lua{};
+        lua.script(script);
+        sol::table defs = lua["defs"];
+        prototypes.transpire(defs);
+    }
 
     entt::registry reg{};
 
@@ -240,6 +277,43 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_1.png");
     CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
 
+    {
+        sol::state lua{};
+        lua.script(script_v1);
+        sol::table defs = lua["defs"];
+        prototypes.transpire(defs);
+    }
+    prototypes.respawn(reg);
+
+    CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 1);
+    CHECK(reg.has<position>(e1));
+    CHECK(reg.get<position>(e1).x == 111);
+    CHECK(reg.get<position>(e1).y == 201);
+    CHECK(reg.has<timer>(e1));
+    CHECK(reg.get<timer>(e1).duration == 1001);
+    CHECK(reg.has<health>(e1));
+    CHECK(reg.get<health>(e1).max == 111);
+    CHECK(reg.has<entt::tag<"enemy"_hs>>(e1));
+    CHECK(reg.has<tag1>(e1));
+
+    CHECK(static_cast<int32_t>(reg.get<id>(e2)) == 2);
+    CHECK(reg.has<position>(e2));
+    CHECK(reg.get<position>(e2).x == 112);
+    CHECK(reg.get<position>(e2).y == 202);
+    CHECK(reg.has<health>(e2));
+    CHECK(reg.get<health>(e2).max == 112);
+    CHECK(reg.has<tag1>(e2));
+
+    CHECK(static_cast<int32_t>(reg.get<id>(e3)) == 3);
+    CHECK(reg.has<position>(e3));
+    CHECK(reg.get<position>(e3).x == 113);
+    CHECK(reg.get<position>(e3).y == 203);
+    CHECK(reg.has<timer>(e3));
+    CHECK(reg.get<timer>(e3).duration == 1003);
+    CHECK(reg.has<sprite>(e3));
+    CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_2.png");
+    CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
+
     motor::locator::components::reset();
 }
 
@@ -252,12 +326,13 @@ TEST_CASE("prototype_registry: ignore bad values") {
             .component<id, position, timer, health, sprite, tag1>();
     motor::locator::components::ref().tag<"enemy"_hs>();
 
-    sol::state lua{};
-    lua.script(bad_script);
-
-    sol::table tbl = lua["defs"];
-
-    motor::prototype_registry prototypes{tbl};
+    motor::prototype_registry prototypes;
+    {
+        sol::state lua{};
+        lua.script(bad_script);
+        sol::table defs = lua["defs"];
+        prototypes.transpire(defs);
+    }
 
     entt::registry reg{};
 

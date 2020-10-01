@@ -7,6 +7,11 @@
 
 namespace motor {
 
+// TODO:
+// 1. remove - initialize services in config system
+// or
+// 2. use file watcher in mods system
+
 void mods_system::on_start(entt::registry& reg) {
     locator::mods::set<mods_service>();
     locator::components::set<components_service>();

@@ -9,13 +9,21 @@
 
 namespace motor {
 
+struct prototype {
+    entt::entity value;
+};
+
 class prototype_registry {
 public:
-    explicit prototype_registry(const sol::table& defs);
-    ~prototype_registry() = default;
+    prototype_registry() noexcept = default;
+    ~prototype_registry() noexcept = default;
+
+    void transpire(const sol::table& defs);
 
     entt::entity spawn(entt::registry& to, entt::id_type name_id);
     entt::entity get(entt::id_type name_id) const;
+
+    void respawn(entt::registry& to);
 
 private:
     std::unordered_map<entt::id_type, entt::entity> prototypes{};
