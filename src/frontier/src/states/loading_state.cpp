@@ -1,7 +1,7 @@
-#include "loading_state.h"
-#include "component_serialization.h"
-#include "frontier/components.h"
-#include "main_state.h"
+#include "frontier/states/loading_state.h"
+#include "components/serialization.h"
+#include "frontier/components/base.h"
+#include "frontier/states/main_state.h"
 #include "motor/core/prototype_registry.h"
 #include <chrono>
 #include <entt/entity/registry.hpp>
@@ -10,7 +10,6 @@
 #include <motor/services/mods_service.h>
 #include <motor/services/scripts_service.h>
 #include <spdlog/spdlog.h>
-#include <thread>
 
 namespace frontier {
 

@@ -1,16 +1,25 @@
-include_directories("include" "../motor/include")
+include_directories("include" "../motor/include" "src")
 
 set(SOURCES
-	"src/loading_state.cpp"
-	"src/main_state.cpp"
+	# components
+
+	# states
+	"src/states/loading_state.cpp"
+	"src/states/main_state.cpp"
+
+	# main
 	"src/main.cpp"
 )
 
 set (HEADERS
-	"include/loading_state.h"
-	"include/main_state.h"
+	# components
+	"include/frontier/components/base.h"
 
-	"src/component_serialization.h"
+	"src/components/serialization.h"
+
+	# states
+	"include/frontier/states/loading_state.h"
+	"include/frontier/states/main_state.h"
 )
 
 add_executable(frontier ${SOURCES} ${HEADERS})
