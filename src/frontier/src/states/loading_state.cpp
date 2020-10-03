@@ -7,7 +7,6 @@
 #include <entt/entity/registry.hpp>
 #include <motor/services/components_service.h>
 #include <motor/services/locator.h>
-#include <motor/services/mods_service.h>
 #include <motor/services/scripts_service.h>
 #include <spdlog/spdlog.h>
 
@@ -17,10 +16,6 @@ void loading_state::on_start(entt::registry& reg,
                              motor::system_dispatcher& disp) {
     motor::locator::components::ref()
             .component<position, velocity, health, sprite>();
-
-    motor::locator::components::ref().prepare(reg);
-
-    motor::locator::mods::ref().load_plugins();
 
     thread = std::thread([this, &reg] {
         progress.update("loading prototypes");

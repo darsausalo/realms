@@ -9,7 +9,17 @@
 
 namespace motor {
 
-using arg_list = std::vector<std::string>;
+class arg_list : public std::vector<std::string> {
+public:
+    arg_list(int argc, const char* argv[]) {
+        for (int i = 0; i < argc; i++) {
+            if (argv[i]) {
+                push_back(argv[i]);
+            }
+        }
+    }
+};
+
 using core_config = nlohmann::json;
 
 namespace event {

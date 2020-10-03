@@ -162,47 +162,6 @@ mods_service::~mods_service() {
     }
 }
 
-void mods_service::load_plugins() {
-    for (auto&& m : mods) {
-        if (!m.load_plugin()) {
-            throw std::runtime_error(
-                    fmt::format("can't load mod plugin '{}'", m.get_name()));
-        }
-    }
-}
-
-void mods_service::start_plugins(system_dispatcher& dispatcher) {
-    for (auto&& m : mods) {
-        if (m.is_valid()) {
-            m.add_systems(dispatcher);
-        }
-    }
-}
-
-void mods_service::stop_plugins(system_dispatcher& dispatcher) {
-    for (auto&& m : mods) {
-        if (m.is_valid()) {
-            m.remove_systems(dispatcher);
-        }
-    }
-}
-
-void mods_service::reload_plugins(system_dispatcher& dispatcher) {
-    for (auto&& m : mods) {
-        if (m.is_changed()) {
-            m.remove_systems(dispatcher);
-            m.unload_plugin();
-
-            if (!m.load_plugin()) {
-                throw std::runtime_error(fmt::format(
-                        "can't update mod '{}' plugin", m.get_name()));
-            }
-
-            m.add_systems(dispatcher);
-        }
-    }
-}
-
 } // namespace motor
 
 //==============================================================================

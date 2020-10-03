@@ -8,7 +8,7 @@
 
 namespace motor {
 
-class mods_system : public system<system_group::post_update> {
+class mods_system : public system<system_group::post_load> {
 public:
     void on_start(entt::registry& reg) override;
     void on_stop(entt::registry& reg) override;

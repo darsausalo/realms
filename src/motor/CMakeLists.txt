@@ -21,13 +21,11 @@ set(SOURCES
 	"src/host/window_system.cpp"
 	"src/host/mods_system.cpp"
 	"src/host/event_system.cpp"
-	"src/host/mod.cpp"
 	"src/host/application.cpp"
 
 	# platform
 	"src/platform/backward.cpp"
 	"src/platform/platform.cpp"
-	"src/platform/dynamic_library.cpp"
 )
 
 set(HEADERS
@@ -41,7 +39,6 @@ set(HEADERS
 	"include/motor/core/binary_archive.h"
 	"include/motor/core/json_archive.h"
 	"include/motor/core/lua_archive.h"
-	"include/motor/core/plugin_context.h"
 	"include/motor/core/prototype_registry.h"
 
 	# services

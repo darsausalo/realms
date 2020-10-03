@@ -27,7 +27,4 @@ struct sprite {
 
 } // namespace frontier
 
-template<typename Type>
-struct entt::type_index<Type> {};
-
 #endif // FRONTIER_COMPONENTS_H

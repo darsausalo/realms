@@ -4,23 +4,15 @@
 #include "host/mods_system.h"
 #include "host/window_system.h"
 #include "motor/core/system_dispatcher.h"
-#include "platform/platform.h"
 #include "state_machine.h"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <fstream>
 #include <spdlog/spdlog.h>
 
 namespace motor {
 
 application::application(int argc, const char* argv[]) {
-    auto& args = reg.set<arg_list>();
-    for (int i = 0; i < argc; i++) {
-        if (argv[i]) {
-            args.push_back(argv[i]);
-        }
-    }
-
+    auto& args = reg.set<arg_list>(argc, argv);
     reg.set<entt::dispatcher>()
             .sink<event::quit>()
             .connect<&application::receive_event_quit>(*this);

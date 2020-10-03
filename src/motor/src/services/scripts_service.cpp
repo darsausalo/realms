@@ -4,7 +4,9 @@
 #include "motor/services/locator.h"
 #include "motor/services/mods_service.h"
 #include <filesystem>
+#include <fmt/format.h>
 #include <fstream>
+#include <spdlog/spdlog.h>
 
 namespace motor {
 
