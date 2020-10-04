@@ -12,8 +12,7 @@
 
 namespace frontier {
 
-void loading_state::on_start(entt::registry& reg,
-                             motor::system_dispatcher& disp) {
+loading_state::loading_state(entt::registry& reg) : motor::state{reg} {
     motor::locator::components::ref()
             .component<position, velocity, health, sprite>();
 
@@ -41,20 +40,18 @@ void loading_state::on_start(entt::registry& reg,
     });
 }
 
-void loading_state::on_stop(entt::registry& reg,
-                            motor::system_dispatcher& disp) {
+loading_state::~loading_state() {
     if (thread.joinable()) {
         thread.join();
     }
 }
 
-motor::transition loading_state::update(entt::registry& reg,
-                                        motor::system_dispatcher& disp) {
+motor::transition loading_state::update() {
     if (progress.is_completed()) {
         if (thread.joinable()) {
             thread.join();
         }
-        return motor::transition_switch{std::make_shared<main_state>()};
+        return motor::transition_switch{std::make_shared<main_state>(reg)};
     }
 
     return motor::transition_none{};

@@ -6,18 +6,18 @@
 
 namespace motor {
 
-class game_state;
+class state;
 
 struct transition_none {};
 
 struct transition_quit {};
 
 struct transition_push {
-    std::shared_ptr<game_state> game_state;
+    std::shared_ptr<state> state;
 };
 
 struct transition_switch {
-    std::shared_ptr<game_state> game_state;
+    std::shared_ptr<state> state;
 };
 
 using transition = std::variant<transition_none, transition_quit,

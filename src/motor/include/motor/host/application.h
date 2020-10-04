@@ -1,8 +1,7 @@
 #ifndef MOTOR_APPLICATION_H
 #define MOTOR_APPLICATION_H
 
-#include "motor/core/system_dispatcher.h"
-#include "motor/host/game_state.h"
+#include "motor/host/state.h"
 #include <entt/entity/registry.hpp>
 
 namespace motor {
@@ -12,6 +11,8 @@ struct quit {};
 } // namespace event
 
 class application final {
+    using create_state_fn = std::function<std::shared_ptr<state>()>;
+
 public:
     application(int argc, const char* argv[]);
     application(const application&) = delete;
@@ -22,7 +23,9 @@ public:
 
     template<typename InitialState>
     int run() {
-        run_loop(std::move(std::make_shared<InitialState>()));
+        run_loop([this]() {
+            return std::move(std::make_shared<InitialState>(reg));
+        });
         return 0;
     }
 
@@ -30,7 +33,7 @@ private:
     entt::registry reg{};
     bool quit_requested{};
 
-    void run_loop(std::shared_ptr<game_state>&& initial_state);
+    void run_loop(create_state_fn create_initial_state);
 
     bool should_close();
 

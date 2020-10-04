@@ -15,7 +15,7 @@ set(SOURCES
 	"src/services/components_service.cpp"
 
 	# host
-	"src/host/game_state.cpp"
+	"src/host/state.cpp"
 	"src/host/state_machine.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
@@ -47,7 +47,7 @@ set(HEADERS
 
 	# host
 	"include/motor/host/transition.h"
-	"include/motor/host/game_state.h"
+	"include/motor/host/state.h"
 	"include/motor/host/mod.h"
 	"include/motor/host/progress.h"
 	"include/motor/host/application.h"

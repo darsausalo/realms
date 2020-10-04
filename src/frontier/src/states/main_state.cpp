@@ -3,16 +3,22 @@
 
 namespace frontier {
 
-void main_state::on_start(entt::registry& reg, motor::system_dispatcher& disp) {
-    spdlog::info("game: start");
+struct test_system {
+    test_system() { spdlog::debug("test_system::start"); }
+    ~test_system() { spdlog::debug("test_system::stop"); }
+};
+
+main_state::main_state(entt::registry& reg) : motor::state{reg} {
+    spdlog::debug("game: start");
+    add_system<motor::system_group::on_update, test_system>();
 }
 
-void main_state::on_stop(entt::registry& reg, motor::system_dispatcher& disp) {
-    spdlog::info("game: stop");
+main_state::~main_state() {
+    motor::state::~state();
+    spdlog::debug("game: stop");
 }
 
-motor::transition main_state::update(entt::registry& reg,
-                                     motor::system_dispatcher& disp) {
+motor::transition main_state::update() {
     return motor::transition_none{};
 }
 

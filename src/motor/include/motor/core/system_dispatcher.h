@@ -32,7 +32,7 @@ public:
 
     ~system_dispatcher() noexcept;
 
-    template<system_group group, typename System, typename... Args>
+    template<system_group Group, typename System, typename... Args>
     auto add(Args&&... args) {
         auto type_id = entt::type_info<System>::id();
         assert(std::find_if(systems.cbegin(), systems.cend(),
@@ -42,14 +42,14 @@ public:
         auto* system = new System{std::forward<Args>(args)...};
         if constexpr (std::is_invocable_v<System>) {
             systems.push_back({type_id,
-                               group,
+                               Group,
                                std::bind(&System::operator(), system),
                                {system, [](void* instance) {
                                     delete static_cast<System*>(instance);
                                 }}});
         } else {
             systems.push_back(
-                    {type_id, group, nullptr, {system, [](void* instance) {
+                    {type_id, Group, nullptr, {system, [](void* instance) {
                                                    delete static_cast<System*>(
                                                            instance);
                                                }}});
@@ -58,14 +58,14 @@ public:
         return type_id;
     }
 
-    template<system_group group, typename Func>
+    template<system_group Group, typename Func>
     auto add(Func func) {
         auto type_id = entt::type_info<decltype(func)>::id();
         assert(std::find_if(systems.cbegin(), systems.cend(),
                             [type_id](auto&& system) {
                                 return system.type_id == type_id;
                             }) == systems.cend());
-        systems.push_back({type_id, group, func, {nullptr, nullptr}});
+        systems.push_back({type_id, Group, func, {nullptr, nullptr}});
         sort();
         return type_id;
     }

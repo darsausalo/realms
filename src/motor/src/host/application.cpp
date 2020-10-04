@@ -12,21 +12,21 @@
 namespace motor {
 
 application::application(int argc, const char* argv[]) {
-    auto& args = reg.set<arg_list>(argc, argv);
+    reg.set<arg_list>(argc, argv);
     reg.set<entt::dispatcher>()
             .sink<event::quit>()
             .connect<&application::receive_event_quit>(*this);
 }
 
-void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
-    system_dispatcher dispatcher;
+void application::run_loop(create_state_fn create_initial_state) {
+    auto& dispatcher = reg.set<system_dispatcher>();
 
     dispatcher.add<system_group::pre_frame, config_system>(reg);
     dispatcher.add<system_group::pre_frame, window_system>(reg);
     dispatcher.add<system_group::pre_frame, mods_system>();
     dispatcher.add<system_group::pre_frame, event_system>(reg);
 
-    state_machine states{reg, dispatcher, std::move(initial_state)};
+    state_machine states{reg, std::move(create_initial_state())};
     while (states.is_running() && !should_close()) {
         states.update();
         dispatcher.update();
