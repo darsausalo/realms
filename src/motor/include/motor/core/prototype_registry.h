@@ -9,10 +9,6 @@
 
 namespace motor {
 
-struct prototype {
-    entt::entity value;
-};
-
 class prototype_registry {
 public:
     prototype_registry() noexcept = default;

@@ -1,11 +1,8 @@
 #include "frontier/states/loading_state.h"
-#include "components/serialization.h"
-#include "frontier/components/base.h"
 #include "frontier/states/main_state.h"
 #include "motor/core/prototype_registry.h"
 #include <chrono>
 #include <entt/entity/registry.hpp>
-#include <motor/services/components_service.h>
 #include <motor/services/locator.h>
 #include <motor/services/scripts_service.h>
 #include <spdlog/spdlog.h>
@@ -13,14 +10,11 @@
 namespace frontier {
 
 loading_state::loading_state(entt::registry& reg) : motor::state{reg} {
-    motor::locator::components::ref()
-            .component<position, velocity, health, sprite>();
-
     thread = std::thread([this, &reg] {
         progress.update("loading prototypes");
 
         sol::state lua{};
-        reg.set<motor::prototype_registry>().transpire(
+        reg.ctx<motor::prototype_registry>().transpire(
                 motor::locator::scripts::ref().load_prototypes(lua));
 
         // TODO: remove --->>>

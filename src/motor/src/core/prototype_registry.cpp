@@ -1,5 +1,5 @@
 #include "motor/core/prototype_registry.h"
-#include "motor/services/components_service.h"
+#include "motor/entity/components.hpp"
 #include "motor/services/locator.h"
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
@@ -25,10 +25,10 @@ void prototype_registry::transpire(const sol::table& defs) {
                             auto comp_id = entt::hashed_string::value(
                                     std::data(tag.as<std::string>()));
 
-                            if (locator::components::ref().exists(comp_id)) {
-                                locator::components::ref().transpire(
-                                        reg, def_e, lua_input_archive{tag},
-                                        comp_id);
+                            if (components::is_defined(comp_id)) {
+                                components::transpire(reg, def_e,
+                                                      lua_input_archive{tag},
+                                                      comp_id);
                             }
                         }
                         return;
@@ -40,12 +40,12 @@ void prototype_registry::transpire(const sol::table& defs) {
                                               value.as<std::string>()))
                                     : entt::hashed_string::value(
                                               std::data(comp_name));
-                    if (!locator::components::ref().exists(comp_id)) {
+                    if (!components::is_defined(comp_id)) {
                         return;
                     }
 
-                    locator::components::ref().transpire(
-                            reg, def_e, lua_input_archive{value}, comp_id);
+                    components::transpire(reg, def_e, lua_input_archive{value},
+                                          comp_id);
                 }
             });
         }
@@ -58,7 +58,7 @@ entt::entity prototype_registry::spawn(entt::registry& to,
     if (src != entt::null) {
         auto dst = to.create();
         to.emplace<prototype>(dst, src);
-        locator::components::ref().stamp(reg, src, to, dst);
+        components::stamp(reg, src, to, dst);
         return dst;
     }
     return {entt::null};
@@ -76,7 +76,7 @@ void prototype_registry::respawn(entt::registry& to) {
         auto src = p.value;
         // TODO: use patch instead stamp
         // in patch: if has<Component> then patch.../emplace_or_replace...
-        locator::components::ref().stamp(reg, src, to, dst);
+        components::stamp(reg, src, to, dst);
     });
 }
 
@@ -224,11 +224,13 @@ defs = {
 TEST_CASE("prototype_registry: transpire components") {
     using namespace motor::test::prototype_registry;
 
-    motor::locator::components::set<motor::components_service>();
-
-    motor::locator::components::ref()
-            .component<id, position, timer, health, sprite, tag1>();
-    motor::locator::components::ref().tag<"enemy"_hs>();
+    motor::components::define<id>();
+    motor::components::define<position>();
+    motor::components::define<timer>();
+    motor::components::define<health>();
+    motor::components::define<sprite>();
+    motor::components::define<tag1>();
+    motor::components::define<"enemy"_hs>();
 
     motor::prototype_registry prototypes;
     {
@@ -320,11 +322,13 @@ TEST_CASE("prototype_registry: transpire components") {
 TEST_CASE("prototype_registry: ignore bad values") {
     using namespace motor::test::prototype_registry;
 
-    motor::locator::components::set<motor::components_service>();
-
-    motor::locator::components::ref()
-            .component<id, position, timer, health, sprite, tag1>();
-    motor::locator::components::ref().tag<"enemy"_hs>();
+    motor::components::define<id>();
+    motor::components::define<position>();
+    motor::components::define<timer>();
+    motor::components::define<health>();
+    motor::components::define<sprite>();
+    motor::components::define<tag1>();
+    motor::components::define<"enemy"_hs>();
 
     motor::prototype_registry prototypes;
     {

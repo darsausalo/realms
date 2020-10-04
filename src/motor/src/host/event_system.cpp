@@ -1,5 +1,5 @@
 #include "event_system.h"
-#include "motor/host/application.h"
+#include "motor/app/app.hpp"
 #include <SDL.h>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>

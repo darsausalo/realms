@@ -1,5 +1,5 @@
-#ifndef MOTOR_APPLICATION_H
-#define MOTOR_APPLICATION_H
+#ifndef MOTOR_APP_HPP
+#define MOTOR_APP_HPP
 
 #include "motor/host/state.h"
 #include <entt/entity/registry.hpp>
@@ -10,16 +10,15 @@ namespace event {
 struct quit {};
 } // namespace event
 
-class application final {
+class app {
     using create_state_fn = std::function<std::shared_ptr<state>()>;
 
 public:
-    application(int argc, const char* argv[]);
-    application(const application&) = delete;
-    application(application&&) = delete;
+    app(const app&) = delete;
+    app(app&&) = delete;
 
-    application& operator=(const application&) = delete;
-    application& operator=(application&&) = delete;
+    app& operator=(const app&) = delete;
+    app& operator=(app&&) = delete;
 
     template<typename InitialState>
     int run() {
@@ -28,6 +27,9 @@ public:
         });
         return 0;
     }
+
+protected:
+    app(int argc, const char* argv[]);
 
 private:
     entt::registry reg{};
@@ -42,4 +44,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_APPLICATION_H
+#endif // MOTOR_APP_HPP

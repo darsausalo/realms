@@ -12,7 +12,6 @@ set(SOURCES
 	"src/services/files_service.cpp"
 	"src/services/mods_service.cpp"
 	"src/services/scripts_service.cpp"
-	"src/services/components_service.cpp"
 
 	# host
 	"src/host/state.cpp"
@@ -21,7 +20,9 @@ set(SOURCES
 	"src/host/window_system.cpp"
 	"src/host/mods_system.cpp"
 	"src/host/event_system.cpp"
-	"src/host/application.cpp"
+
+	# app
+	"src/app/app.cpp"
 
 	# platform
 	"src/platform/backward.cpp"
@@ -40,6 +41,9 @@ set(HEADERS
 	"include/motor/core/lua_archive.h"
 	"include/motor/core/prototype_registry.h"
 
+	# entity
+	"include/motor/entity/components.hpp"
+
 	# services
 	"include/motor/services/files_service.h"
 	"include/motor/services/mods_service.h"
@@ -50,7 +54,9 @@ set(HEADERS
 	"include/motor/host/state.h"
 	"include/motor/host/mod.h"
 	"include/motor/host/progress.h"
-	"include/motor/host/application.h"
+
+	# app
+	"include/motor/app/app.hpp"
 
 	"src/host/config_system.h"
 	"src/host/window_system.h"
