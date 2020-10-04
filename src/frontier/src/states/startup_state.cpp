@@ -1,20 +1,20 @@
-#include "frontier/states/loading_state.h"
-#include "frontier/states/main_state.h"
+#include "frontier/states/startup_state.hpp"
+#include "frontier/states/game_state.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
 
-loading_state::loading_state(entt::registry& reg) : motor::state{reg} {
+startup_state::startup_state(entt::registry& reg) : motor::state{reg} {
     reg.ctx<entt::dispatcher>()
             .sink<motor::event::start>()
-            .connect<&loading_state::receive_start>(*this);
+            .connect<&startup_state::receive_start>(*this);
 }
 
-motor::transition loading_state::update() {
+motor::transition startup_state::update() {
     if (started) {
-        return motor::transition_switch{std::make_shared<main_state>(reg)};
+        return motor::transition_switch{std::make_shared<game_state>(reg)};
     }
 
     return motor::transition_none{};

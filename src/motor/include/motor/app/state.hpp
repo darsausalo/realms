@@ -1,13 +1,11 @@
-#ifndef MOTOR_STATE_H
-#define MOTOR_STATE_H
+#ifndef MOTOR_STATE_HPP
+#define MOTOR_STATE_HPP
 
-#include "motor/host/transition.h"
+#include "motor/app/transition.hpp"
+#include "motor/entity/system_dispatcher.hpp"
 #include <entt/entity/registry.hpp>
-#include <motor/core/system_dispatcher.h>
 
 namespace motor {
-
-class system_dispatcher;
 
 class state {
 public:
@@ -33,4 +31,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_STATE_H
+#endif // MOTOR_STATE_HPP

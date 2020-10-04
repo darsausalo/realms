@@ -1,5 +1,5 @@
-#ifndef MOTOR_SYSTEM_DISPATCHER_H
-#define MOTOR_SYSTEM_DISPATCHER_H
+#ifndef MOTOR_SYSTEM_DISPATCHER_HPP
+#define MOTOR_SYSTEM_DISPATCHER_HPP
 
 #include <entt/core/type_info.hpp>
 #include <functional>
@@ -110,4 +110,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_SYSTEM_DISPATCHER_H
+#endif // MOTOR_SYSTEM_DISPATCHER_HPP

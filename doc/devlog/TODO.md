@@ -4,7 +4,7 @@
     - [x] Component/Prototype Registry
     - [x] Rework mods system/service
     - [x] Rework scripts system/service
-- [ ] Restructure Project
+- [x] Restructure Project
 - [ ] Prototypes Hot Reload
 - [ ] Resources
 - [ ] Systems Scripting

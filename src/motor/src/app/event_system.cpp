@@ -1,4 +1,4 @@
-#include "event_system.h"
+#include "event_system.hpp"
 #include "motor/app/app.hpp"
 #include <SDL.h>
 #include <entt/entity/registry.hpp>

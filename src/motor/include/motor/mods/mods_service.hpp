@@ -1,8 +1,8 @@
-#ifndef MOTOR_MODS_SERVICE_H
-#define MOTOR_MODS_SERVICE_H
+#ifndef MOTOR_MODS_SERVICE_HPP
+#define MOTOR_MODS_SERVICE_HPP
 
-#include "motor/core/prototype_registry.h"
-#include "motor/mods/mod.h"
+#include "motor/entity/prototype_registry.hpp"
+#include "motor/mods/mod.hpp"
 #include <memory>
 #include <sol/sol.hpp>
 #include <vector>
@@ -43,4 +43,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_MODS_SERVICE_H
+#endif // MOTOR_MODS_SERVICE_HPP

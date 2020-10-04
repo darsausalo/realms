@@ -1,7 +1,7 @@
-#ifndef MOTOR_PROTOTYPE_REGISTRY_H
-#define MOTOR_PROTOTYPE_REGISTRY_H
+#ifndef MOTOR_PROTOTYPE_REGISTRY_HPP
+#define MOTOR_PROTOTYPE_REGISTRY_HPP
 
-#include "motor/core/lua_archive.h"
+#include "motor/core/lua_archive.hpp"
 #include <entt/entity/registry.hpp>
 #include <sol/forward.hpp>
 #include <unordered_map>
@@ -30,4 +30,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_PROTOTYPE_REGISTRY_H
+#endif // MOTOR_PROTOTYPE_REGISTRY_HPP

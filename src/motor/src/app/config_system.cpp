@@ -1,7 +1,7 @@
-#include "config_system.h"
-#include "motor/services/files_service.h"
-#include "motor/services/locator.h"
-#include "platform/platform.h"
+#include "config_system.hpp"
+#include "motor/app/locator.hpp"
+#include "motor/core/files_service.hpp"
+#include "platform/platform.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <filesystem>

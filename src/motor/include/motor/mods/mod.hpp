@@ -1,5 +1,5 @@
-#ifndef MOTOR_MOD_H
-#define MOTOR_MOD_H
+#ifndef MOTOR_MOD_HPP
+#define MOTOR_MOD_HPP
 
 #include <filesystem>
 #include <string_view>
@@ -32,4 +32,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_MOD_H
+#endif // MOTOR_MOD_HPP

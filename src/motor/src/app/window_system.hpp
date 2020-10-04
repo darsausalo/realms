@@ -1,7 +1,6 @@
-#ifndef MOTOR_WINDOW_SYSTEM_H
-#define MOTOR_WINDOW_SYSTEM_H
+#ifndef MOTOR_WINDOW_SYSTEM_HPP
+#define MOTOR_WINDOW_SYSTEM_HPP
 
-#include "motor/core/type_traits.h"
 #include <SDL.h>
 #include <entt/entity/fwd.hpp>
 #include <string>
@@ -40,4 +39,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_WINDOW_SYSTEM_H
+#endif // MOTOR_WINDOW_SYSTEM_HPP

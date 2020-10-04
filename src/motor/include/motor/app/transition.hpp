@@ -1,5 +1,5 @@
-#ifndef MOTOR_TRANSITION_H
-#define MOTOR_TRANSITION_H
+#ifndef MOTOR_TRANSITION_HPP
+#define MOTOR_TRANSITION_HPP
 
 #include <memory>
 #include <variant>
@@ -25,4 +25,4 @@ using transition = std::variant<transition_none, transition_quit,
 
 } // namespace motor
 
-#endif // MOTOR_TRANSITION_H
+#endif // MOTOR_TRANSITION_HPP

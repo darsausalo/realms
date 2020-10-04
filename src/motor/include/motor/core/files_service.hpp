@@ -1,5 +1,5 @@
-#ifndef MOTOR_FILES_SERVICE_H
-#define MOTOR_FILES_SERVICE_H
+#ifndef MOTOR_FILES_SERVICE_HPP
+#define MOTOR_FILES_SERVICE_HPP
 
 #include <filesystem>
 
@@ -34,4 +34,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_FILES_SERVICE_H
+#endif // MOTOR_FILES_SERVICE_HPP

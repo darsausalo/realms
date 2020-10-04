@@ -1,4 +1,4 @@
-#include "motor/core/binary_archive.h"
+#include "motor/core/binary_archive.hpp"
 
 //==============================================================================
 // TEST

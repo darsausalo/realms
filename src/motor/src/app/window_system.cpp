@@ -1,5 +1,5 @@
-#include "window_system.h"
-#include "config_system.h"
+#include "window_system.hpp"
+#include "config_system.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>

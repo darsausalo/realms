@@ -1,14 +1,14 @@
-#ifndef FRONTIER_LOADING_STATE_H
-#define FRONTIER_LOADING_STATE_H
+#ifndef FRONTIER_STARTUP_STATE_HPP
+#define FRONTIER_STARTUP_STATE_HPP
 
+#include <motor/app/state.hpp>
 #include <motor/core/event.hpp>
-#include <motor/host/state.h>
 
 namespace frontier {
 
-class loading_state : public motor::state {
+class startup_state : public motor::state {
 public:
-    loading_state(entt::registry& reg);
+    startup_state(entt::registry& reg);
 
     motor::transition update() override;
 
@@ -20,4 +20,4 @@ private:
 
 } // namespace frontier
 
-#endif // FRONTIER_LOADING_STATE_H
+#endif // FRONTIER_STARTUP_STATE_HPP

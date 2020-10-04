@@ -1,5 +1,5 @@
-#ifndef MOTOR_PROGRESS_H
-#define MOTOR_PROGRESS_H
+#ifndef MOTOR_PROGRESS_HPP
+#define MOTOR_PROGRESS_HPP
 
 #include <atomic>
 #include <mutex>
@@ -43,4 +43,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_PROGRESS_H
+#endif // MOTOR_PROGRESS_HPP

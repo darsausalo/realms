@@ -1,5 +1,4 @@
-#include "motor/core/system_dispatcher.h"
-#include "motor/core/type_traits.h"
+#include "motor/entity/system_dispatcher.hpp"
 #include <algorithm>
 #include <functional>
 

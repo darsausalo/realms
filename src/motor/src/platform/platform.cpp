@@ -1,5 +1,5 @@
+#include "platform.hpp"
 #include "backward.hpp"
-#include "platform.h"
 #include <SDL.h>
 
 #if defined(_WIN32) && !defined(WINDOWS_STORE)

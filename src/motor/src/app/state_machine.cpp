@@ -1,5 +1,5 @@
-#include "state_machine.h"
-#include "motor/host/state.h"
+#include "state_machine.hpp"
+#include "motor/app/state.hpp"
 
 namespace motor {
 

@@ -1,8 +1,8 @@
 #ifndef MOTOR_COMPONENTS_HPP
 #define MOTOR_COMPONENTS_HPP
 
-#include "motor/core/lua_archive.h"
-#include "motor/core/utility.h"
+#include "motor/core/lua_archive.hpp"
+#include "motor/core/utility.hpp"
 #include <entt/entity/registry.hpp>
 #include <unordered_map>
 

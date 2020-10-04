@@ -1,7 +1,7 @@
-#ifndef MOTOR_UTILITY_H
-#define MOTOR_UTILITY_H
+#ifndef MOTOR_UTILITY_HPP
+#define MOTOR_UTILITY_HPP
 
-#include "motor/core/type_traits.h"
+#include "motor/core/type_traits.hpp"
 #include <nameof.hpp>
 
 namespace nameof {
@@ -22,4 +22,4 @@ template<typename T>
 
 } // namespace nameof
 
-#endif // MOTOR_UTILITY_H
+#endif // MOTOR_UTILITY_HPP

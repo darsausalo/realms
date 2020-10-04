@@ -1,7 +1,6 @@
-#ifndef CONFIG_SYSTEM_H
-#define CONFIG_SYSTEM_H
+#ifndef CONFIG_SYSTEM_HPP
+#define CONFIG_SYSTEM_HPP
 
-#include "motor/core/type_traits.h"
 #include <entt/entity/fwd.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -47,4 +46,4 @@ private:
 
 } // namespace motor
 
-#endif // CONFIG_SYSTEM_H
+#endif // CONFIG_SYSTEM_HPP

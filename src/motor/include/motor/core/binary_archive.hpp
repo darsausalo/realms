@@ -1,7 +1,7 @@
-#ifndef MOTOR_BINARY_ARCHIVE_H
-#define MOTOR_BINARY_ARCHIVE_H
+#ifndef MOTOR_BINARY_ARCHIVE_HPP
+#define MOTOR_BINARY_ARCHIVE_HPP
 
-#include "motor/core/archive.h"
+#include "motor/core/archive.hpp"
 #include <entt/entity/fwd.hpp>
 #include <fmt/core.h>
 #include <iostream>
@@ -96,4 +96,4 @@ auto serialize(binary_input_archive& ar, T& value)
 
 } // namespace motor
 
-#endif // MOTOR_BINARY_ARCHIVE_H
+#endif // MOTOR_BINARY_ARCHIVE_HPP

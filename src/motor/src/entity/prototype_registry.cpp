@@ -1,6 +1,5 @@
-#include "motor/core/prototype_registry.h"
+#include "motor/entity/prototype_registry.hpp"
 #include "motor/entity/components.hpp"
-#include "motor/services/locator.h"
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
 

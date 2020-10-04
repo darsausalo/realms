@@ -2,27 +2,24 @@ include_directories("include" "src")
 
 set(SOURCES
 	# core
-	"src/core/system_dispatcher.cpp"
 	"src/core/binary_archive.cpp"
-	"src/core/json_archive.cpp"
 	"src/core/lua_archive.cpp"
-	"src/core/prototype_registry.cpp"
+	"src/core/files_service.cpp"
 
-	# services
-	"src/services/files_service.cpp"
+	# entity
+	"src/entity/prototype_registry.cpp"
+	"src/entity/system_dispatcher.cpp"
 
 	# mods
 	"src/mods/mods_service.cpp"
 	"src/mods/mods_system.cpp"
 
-	# host
-	"src/host/state.cpp"
-	"src/host/state_machine.cpp"
-	"src/host/config_system.cpp"
-	"src/host/window_system.cpp"
-	"src/host/event_system.cpp"
-
 	# app
+	"src/app/state.cpp"
+	"src/app/state_machine.cpp"
+	"src/app/config_system.cpp"
+	"src/app/window_system.cpp"
+	"src/app/event_system.cpp"
 	"src/app/app.cpp"
 
 	# platform
@@ -32,44 +29,39 @@ set(SOURCES
 
 set(HEADERS
 	# core
-	"include/motor/core/attribute.h"
-	"include/motor/core/system_dispatcher.h"
-	"include/motor/core/type_traits.h"
-	"include/motor/core/utility.h"
-	"include/motor/core/archive.h"
-	"include/motor/core/binary_archive.h"
-	"include/motor/core/json_archive.h"
-	"include/motor/core/lua_archive.h"
-	"include/motor/core/prototype_registry.h"
+	"include/motor/core/type_traits.hpp"
+	"include/motor/core/utility.hpp"
+	"include/motor/core/archive.hpp"
+	"include/motor/core/binary_archive.hpp"
+	"include/motor/core/lua_archive.hpp"
+	"include/motor/core/files_service.hpp"
+	"include/motor/core/event.hpp"
+
+	"src/core/progress.hpp"
 
 	# entity
 	"include/motor/entity/components.hpp"
+	"include/motor/entity/prototype_registry.hpp"
+	"include/motor/entity/system_dispatcher.hpp"
 
 	# mods
-	"include/motor/mods/mod.h"
-	"include/motor/mods/mods_service.h"
+	"include/motor/mods/mod.hpp"
+	"include/motor/mods/mods_service.hpp"
 
-	"src/mods/mods_system.h"
-
-	# services
-	"include/motor/services/files_service.h"
-
-	# host
-	"include/motor/host/transition.h"
-	"include/motor/host/state.h"
-	"include/motor/host/progress.h"
+	"src/mods/mods_system.hpp"
 
 	# app
+	"include/motor/app/transition.hpp"
+	"include/motor/app/state.hpp"
 	"include/motor/app/app.hpp"
 
-	"src/host/config_system.h"
-	"src/host/window_system.h"
-	"src/host/event_system.h"
-
-	"src/host/state_machine.h"
+	"src/app/state_machine.hpp"
+	"src/app/config_system.hpp"
+	"src/app/window_system.hpp"
+	"src/app/event_system.hpp"
 
 	# platform
-	"src/platform/platform.h"
+	"src/platform/platform.hpp"
 	"src/platform/backward.hpp"
 )
 

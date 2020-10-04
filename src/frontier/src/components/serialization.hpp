@@ -1,8 +1,8 @@
-#ifndef FRONTIER_COMPONENTS_SERIALIZATION_H
-#define FRONTIER_COMPONENTS_SERIALIZATION_H
+#ifndef FRONTIER_COMPONENTS_SERIALIZATION_HPP
+#define FRONTIER_COMPONENTS_SERIALIZATION_HPP
 
-#include "frontier/components/base.h"
-#include <motor/core/archive.h>
+#include "frontier/components/base.hpp"
+#include <motor/core/archive.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -36,4 +36,4 @@ void serialize(Archive& ar, sprite& value) {
 
 } // namespace frontier
 
-#endif // FRONTIER_COMPONENTS_SERIALIZATION_H
+#endif // FRONTIER_COMPONENTS_SERIALIZATION_HPP

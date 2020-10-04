@@ -1,7 +1,6 @@
-#ifndef MOTOR_EVENT_SYSTEM_H
-#define MOTOR_EVENT_SYSTEM_H
+#ifndef MOTOR_EVENT_SYSTEM_HPP
+#define MOTOR_EVENT_SYSTEM_HPP
 
-#include "motor/core/type_traits.h"
 #include <entt/entity/fwd.hpp>
 
 namespace motor {
@@ -19,4 +18,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_EVENT_SYSTEM_H
+#endif // MOTOR_EVENT_SYSTEM_HPP

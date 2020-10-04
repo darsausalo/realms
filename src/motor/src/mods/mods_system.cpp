@@ -1,6 +1,6 @@
-#include "mods_system.h"
-#include "motor/mods/mods_service.h"
-#include "motor/services/locator.h"
+#include "mods_system.hpp"
+#include "motor/app/locator.hpp"
+#include "motor/mods/mods_service.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>

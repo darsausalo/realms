@@ -1,8 +1,8 @@
 #ifndef MOTOR_APP_HPP
 #define MOTOR_APP_HPP
 
+#include "motor/app/state.hpp"
 #include "motor/core/event.hpp"
-#include "motor/host/state.h"
 #include <entt/entity/registry.hpp>
 
 namespace motor {

@@ -1,4 +1,4 @@
-#include "motor/core/lua_archive.h"
+#include "motor/core/lua_archive.hpp"
 
 //==============================================================================
 // TEST

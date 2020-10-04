@@ -1,11 +1,11 @@
-#include "motor/mods/mods_service.h"
-#include "motor/core/json_archive.h"
-#include "motor/services/files_service.h"
-#include "motor/services/locator.h"
+#include "motor/mods/mods_service.hpp"
+#include "motor/app/locator.hpp"
+#include "motor/core/files_service.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <fmt/core.h>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 

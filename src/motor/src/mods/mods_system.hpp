@@ -1,9 +1,8 @@
-#ifndef MOTOR_MODS_SYSTEM_H
-#define MOTOR_MODS_SYSTEM_H
+#ifndef MOTOR_MODS_SYSTEM_HPP
+#define MOTOR_MODS_SYSTEM_HPP
 
+#include "core/progress.hpp"
 #include "motor/core/event.hpp"
-#include "motor/core/type_traits.h"
-#include "motor/host/progress.h"
 #include <entt/entity/fwd.hpp>
 #include <memory>
 #include <thread>
@@ -27,4 +26,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_MODS_SYSTEM_H
+#endif // MOTOR_MODS_SYSTEM_HPP

@@ -1,8 +1,7 @@
-#ifndef MOTOR_STATE_MACHINE_H
-#define MOTOR_STATE_MACHINE_H
+#ifndef MOTOR_STATE_MACHINE_HPP
+#define MOTOR_STATE_MACHINE_HPP
 
-#include "motor/host/state.h"
-#include "motor/host/transition.h"
+#include "motor/app/state.hpp"
 #include <entt/entity/fwd.hpp>
 #include <vector>
 
@@ -28,4 +27,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_STATE_MACHINE_H
+#endif // MOTOR_STATE_MACHINE_HPP

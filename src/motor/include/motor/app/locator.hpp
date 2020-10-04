@@ -1,5 +1,5 @@
-#ifndef MOTOR_SERVICE_LOCATOR_H
-#define MOTOR_SERVICE_LOCATOR_H
+#ifndef MOTOR_SERVICE_LOCATOR_HPP
+#define MOTOR_SERVICE_LOCATOR_HPP
 
 #include <entt/locator/locator.hpp>
 
@@ -15,4 +15,4 @@ struct locator {
 
 } // namespace motor
 
-#endif // MOTOR_SERVICE_LOCATOR_H
+#endif // MOTOR_SERVICE_LOCATOR_HPP

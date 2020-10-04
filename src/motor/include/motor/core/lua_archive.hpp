@@ -1,10 +1,8 @@
-#ifndef MOTOR_LUA_ARCHIVE_H
-#define MOTOR_LUA_ARCHIVE_H
+#ifndef MOTOR_LUA_ARCHIVE_HPP
+#define MOTOR_LUA_ARCHIVE_HPP
 
-#include "motor/core/archive.h"
+#include "motor/core/archive.hpp"
 #include <sol/sol.hpp>
-
-#include <doctest/doctest.h>
 
 namespace motor {
 
@@ -120,4 +118,4 @@ inline void serialize(lua_input_archive& ar, std::string& value) {
 
 } // namespace motor
 
-#endif // MOTOR_LUA_ARCHIVE_H
+#endif // MOTOR_LUA_ARCHIVE_HPP

@@ -1,14 +1,14 @@
-#ifndef FRONTIER_MAIN_STATE_H
-#define FRONTIER_MAIN_STATE_H
+#ifndef FRONTIER_GAME_STATE_HPP
+#define FRONTIER_GAME_STATE_HPP
 
-#include <motor/host/state.h>
+#include <motor/app/state.hpp>
 
 namespace frontier {
 
-class main_state : public motor::state {
+class game_state : public motor::state {
 public:
-    main_state(entt::registry& reg);
-    ~main_state();
+    game_state(entt::registry& reg);
+    ~game_state();
 
     motor::transition update() override;
 };
@@ -16,4 +16,4 @@ public:
 } // namespace frontier
 
 
-#endif // FRONTIER_MAIN_STATE_H
+#endif // FRONTIER_GAME_STATE_HPP

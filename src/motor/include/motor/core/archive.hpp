@@ -1,7 +1,7 @@
-#ifndef MOTOR_ARCHIVE_H
-#define MOTOR_ARCHIVE_H
+#ifndef MOTOR_ARCHIVE_HPP
+#define MOTOR_ARCHIVE_HPP
 
-#include "motor/core/type_traits.h"
+#include "motor/core/type_traits.hpp"
 #include <nameof.hpp>
 #include <stdexcept>
 #include <type_traits>
@@ -116,4 +116,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_ARCHIVE_H
+#endif // MOTOR_ARCHIVE_HPP
