@@ -2,6 +2,7 @@
 #define FRONTIER_GAME_STATE_HPP
 
 #include <motor/app/state.hpp>
+#include <motor/core/event.hpp>
 
 namespace frontier {
 
@@ -11,6 +12,11 @@ public:
     ~game_state();
 
     motor::transition update() override;
+
+private:
+    entt::registry world_reg;
+
+    void receive_respawn(const motor::event::respawn&);
 };
 
 } // namespace frontier

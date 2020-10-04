@@ -9,7 +9,8 @@ namespace frontier {
 class app : public motor::app {
 public:
     app(int argc, const char* argv[]) : motor::app(argc, argv) {
-        motor::components::define<position>();
+        motor::components::define<position,
+                                  motor::component_specifier::FINAL>();
         motor::components::define<velocity>();
         motor::components::define<health>();
         motor::components::define<sprite>();

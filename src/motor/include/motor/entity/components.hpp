@@ -8,9 +8,32 @@
 
 namespace motor {
 
-namespace components {
+enum class component_specifier : std::uint8_t { FINAL, OVERRIDABLE };
 
 namespace internal {
+
+struct component_context {
+    using transpire_fn_type = void(entt::registry& reg, entt::entity e,
+                                   lua_input_archive& ar);
+    using stamp_fn_type = void(const entt::registry&, const entt::entity,
+                               entt::registry&, const entt::entity);
+    using clone_fn_type = void(const entt::registry&, entt::registry&);
+
+    inline static std::unordered_map<entt::id_type, transpire_fn_type*>
+            transpire_functions;
+    inline static std::unordered_map<entt::id_type, stamp_fn_type*>
+            stamp_functions;
+    inline static std::unordered_map<entt::id_type, clone_fn_type*>
+            clone_functions;
+    inline static std::unordered_map<entt::id_type, stamp_fn_type*>
+            patch_functions;
+    inline static std::unordered_map<entt::id_type, component_specifier>
+            specifiers;
+};
+
+} // namespace internal
+
+namespace components {
 
 template<typename Component>
 void transpire(entt::registry& reg, entt::entity e, lua_input_archive& ar) {
@@ -47,45 +70,47 @@ void patch(const entt::registry& from, const entt::entity src,
     }
 }
 
-struct component_context {
-    using transpire_fn = void(entt::registry& reg, entt::entity e,
-                              lua_input_archive& ar);
-    using stamp_fn_type = void(const entt::registry&, const entt::entity,
-                               entt::registry&, const entt::entity);
-
-    inline static std::unordered_map<entt::id_type, transpire_fn*>
-            transpire_functions;
-    inline static std::unordered_map<entt::id_type, stamp_fn_type*>
-            stamp_functions;
-    inline static std::unordered_map<entt::id_type, stamp_fn_type*>
-            patch_functions;
-};
-
-} // namespace internal
-
 template<typename Component>
+void clone(const entt::registry& from, entt::registry& to) {
+    const auto* data = from.data<Component>();
+    const auto size = from.size<Component>();
+
+    if constexpr (std::is_empty_v<Component>) {
+        to.insert<Component>(data, data + size);
+    } else {
+        const auto* raw = from.raw<Component>();
+        to.insert<Component>(data, data + size, raw, raw + size);
+    }
+}
+
+template<typename Component,
+         component_specifier Specifier = component_specifier::OVERRIDABLE>
 void define() noexcept {
     constexpr auto name = nameof::nameof_short_type<Component>();
     auto name_id = entt::hashed_string::value(std::data(name));
     constexpr auto type_id = entt::type_info<Component>::id();
     internal::component_context::transpire_functions[name_id] =
-            &internal::transpire<Component>;
-    internal::component_context::stamp_functions[type_id] =
-            &internal::stamp<Component>;
-    internal::component_context::patch_functions[type_id] =
-            &internal::patch<Component>;
+            &transpire<Component>;
+    internal::component_context::stamp_functions[type_id] = &stamp<Component>;
+    internal::component_context::clone_functions[type_id] = &clone<Component>;
+    internal::component_context::patch_functions[type_id] = &patch<Component>;
+    internal::component_context::specifiers[type_id] = Specifier;
 }
 
-template<entt::id_type Value>
+template<entt::id_type Value,
+         component_specifier Specifier = component_specifier::OVERRIDABLE>
 void define() noexcept {
     constexpr auto name_id = Value;
     constexpr auto type_id = entt::type_info<entt::tag<Value>>::id();
     internal::component_context::transpire_functions[name_id] =
-            &internal::transpire<entt::tag<Value>>;
+            &transpire<entt::tag<Value>>;
     internal::component_context::stamp_functions[type_id] =
-            &internal::stamp<entt::tag<Value>>;
+            &stamp<entt::tag<Value>>;
+    internal::component_context::clone_functions[type_id] =
+            &clone<entt::tag<Value>>;
     internal::component_context::patch_functions[type_id] =
-            &internal::patch<entt::tag<Value>>;
+            &patch<entt::tag<Value>>;
+    internal::component_context::specifiers[type_id] = Specifier;
 }
 
 inline bool is_defined(entt::id_type name_id) noexcept {
@@ -112,7 +137,10 @@ inline void patch(const entt::registry& from, const entt::entity src,
                   entt::registry& to, const entt::entity dst) noexcept {
     using namespace internal;
     from.visit(src, [&from, &to, src, dst](const auto type_id) {
-        component_context::patch_functions[type_id](from, src, to, dst);
+        if (component_context::specifiers[type_id] ==
+            component_specifier::OVERRIDABLE) {
+            component_context::patch_functions[type_id](from, src, to, dst);
+        }
     });
 }
 

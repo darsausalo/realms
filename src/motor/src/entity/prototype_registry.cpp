@@ -73,7 +73,9 @@ entt::entity prototype_registry::get(entt::id_type name_id) const {
 void prototype_registry::respawn(entt::registry& to) {
     to.view<prototype>().each([this, &to](entt::entity dst, auto& p) {
         auto src = p.value;
-        components::patch(reg, src, to, dst);
+        if (reg.valid(src)) {
+            components::patch(reg, src, to, dst);
+        }
     });
 }
 

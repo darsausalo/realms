@@ -57,7 +57,10 @@ void mods_system::operator()() {
     } else {
         if (prototypes_changed) {
             prototypes_changed = false;
+
             locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
+
+            reg.ctx<entt::dispatcher>().trigger<event::respawn>();
         }
     }
 }
