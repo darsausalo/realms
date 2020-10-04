@@ -33,6 +33,20 @@ void stamp(const entt::registry& from, const entt::entity src,
     }
 }
 
+template<typename Component>
+void patch(const entt::registry& from, const entt::entity src,
+           entt::registry& to, const entt::entity dst) {
+    if constexpr (std::is_empty_v<Component>) {
+        if (to.template has<Component>(dst)) {
+            to.template emplace_or_replace<Component>(dst);
+        }
+    } else {
+        if (to.template has<Component>(dst)) {
+            to.emplace_or_replace<Component>(dst, from.get<Component>(src));
+        }
+    }
+}
+
 struct component_context {
     using transpire_fn = void(entt::registry& reg, entt::entity e,
                               lua_input_archive& ar);
@@ -43,6 +57,8 @@ struct component_context {
             transpire_functions;
     inline static std::unordered_map<entt::id_type, stamp_fn_type*>
             stamp_functions;
+    inline static std::unordered_map<entt::id_type, stamp_fn_type*>
+            patch_functions;
 };
 
 } // namespace internal
@@ -56,6 +72,8 @@ void define() noexcept {
             &internal::transpire<Component>;
     internal::component_context::stamp_functions[type_id] =
             &internal::stamp<Component>;
+    internal::component_context::patch_functions[type_id] =
+            &internal::patch<Component>;
 }
 
 template<entt::id_type Value>
@@ -66,6 +84,8 @@ void define() noexcept {
             &internal::transpire<entt::tag<Value>>;
     internal::component_context::stamp_functions[type_id] =
             &internal::stamp<entt::tag<Value>>;
+    internal::component_context::patch_functions[type_id] =
+            &internal::patch<entt::tag<Value>>;
 }
 
 inline bool is_defined(entt::id_type name_id) noexcept {
@@ -85,6 +105,14 @@ inline void stamp(const entt::registry& from, const entt::entity src,
     using namespace internal;
     from.visit(src, [&from, &to, src, dst](const auto type_id) {
         component_context::stamp_functions[type_id](from, src, to, dst);
+    });
+}
+
+inline void patch(const entt::registry& from, const entt::entity src,
+                  entt::registry& to, const entt::entity dst) noexcept {
+    using namespace internal;
+    from.visit(src, [&from, &to, src, dst](const auto type_id) {
+        component_context::patch_functions[type_id](from, src, to, dst);
     });
 }
 

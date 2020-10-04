@@ -74,9 +74,7 @@ entt::entity prototype_registry::get(entt::id_type name_id) const {
 void prototype_registry::respawn(entt::registry& to) {
     to.view<prototype>().each([this, &to](entt::entity dst, auto& p) {
         auto src = p.value;
-        // TODO: use patch instead stamp
-        // in patch: if has<Component> then patch.../emplace_or_replace...
-        components::stamp(reg, src, to, dst);
+        components::patch(reg, src, to, dst);
     });
 }
 
@@ -279,6 +277,9 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_1.png");
     CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
 
+    reg.remove<timer>(e3);
+    CHECK(!reg.has<timer>(e3));
+
     {
         sol::state lua{};
         lua.script(script_v1);
@@ -310,8 +311,7 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK(reg.has<position>(e3));
     CHECK(reg.get<position>(e3).x == 113);
     CHECK(reg.get<position>(e3).y == 203);
-    CHECK(reg.has<timer>(e3));
-    CHECK(reg.get<timer>(e3).duration == 1003);
+    CHECK(!reg.has<timer>(e3));
     CHECK(reg.has<sprite>(e3));
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_2.png");
     CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));

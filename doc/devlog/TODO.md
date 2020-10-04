@@ -1,7 +1,7 @@
 - [ ] Refine Flow
     - [x] Rework systems
     - [x] Add/remove systems in states (with auto-remove in dtor)
-    - [ ] Component/Prototype Registry
+    - [x] Component/Prototype Registry
     - [ ] Rework mods system/service
     - [ ] Rework scripts system/service
 - [ ] Restructure Project
