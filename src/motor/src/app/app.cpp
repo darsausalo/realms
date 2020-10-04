@@ -17,9 +17,9 @@ app::app(int argc, const char* argv[]) {
     components::define<prototype>();
 
     reg.set<arg_list>(argc, argv);
-    reg.set<entt::dispatcher>()
-            .sink<event::quit>()
-            .connect<&app::receive_event_quit>(*this);
+    reg.set<entt::dispatcher>()  //
+            .sink<event::quit>() //
+            .connect<&app::receive_quit>(*this);
     reg.set<prototype_registry>();
 }
 
@@ -28,7 +28,7 @@ void app::run_loop(create_state_fn create_initial_state) {
 
     dispatcher.add<system_group::pre_frame, config_system>(reg);
     dispatcher.add<system_group::pre_frame, window_system>(reg);
-    dispatcher.add<system_group::pre_frame, mods_system>();
+    dispatcher.add<system_group::pre_frame, mods_system>(reg);
     dispatcher.add<system_group::pre_frame, event_system>(reg);
 
     state_machine states{reg, std::move(create_initial_state())};

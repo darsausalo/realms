@@ -1,14 +1,11 @@
 #ifndef MOTOR_APP_HPP
 #define MOTOR_APP_HPP
 
+#include "motor/core/event.hpp"
 #include "motor/host/state.h"
 #include <entt/entity/registry.hpp>
 
 namespace motor {
-
-namespace event {
-struct quit {};
-} // namespace event
 
 class app {
     using create_state_fn = std::function<std::shared_ptr<state>()>;
@@ -39,7 +36,7 @@ private:
 
     bool should_close();
 
-    void receive_event_quit(const event::quit&) { quit_requested = true; }
+    void receive_quit(const event::quit&) { quit_requested = true; }
 };
 
 } // namespace motor

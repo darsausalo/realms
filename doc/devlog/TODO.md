@@ -2,8 +2,8 @@
     - [x] Rework systems
     - [x] Add/remove systems in states (with auto-remove in dtor)
     - [x] Component/Prototype Registry
-    - [ ] Rework mods system/service
-    - [ ] Rework scripts system/service
+    - [x] Rework mods system/service
+    - [x] Rework scripts system/service
 - [ ] Restructure Project
 - [ ] Prototypes Hot Reload
 - [ ] Resources

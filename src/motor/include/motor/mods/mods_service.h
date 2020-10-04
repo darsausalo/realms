@@ -9,8 +9,6 @@
 
 namespace motor {
 
-class system_dispatcher;
-
 class mods_service {
 public:
     mods_service();
@@ -29,12 +27,13 @@ public:
         }
     }
 
-    void load_prototypes(prototype_registry& prototypes);
-
 private:
+    friend class mods_system;
+
     std::vector<mod> mods{};
     std::vector<mod> broken_mods{};
 
+    void load_prototypes(prototype_registry& prototypes);
     sol::table load_prototypes(sol::state& prototypes_lua);
 
     void run_mod_scripts(sol::state& lua, std::string_view name,
