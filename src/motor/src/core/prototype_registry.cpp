@@ -315,8 +315,6 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK(reg.has<sprite>(e3));
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_2.png");
     CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
-
-    motor::locator::components::reset();
 }
 
 TEST_CASE("prototype_registry: ignore bad values") {

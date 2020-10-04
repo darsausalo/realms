@@ -3,8 +3,8 @@
 #include "motor/core/prototype_registry.h"
 #include <chrono>
 #include <entt/entity/registry.hpp>
+#include <motor/mods/mods_service.h>
 #include <motor/services/locator.h>
-#include <motor/services/scripts_service.h>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -13,9 +13,8 @@ loading_state::loading_state(entt::registry& reg) : motor::state{reg} {
     thread = std::thread([this, &reg] {
         progress.update("loading prototypes");
 
-        sol::state lua{};
-        reg.ctx<motor::prototype_registry>().transpire(
-                motor::locator::scripts::ref().load_prototypes(lua));
+        motor::locator::mods::ref().load_prototypes(
+                reg.ctx<motor::prototype_registry>());
 
         // TODO: remove --->>>
         auto& protos = reg.ctx<motor::prototype_registry>();

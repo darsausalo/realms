@@ -1,8 +1,10 @@
 #ifndef MOTOR_MODS_SERVICE_H
 #define MOTOR_MODS_SERVICE_H
 
-#include "motor/host/mod.h"
+#include "motor/core/prototype_registry.h"
+#include "motor/mods/mod.h"
 #include <memory>
+#include <sol/sol.hpp>
 #include <vector>
 
 namespace motor {
@@ -27,9 +29,17 @@ public:
         }
     }
 
+    void load_prototypes(prototype_registry& prototypes);
+
 private:
     std::vector<mod> mods{};
     std::vector<mod> broken_mods{};
+
+    sol::table load_prototypes(sol::state& prototypes_lua);
+
+    void run_mod_scripts(sol::state& lua, std::string_view name,
+                         const std::vector<std::string_view>& libs,
+                         const std::vector<std::string_view>& preloads);
 };
 
 } // namespace motor

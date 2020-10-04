@@ -13,6 +13,5 @@ set(PROJECT_ORG "Auriga Games")
 set(PROJECT_BIN "bin")
 set(PROJECT_LIB "lib")
 set(PROJECT_DATA "data")
-set(PROJECT_MODS "mods")
 
 add_subdirectory(src)

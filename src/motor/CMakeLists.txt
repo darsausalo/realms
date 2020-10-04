@@ -10,15 +10,16 @@ set(SOURCES
 
 	# services
 	"src/services/files_service.cpp"
-	"src/services/mods_service.cpp"
-	"src/services/scripts_service.cpp"
+
+	# mods
+	"src/mods/mods_service.cpp"
+	"src/mods/mods_system.cpp"
 
 	# host
 	"src/host/state.cpp"
 	"src/host/state_machine.cpp"
 	"src/host/config_system.cpp"
 	"src/host/window_system.cpp"
-	"src/host/mods_system.cpp"
 	"src/host/event_system.cpp"
 
 	# app
@@ -44,15 +45,18 @@ set(HEADERS
 	# entity
 	"include/motor/entity/components.hpp"
 
+	# mods
+	"include/motor/mods/mod.h"
+	"include/motor/mods/mods_service.h"
+
+	"src/mods/mods_system.h"
+
 	# services
 	"include/motor/services/files_service.h"
-	"include/motor/services/mods_service.h"
-	"include/motor/services/scripts_service.h"
 
 	# host
 	"include/motor/host/transition.h"
 	"include/motor/host/state.h"
-	"include/motor/host/mod.h"
 	"include/motor/host/progress.h"
 
 	# app
@@ -60,7 +64,6 @@ set(HEADERS
 
 	"src/host/config_system.h"
 	"src/host/window_system.h"
-	"src/host/mods_system.h"
 	"src/host/event_system.h"
 
 	"src/host/state_machine.h"
@@ -73,7 +76,6 @@ set(HEADERS
 add_library(motor STATIC ${SOURCES} ${HEADERS})
 target_compile_definitions(motor PRIVATE
 	-DMOTOR_DATA_DIR="${PROJECT_DATA}"
-	-DMOTOR_MODS_DIR="${PROJECT_MODS}"
 	-DMOTOR_PROJECT_NAME="${PROJECT_NAME}"
 	-DMOTOR_PROJECT_VERSION="${PROJECT_VERSION}"
 	-DMOTOR_PROJECT_ORG="${PROJECT_ORG}"
