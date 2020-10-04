@@ -7,11 +7,13 @@
 
 namespace motor {
 
-// TODO: use file watcher in mods system
-
-mods_system::mods_system(entt::registry& reg) : reg{reg} {
+mods_system::mods_system(entt::registry& reg) : reg{reg}, watcher{reg} {
     locator::mods::set<mods_service>();
     spdlog::debug("mods_system::start");
+
+    reg.ctx<entt::dispatcher>()
+            .sink<event::file_changed>()
+            .connect<&mods_system::receive_file_changed>(*this);
 
     thread = std::thread([this, &reg] {
         prg.update("loading prototypes");
@@ -49,9 +51,26 @@ void mods_system::operator()() {
         if (prg.is_completed()) {
             loaded = true;
             reg.ctx<entt::dispatcher>().trigger<event::start>();
+
+            start_watch_mods();
         }
     } else {
-        // TODO: hot-reload
+        if (prototypes_changed) {
+            prototypes_changed = false;
+            locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
+        }
+    }
+}
+
+void mods_system::start_watch_mods() {
+    locator::mods::ref().visit(
+            [this](auto&& m) { watcher.watch_directory(m.get_path()); });
+}
+
+void mods_system::receive_file_changed(const event::file_changed& e) {
+    spdlog::debug("file changed: {}", e.path.string());
+    if (e.path.string().rfind("prototype", 0) == 0) {
+        prototypes_changed = true;
     }
 }
 

@@ -18,7 +18,7 @@ prototypes:def({
     base = "@infantry",
     health = {
       max = 400,
-      value = 1
+      value = 2
     },
     tag = "enemy"
   }

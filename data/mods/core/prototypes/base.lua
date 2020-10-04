@@ -1,5 +1,5 @@
 prototypes:def({
   ["@with_sprite"] = {
-    sprite = "Sprite1"
+    sprite = "Sprite2"
   }
 });

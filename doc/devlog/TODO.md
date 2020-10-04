@@ -1,4 +1,4 @@
-- [ ] Refine Flow
+- [x] Refine Flow
     - [x] Rework systems
     - [x] Add/remove systems in states (with auto-remove in dtor)
     - [x] Component/Prototype Registry
@@ -6,8 +6,11 @@
     - [x] Rework scripts system/service
 - [x] Restructure Project
 - [ ] Prototypes Hot Reload
+    - [ ] Solve problem with prototypes reload: archetype{position, health} -> position override
+    - [ ] use test_system to watch changes
 - [ ] Resources
 - [ ] Systems Scripting
 - [ ] Input
 - [ ] Graphics
 - [ ] Code review
+- [ ] vcpkg

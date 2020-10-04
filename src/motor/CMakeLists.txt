@@ -25,6 +25,7 @@ set(SOURCES
 	# platform
 	"src/platform/backward.cpp"
 	"src/platform/platform.cpp"
+	"src/platform/file_watcher.cpp"
 )
 
 set(HEADERS
@@ -63,6 +64,7 @@ set(HEADERS
 	# platform
 	"src/platform/platform.hpp"
 	"src/platform/backward.hpp"
+	"src/platform/file_watcher.hpp"
 )
 
 add_library(motor STATIC ${SOURCES} ${HEADERS})
@@ -82,6 +84,7 @@ target_link_libraries(motor PRIVATE
 	mimalloc
 	Backward::Backward
 	nlohmann_json::nlohmann_json
+	efsw::efsw
 	SDL2::SDL2
 	sol2::sol2
 	${LUA_LIBRARIES}
