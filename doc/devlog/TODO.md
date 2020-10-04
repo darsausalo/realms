@@ -1,6 +1,8 @@
 - [ ] Refine Flow
-    - [ ] Move system dispatcher to services
-    - [ ] Remove global registry: instantiate registry only in main game state
+    - [x] Rework systems
+    - [ ] Add/remove systems in states (with auto-remove in dtor)
+    - [ ] Rework mods system/service
+    - [ ] Rework scripts system/service
 - [ ] Prototypes Hot Reload
 - [ ] Resources
 - [ ] Systems Scripting

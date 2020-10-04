@@ -12,18 +12,18 @@ namespace motor {
 // or
 // 2. use file watcher in mods system
 
-void mods_system::on_start(entt::registry& reg) {
+mods_system::mods_system() noexcept {
     locator::mods::set<mods_service>();
     locator::components::set<components_service>();
     locator::scripts::set<scripts_service>();
-    spdlog::info("mods_system::started");
+    spdlog::debug("mods_system::start");
 }
 
-void mods_system::on_stop(entt::registry& reg) {
+mods_system::~mods_system() noexcept {
+    spdlog::debug("mods_system::stop");
     locator::scripts::reset();
     locator::components::reset();
     locator::mods::reset();
-    spdlog::info("mods_system::stopped");
 }
 
 } // namespace motor

@@ -31,15 +31,15 @@ struct config_changed {
 
 } // namespace event
 
-class config_system : public system<system_group::pre_frame> {
+class config_system {
 public:
-    config_system();
+    config_system(entt::registry& reg);
+    ~config_system();
 
-    void on_start(entt::registry& reg) override;
-    void on_stop(entt::registry& reg) override;
-    void update(entt::registry& reg) override;
+    void operator()();
 
 private:
+    entt::registry& reg;
     bool modified{};
 
     void receive_config_changed(const event::config_changed&);

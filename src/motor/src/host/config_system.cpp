@@ -54,11 +54,9 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system() {
+config_system::config_system(entt::registry& reg) : reg{reg} {
     platform::setup_crash_handling(SDL_GetBasePath());
-}
 
-void config_system::on_start(entt::registry& reg) {
     auto& args = reg.ctx<arg_list>();
 
     nlohmann::json cli_config{};
@@ -131,18 +129,18 @@ void config_system::on_start(entt::registry& reg) {
             .sink<event::config_changed>()
             .connect<&config_system::receive_config_changed>(*this);
 
-    spdlog::info("config_system::started");
+    spdlog::debug("config_system::start");
 }
 
-void config_system::on_stop(entt::registry& reg) {
+config_system::~config_system() {
+    spdlog::debug("config_system::stop");
+
     locator::files::reset();
 
     SDL_Quit();
-
-    spdlog::info("config_system::stopped");
 }
 
-void config_system::update(entt::registry& reg) {
+void config_system::operator()() {
     if (modified) {
         try {
             std::ofstream cfg_file(

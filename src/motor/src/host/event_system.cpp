@@ -7,15 +7,15 @@
 
 namespace motor {
 
-void event_system::on_start(entt::registry& reg) {
-    spdlog::info("event_system::started");
+event_system::event_system(entt::registry& reg) noexcept : reg{reg} {
+    spdlog::debug("event_system::start");
 }
 
-void event_system::on_stop(entt::registry& reg) {
-    spdlog::info("event_system::stopped");
+event_system::~event_system() {
+    spdlog::debug("event_system::stop");
 }
 
-void event_system::update(entt::registry& reg) {
+void event_system::operator()() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         if (sdl_event.type == SDL_QUIT) {

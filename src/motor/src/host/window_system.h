@@ -25,17 +25,17 @@ struct window_config {
     window_size size;
 };
 
-class window_system : public system<system_group::on_load> {
+class window_system {
 public:
-    window_system() noexcept;
+    window_system(entt::registry& reg);
+    ~window_system();
 
-    void on_start(entt::registry& reg) override;
-    void on_stop(entt::registry& reg) override;
-    void update(entt::registry& reg) override;
+    void operator()();
 
 private:
+    entt::registry& reg;
+    window_config config;
     SDL_Window* window{};
-    window_config config{};
 };
 
 } // namespace motor

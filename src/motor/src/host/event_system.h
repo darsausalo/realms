@@ -3,14 +3,19 @@
 
 #include "motor/core/system.h"
 #include "motor/core/type_traits.h"
+#include <entt/entity/registry.hpp>
 
 namespace motor {
 
-class event_system : public system<system_group::pre_update> {
+class event_system {
 public:
-    void on_start(entt::registry& reg) override;
-    void on_stop(entt::registry& reg) override;
-    void update(entt::registry& reg) override;
+    event_system(entt::registry& reg) noexcept;
+    ~event_system() noexcept;
+
+    void operator()();
+
+private:
+    entt::registry& reg;
 };
 
 } // namespace motor

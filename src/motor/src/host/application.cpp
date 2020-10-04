@@ -19,12 +19,12 @@ application::application(int argc, const char* argv[]) {
 }
 
 void application::run_loop(std::shared_ptr<game_state>&& initial_state) {
-    system_dispatcher dispatcher{reg};
+    system_dispatcher dispatcher;
 
-    dispatcher.add_system<config_system>();
-    dispatcher.add_system<window_system>();
-    dispatcher.add_system<mods_system>();
-    dispatcher.add_system<event_system>();
+    dispatcher.add<system_group::pre_frame, config_system>(reg);
+    dispatcher.add<system_group::pre_frame, window_system>(reg);
+    dispatcher.add<system_group::pre_frame, mods_system>();
+    dispatcher.add<system_group::pre_frame, event_system>(reg);
 
     state_machine states{reg, dispatcher, std::move(initial_state)};
     while (states.is_running() && !should_close()) {

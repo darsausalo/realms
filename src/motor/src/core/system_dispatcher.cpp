@@ -7,18 +7,13 @@ namespace motor {
 
 system_dispatcher::~system_dispatcher() {
     while (!systems.empty()) {
-        systems.back().instance->on_stop(reg);
         systems.pop_back();
     }
 }
 
 void system_dispatcher::update() {
-    if (need_sorting) {
-        sort();
-        need_sorting = false;
-    }
     for (auto& system : systems) {
-        system.instance->update(reg);
+        system();
     }
 }
 
@@ -26,72 +21,7 @@ void system_dispatcher::sort() {
     std::stable_sort(
             std::begin(systems), std::end(systems),
             [](auto&& lhs, auto&& rhs) { return lhs.group < rhs.group; });
-
-    std::vector<std::vector<std::size_t>> all_dependencies;
-    for (auto&& sd : systems) {
-        all_dependencies.push_back({});
-        auto& dependencies = all_dependencies.back();
-
-        std::transform(sd.dependencies.cbegin(), sd.dependencies.cend(),
-                       std::back_inserter(dependencies),
-                       [=](auto& type_id) -> std::size_t {
-                           auto it = std::find_if(
-                                   systems.cbegin(), systems.cend(),
-                                   [&type_id](auto&& s) {
-                                       return s.type_id == type_id;
-                                   });
-                           return it - systems.cbegin();
-                       });
-    }
-    std::vector<bool> visited;
-    visited.resize(all_dependencies.size());
-    std::fill(std::begin(visited), std::end(visited), false);
-
-    std::vector<system_desc> sorted;
-
-    std::function<void(std::size_t v)> dfs = [&, this](std::size_t v) {
-        visited[v] = true;
-        for (auto&& i : all_dependencies[v]) {
-            if (!visited[i]) {
-                dfs(i);
-            }
-        }
-        sorted.push_back(std::move(this->systems[v]));
-    };
-
-    for (auto v = 0u; v < all_dependencies.size(); v++) {
-        if (!visited[v]) {
-            dfs(v);
-        }
-    }
-
-    systems = std::move(sorted);
 }
-
-std::vector<std::pair<std::string, std::string>> system_dispatcher::dump() {
-    std::vector<std::pair<std::string, std::string>> result{};
-
-    for (auto&& sd : systems) {
-        std::string name = std::string{sd.name};
-        std::string dependencies{};
-
-        for (auto i = 0u; i < sd.dependencies.size(); i++) {
-            auto id = sd.dependencies[i];
-            auto it = std::find_if(systems.cbegin(), systems.cend(),
-                                   [&id](auto&& s) { return s.type_id == id; });
-            if (it != std::end(systems)) {
-                dependencies += it->name;
-                if (i < sd.dependencies.size() - 1) {
-                    dependencies += ", ";
-                }
-            }
-        }
-
-        result.push_back({name, dependencies});
-    }
-    return std::move(result);
-}
-
 
 } // namespace motor
 
@@ -99,66 +29,122 @@ std::vector<std::pair<std::string, std::string>> system_dispatcher::dump() {
 // TEST
 
 #include <doctest/doctest.h>
-#include <entt/entity/registry.hpp>
-#include <fmt/core.h>
-#include <iostream>
 
-namespace motor::test::system_dispatcher {
-
-class system_pre_frame_a
-    : public motor::system<motor::system_group::pre_frame> {};
-
-class system_post_frame_a
-    : public motor::system<motor::system_group::post_frame> {};
-class system_post_frame_b
-    : public motor::system<motor::system_group::post_frame> {};
-
-class system_a : public motor::system<motor::system_group::on_update> {};
-class system_b : public motor::system<motor::system_group::on_update> {};
-class system_c : public motor::system<motor::system_group::on_update> {};
-class system_d : public motor::system<motor::system_group::on_update> {};
-class system_e : public motor::system<motor::system_group::on_update> {};
-
-class system_a1 : public motor::system<motor::system_group::on_update> {};
-class system_a2 : public motor::system<motor::system_group::on_update> {};
-
-} // namespace motor::test::system_dispatcher
-
-namespace motor {} // namespace motor
+static void func_system() {
+}
 
 TEST_CASE("system dispatcher: topology sorting") {
-    using namespace motor::test::system_dispatcher;
+    static std::vector<entt::id_type> ctors;
+    static std::vector<entt::id_type> dtors;
 
-    entt::registry reg;
-    motor::system_dispatcher dispatcher{reg};
+    ctors.clear();
+    dtors.clear();
 
-    dispatcher.add_system<system_post_frame_a>();
-    dispatcher.add_system<system_a1>();
-    dispatcher.add_system<system_pre_frame_a>();
-    dispatcher.add_system<system_e, system_a, system_d>();
-    dispatcher.add_system<system_d, system_b, system_c>();
-    dispatcher.add_system<system_b, system_a>();
-    dispatcher.add_system<system_c, system_b>();
-    dispatcher.add_system<system_post_frame_b>();
-    dispatcher.add_system<system_a>();
-    dispatcher.add_system<system_a2>();
+    struct system_pre_frame {
+        system_pre_frame() noexcept {
+            ctors.push_back(entt::type_info<system_pre_frame>::id());
+        }
+        ~system_pre_frame() {
+            dtors.push_back(entt::type_info<system_pre_frame>::id());
+        }
+        void operator()() {}
+    };
+    struct system_post_frame {
+        system_post_frame() noexcept {
+            ctors.push_back(entt::type_info<system_post_frame>::id());
+        }
+        ~system_post_frame() {
+            dtors.push_back(entt::type_info<system_post_frame>::id());
+        }
+        void operator()() {}
+    };
+    struct system_on_store {
+        system_on_store() noexcept {
+            ctors.push_back(entt::type_info<system_on_store>::id());
+        }
+        ~system_on_store() {
+            dtors.push_back(entt::type_info<system_on_store>::id());
+        }
+        void operator()() {}
+    };
+    struct system_a {
+        system_a() noexcept {
+            ctors.push_back(entt::type_info<system_a>::id());
+        }
+        ~system_a() { dtors.push_back(entt::type_info<system_a>::id()); }
+        void operator()() {}
+    };
+    struct system_b {
+        system_b() noexcept {
+            ctors.push_back(entt::type_info<system_b>::id());
+        }
+        ~system_b() { dtors.push_back(entt::type_info<system_b>::id()); }
+        void operator()() {}
+    };
+    struct system_c {
+        system_c() noexcept {
+            ctors.push_back(entt::type_info<system_c>::id());
+        }
+        ~system_c() { dtors.push_back(entt::type_info<system_c>::id()); }
+        void operator()() {}
+    };
+    struct startup_system {
+        startup_system() noexcept {
+            ctors.push_back(entt::type_info<startup_system>::id());
+        }
+        ~startup_system() {
+            dtors.push_back(entt::type_info<startup_system>::id());
+        }
+    };
+    entt::id_type lambda_system_id{};
+    entt::id_type func_system_id{};
 
-    dispatcher.update();
+    std::vector<entt::id_type> calls{};
+    {
+        motor::system_dispatcher dispatcher;
 
-    auto dump = dispatcher.dump();
+        dispatcher.add<motor::system_group::post_frame, system_post_frame>();
+        dispatcher.add<motor::system_group::on_update, system_a>();
+        dispatcher.add<motor::system_group::pre_frame, system_pre_frame>();
+        dispatcher.add<motor::system_group::on_store, system_on_store>();
+        dispatcher.add<motor::system_group::on_update, system_b>();
+        dispatcher.add<motor::system_group::on_update, system_c>();
+        dispatcher.add<motor::system_group::on_load, startup_system>();
+        lambda_system_id =
+                dispatcher.add<motor::system_group::on_update>([&calls]() {});
+        func_system_id =
+                dispatcher.add<motor::system_group::on_update>(func_system);
 
-    CHECK(dump.size() == 10);
-    CHECK(dump[0].first ==
-          "class motor::test::system_dispatcher::system_pre_frame_a");
-    CHECK(dump[1].first == "class motor::test::system_dispatcher::system_a1");
-    CHECK(dump[2].first == "class motor::test::system_dispatcher::system_a");
-    CHECK(dump[3].first == "class motor::test::system_dispatcher::system_b");
-    CHECK(dump[4].first == "class motor::test::system_dispatcher::system_c");
-    CHECK(dump[5].first == "class motor::test::system_dispatcher::system_d");
-    CHECK(dump[6].first == "class motor::test::system_dispatcher::system_e");
-    CHECK(dump[7].first == "class motor::test::system_dispatcher::system_a2");
-    CHECK(dump[8].first ==
-          "class motor::test::system_dispatcher::system_post_frame_a");
-    CHECK(dump[9].first ==
-          "class motor::test::system_dispatcher::system_post_frame_b");
+        dispatcher.visit(
+                [&calls](const auto system_id) { calls.push_back(system_id); });
+    }
+
+    CHECK(ctors.size() == 7);
+    CHECK(ctors[0] == entt::type_info<system_post_frame>::id());
+    CHECK(ctors[1] == entt::type_info<system_a>::id());
+    CHECK(ctors[2] == entt::type_info<system_pre_frame>::id());
+    CHECK(ctors[3] == entt::type_info<system_on_store>::id());
+    CHECK(ctors[4] == entt::type_info<system_b>::id());
+    CHECK(ctors[5] == entt::type_info<system_c>::id());
+    CHECK(ctors[6] == entt::type_info<startup_system>::id());
+
+    CHECK(calls.size() == 9);
+    CHECK(calls[0] == entt::type_info<system_pre_frame>::id());
+    CHECK(calls[1] == entt::type_info<startup_system>::id());
+    CHECK(calls[2] == entt::type_info<system_a>::id());
+    CHECK(calls[3] == entt::type_info<system_b>::id());
+    CHECK(calls[4] == entt::type_info<system_c>::id());
+    CHECK(calls[5] == lambda_system_id);
+    CHECK(calls[6] == func_system_id);
+    CHECK(calls[7] == entt::type_info<system_on_store>::id());
+    CHECK(calls[8] == entt::type_info<system_post_frame>::id());
+
+    CHECK(dtors.size() == 7);
+    CHECK(dtors[6] == entt::type_info<system_pre_frame>::id());
+    CHECK(dtors[5] == entt::type_info<startup_system>::id());
+    CHECK(dtors[4] == entt::type_info<system_a>::id());
+    CHECK(dtors[3] == entt::type_info<system_b>::id());
+    CHECK(dtors[2] == entt::type_info<system_c>::id());
+    CHECK(dtors[1] == entt::type_info<system_on_store>::id());
+    CHECK(dtors[0] == entt::type_info<system_post_frame>::id());
 }

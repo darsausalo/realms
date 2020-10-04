@@ -8,10 +8,10 @@
 
 namespace motor {
 
-class mods_system : public system<system_group::post_load> {
+class mods_system {
 public:
-    void on_start(entt::registry& reg) override;
-    void on_stop(entt::registry& reg) override;
+    mods_system() noexcept;
+    ~mods_system() noexcept;
 };
 
 } // namespace motor

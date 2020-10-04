@@ -40,11 +40,8 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("size").get_to(c.size);
 }
 
-window_system::window_system() noexcept
-    : config{"default", false, {0, 0}, {1280, 768}} {
-}
-
-void window_system::on_start(entt::registry& reg) {
+window_system::window_system(entt::registry& reg)
+    : reg{reg}, config{"default", false, {0, 0}, {1280, 768}} {
     try {
         reg.ctx<core_config>().at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
@@ -62,15 +59,15 @@ void window_system::on_start(entt::registry& reg) {
                 fmt::format("Could not create window: {}", SDL_GetError()));
     }
 
-    spdlog::info("window_system::started");
+    spdlog::debug("window_system::start");
 }
 
-void window_system::on_stop(entt::registry& reg) {
+window_system::~window_system() {
+    spdlog::debug("window_system::stop");
     SDL_DestroyWindow(window);
-    spdlog::info("window_system::stopped");
 }
 
-void window_system::update(entt::registry& reg) {
+void window_system::operator()() {
     bool modified = false;
 
     int x, y;
