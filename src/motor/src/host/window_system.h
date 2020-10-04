@@ -1,9 +1,9 @@
 #ifndef MOTOR_WINDOW_SYSTEM_H
 #define MOTOR_WINDOW_SYSTEM_H
 
-#include "motor/core/system.h"
 #include "motor/core/type_traits.h"
 #include <SDL.h>
+#include <entt/entity/fwd.hpp>
 #include <string>
 
 namespace motor {

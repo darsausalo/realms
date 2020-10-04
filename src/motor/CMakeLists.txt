@@ -31,7 +31,6 @@ set(SOURCES
 set(HEADERS
 	# core
 	"include/motor/core/attribute.h"
-	"include/motor/core/system.h"
 	"include/motor/core/system_dispatcher.h"
 	"include/motor/core/type_traits.h"
 	"include/motor/core/utility.h"

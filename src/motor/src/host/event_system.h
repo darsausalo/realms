@@ -1,9 +1,8 @@
 #ifndef MOTOR_EVENT_SYSTEM_H
 #define MOTOR_EVENT_SYSTEM_H
 
-#include "motor/core/system.h"
 #include "motor/core/type_traits.h"
-#include <entt/entity/registry.hpp>
+#include <entt/entity/fwd.hpp>
 
 namespace motor {
 

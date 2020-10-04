@@ -1,13 +1,25 @@
 #ifndef MOTOR_SYSTEM_DISPATCHER_H
 #define MOTOR_SYSTEM_DISPATCHER_H
 
-#include "motor/core/system.h"
 #include <entt/core/type_info.hpp>
 #include <functional>
 #include <memory>
 #include <vector>
 
 namespace motor {
+
+enum class system_group {
+    pre_frame,
+    on_load,
+    post_load,
+    pre_update,
+    on_update,
+    on_validate,
+    post_update,
+    pre_store,
+    on_store,
+    post_frame
+};
 
 class system_dispatcher final {
 public:

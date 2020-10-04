@@ -1,7 +1,6 @@
 #ifndef MOTOR_MODS_SYSTEM_H
 #define MOTOR_MODS_SYSTEM_H
 
-#include "motor/core/system.h"
 #include "motor/core/type_traits.h"
 #include <memory>
 #include <vector>

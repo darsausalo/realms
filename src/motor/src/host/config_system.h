@@ -1,8 +1,8 @@
 #ifndef CONFIG_SYSTEM_H
 #define CONFIG_SYSTEM_H
 
-#include "motor/core/system.h"
 #include "motor/core/type_traits.h"
+#include <entt/entity/fwd.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
