@@ -9,12 +9,11 @@ struct test_system {
 };
 
 main_state::main_state(entt::registry& reg) : motor::state{reg} {
-    spdlog::debug("game: start");
     add_system<motor::system_group::on_update, test_system>();
+    spdlog::debug("game: start");
 }
 
 main_state::~main_state() {
-    motor::state::~state();
     spdlog::debug("game: stop");
 }
 

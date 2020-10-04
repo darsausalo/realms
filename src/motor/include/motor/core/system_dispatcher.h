@@ -83,8 +83,8 @@ public:
 
     template<typename Func>
     void visit(Func func) {
-        for (auto&& desc : systems) {
-            func(desc.type_id);
+        for (auto&& order : exec_order) {
+            func(systems[order].type_id);
         }
     }
 
@@ -103,6 +103,7 @@ private:
     };
 
     std::vector<system> systems{};
+    std::vector<std::size_t> exec_order{};
 
     void sort();
 };
