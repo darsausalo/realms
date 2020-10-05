@@ -23,10 +23,10 @@ protected:
     virtual void on_start() {}
     virtual void on_stop() {}
 
-    template<system_group Group, typename System, typename... Args>
+    template<typename System, stage Stage = stage::ON_UPDATE, typename... Args>
     void add_system(Args&&... args) {
         auto type_id =
-                app.add_system<Group, System>(std::forward<Args>(args)...);
+                app.add_system<System, Stage>(std::forward<Args>(args)...);
         systems.push_back(type_id);
     }
 

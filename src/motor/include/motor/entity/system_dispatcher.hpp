@@ -8,17 +8,14 @@
 
 namespace motor {
 
-enum class system_group {
-    pre_frame,
-    on_load,
-    post_load,
-    pre_update,
-    on_update,
-    on_validate,
-    post_update,
-    pre_store,
-    on_store,
-    post_frame
+enum class stage {
+    NONE,
+    PRE_FRAME,
+    ON_EVENT,
+    PRE_UPDATE,
+    ON_UPDATE,
+    POST_UPDATE,
+    POST_FRAME
 };
 
 class system_dispatcher final {
@@ -32,7 +29,7 @@ public:
 
     ~system_dispatcher() noexcept;
 
-    template<system_group Group, typename System, typename... Args>
+    template<typename System, stage Stage = stage::ON_UPDATE, typename... Args>
     auto add(Args&&... args) {
         auto type_id = entt::type_info<System>::id();
         assert(std::find_if(systems.cbegin(), systems.cend(),
@@ -41,15 +38,17 @@ public:
                             }) == systems.cend());
         auto* system = new System{std::forward<Args>(args)...};
         if constexpr (std::is_invocable_v<System>) {
+            static_assert(Stage != stage::NONE);
             systems.push_back({type_id,
-                               Group,
+                               Stage,
                                std::bind(&System::operator(), system),
                                {system, [](void* instance) {
                                     delete static_cast<System*>(instance);
                                 }}});
         } else {
+            static_assert(Stage == stage::NONE);
             systems.push_back(
-                    {type_id, Group, nullptr, {system, [](void* instance) {
+                    {type_id, Stage, nullptr, {system, [](void* instance) {
                                                    delete static_cast<System*>(
                                                            instance);
                                                }}});
@@ -58,14 +57,15 @@ public:
         return type_id;
     }
 
-    template<system_group Group, typename Func>
+    template<typename Func, stage Stage = stage::ON_UPDATE>
     auto add(Func func) {
+        static_assert(Stage != stage::NONE);
         auto type_id = entt::type_info<decltype(func)>::id();
         assert(std::find_if(systems.cbegin(), systems.cend(),
                             [type_id](auto&& system) {
                                 return system.type_id == type_id;
                             }) == systems.cend());
-        systems.push_back({type_id, Group, func, {nullptr, nullptr}});
+        systems.push_back({type_id, Stage, func, {nullptr, nullptr}});
         sort();
         return type_id;
     }
@@ -91,7 +91,7 @@ public:
 private:
     struct system {
         entt::id_type type_id;
-        system_group group;
+        stage stage;
         std::function<void()> function;
         std::unique_ptr<void, void (*)(void*)> instance;
     };

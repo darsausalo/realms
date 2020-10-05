@@ -23,9 +23,9 @@ public:
     const entt::registry& get_registry() const { return registry; }
     entt::registry& get_registry() { return registry; }
 
-    template<system_group Group, typename System, typename... Args>
+    template<typename System, stage Stage = stage::ON_UPDATE, typename... Args>
     entt::id_type add_system(Args&&... args) {
-        return dispatcher.add<Group, System>(std::forward<Args>(args)...);
+        return dispatcher.add<System, Stage>(std::forward<Args>(args)...);
     }
 
     void remove_system(entt::id_type type_id) { dispatcher.remove(type_id); }

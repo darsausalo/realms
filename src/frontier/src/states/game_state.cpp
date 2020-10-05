@@ -39,7 +39,7 @@ struct test_system {
 void game_state::on_start() {
     registry.clear();
 
-    add_system<motor::system_group::on_update, test_system>(registry);
+    add_system<test_system>(registry);
 
     registry.ctx<motor::prototype_registry>().spawn(registry, "soldier2"_hs);
 

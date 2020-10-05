@@ -25,7 +25,7 @@ void system_dispatcher::sort() {
     }
     std::stable_sort(std::begin(exec_order), std::end(exec_order),
                      [this](auto&& lhs, auto&& rhs) {
-                         return systems[lhs].group < systems[rhs].group;
+                         return systems[lhs].stage < systems[rhs].stage;
                      });
 }
 
@@ -61,12 +61,12 @@ TEST_CASE("system dispatcher: topology sorting") {
         }
         void operator()() {}
     };
-    struct system_on_store {
-        system_on_store() noexcept {
-            ctors.push_back(entt::type_info<system_on_store>::id());
+    struct system_post_update {
+        system_post_update() noexcept {
+            ctors.push_back(entt::type_info<system_post_update>::id());
         }
-        ~system_on_store() {
-            dtors.push_back(entt::type_info<system_on_store>::id());
+        ~system_post_update() {
+            dtors.push_back(entt::type_info<system_post_update>::id());
         }
         void operator()() {}
     };
@@ -106,17 +106,15 @@ TEST_CASE("system dispatcher: topology sorting") {
     {
         motor::system_dispatcher dispatcher;
 
-        dispatcher.add<motor::system_group::post_frame, system_post_frame>();
-        dispatcher.add<motor::system_group::on_update, system_a>();
-        dispatcher.add<motor::system_group::pre_frame, system_pre_frame>();
-        dispatcher.add<motor::system_group::on_store, system_on_store>();
-        dispatcher.add<motor::system_group::on_update, system_b>();
-        dispatcher.add<motor::system_group::on_update, system_c>();
-        dispatcher.add<motor::system_group::on_load, startup_system>();
-        lambda_system_id =
-                dispatcher.add<motor::system_group::on_update>([&calls]() {});
-        func_system_id =
-                dispatcher.add<motor::system_group::on_update>(func_system);
+        dispatcher.add<system_post_frame, motor::stage::POST_FRAME>();
+        dispatcher.add<system_a, motor::stage::ON_UPDATE>();
+        dispatcher.add<system_pre_frame, motor::stage::PRE_FRAME>();
+        dispatcher.add<system_post_update, motor::stage::POST_UPDATE>();
+        dispatcher.add<system_b, motor::stage::ON_UPDATE>();
+        dispatcher.add<system_c, motor::stage::ON_UPDATE>();
+        dispatcher.add<startup_system, motor::stage::NONE>();
+        lambda_system_id = dispatcher.add([&calls]() {});
+        func_system_id = dispatcher.add(func_system);
 
         dispatcher.visit(
                 [&calls](const auto system_id) { calls.push_back(system_id); });
@@ -126,7 +124,7 @@ TEST_CASE("system dispatcher: topology sorting") {
     CHECK(ctors[0] == entt::type_info<system_post_frame>::id());
     CHECK(ctors[1] == entt::type_info<system_a>::id());
     CHECK(ctors[2] == entt::type_info<system_pre_frame>::id());
-    CHECK(ctors[3] == entt::type_info<system_on_store>::id());
+    CHECK(ctors[3] == entt::type_info<system_post_update>::id());
     CHECK(ctors[4] == entt::type_info<system_b>::id());
     CHECK(ctors[5] == entt::type_info<system_c>::id());
     CHECK(ctors[6] == entt::type_info<startup_system>::id());
@@ -138,14 +136,14 @@ TEST_CASE("system dispatcher: topology sorting") {
     CHECK(calls[3] == entt::type_info<system_c>::id());
     CHECK(calls[4] == lambda_system_id);
     CHECK(calls[5] == func_system_id);
-    CHECK(calls[6] == entt::type_info<system_on_store>::id());
+    CHECK(calls[6] == entt::type_info<system_post_update>::id());
     CHECK(calls[7] == entt::type_info<system_post_frame>::id());
 
     CHECK(dtors.size() == 7);
     CHECK(dtors[6] == entt::type_info<system_post_frame>::id());
     CHECK(dtors[5] == entt::type_info<system_a>::id());
     CHECK(dtors[4] == entt::type_info<system_pre_frame>::id());
-    CHECK(dtors[3] == entt::type_info<system_on_store>::id());
+    CHECK(dtors[3] == entt::type_info<system_post_update>::id());
     CHECK(dtors[2] == entt::type_info<system_b>::id());
     CHECK(dtors[1] == entt::type_info<system_c>::id());
     CHECK(dtors[0] == entt::type_info<startup_system>::id());

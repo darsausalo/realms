@@ -22,10 +22,10 @@ app::app(int argc, const char* argv[]) {
             .connect<&app::receive_quit>(*this);
     registry.set<prototype_registry>();
 
-    add_system<system_group::pre_frame, config_system>(registry);
-    add_system<system_group::pre_frame, window_system>(registry);
-    add_system<system_group::pre_frame, mods_system>(registry);
-    add_system<system_group::pre_frame, event_system>(registry);
+    add_system<config_system, stage::NONE>(registry);
+    add_system<window_system, stage::PRE_FRAME>(registry);
+    add_system<mods_system, stage::PRE_FRAME>(registry);
+    add_system<event_system, stage::ON_EVENT>(registry);
 }
 
 void app::run_loop(std::shared_ptr<state>&& initial_state) {
