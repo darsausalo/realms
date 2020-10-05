@@ -69,8 +69,8 @@ void file_watcher::handleFileAction(efsw::WatchID watch_id,
         break;
     }
 
-    reg.ctx<entt::dispatcher>().trigger<event::file_changed>(
-            f_action, path.generic_string(), fullpath);
+    reg.ctx<entt::dispatcher>().enqueue<event::file_changed>(
+            {f_action, path.generic_string(), fullpath});
 }
 
 } // namespace motor

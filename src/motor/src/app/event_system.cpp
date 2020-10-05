@@ -19,9 +19,11 @@ void event_system::operator()() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         if (sdl_event.type == SDL_QUIT) {
-            reg.ctx<entt::dispatcher>().trigger<event::quit>();
+            reg.ctx<entt::dispatcher>().enqueue<event::quit>();
         }
     }
+
+    reg.ctx<entt::dispatcher>().update();
 }
 
 } // namespace motor

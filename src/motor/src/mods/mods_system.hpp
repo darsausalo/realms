@@ -26,8 +26,6 @@ private:
     std::thread thread{};
     motor::progress prg{};
 
-    bool prototypes_changed{};
-
     void start_watch_mods();
     void receive_file_changed(const event::file_changed& e);
 };

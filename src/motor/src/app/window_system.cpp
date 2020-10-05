@@ -89,7 +89,7 @@ void window_system::operator()() {
     if (modified) {
         try {
             reg.ctx<core_config>()["window"] = config;
-            reg.ctx<entt::dispatcher>().trigger<event::config_changed>();
+            reg.ctx<entt::dispatcher>().enqueue<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());
         }

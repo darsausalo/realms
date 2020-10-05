@@ -50,17 +50,9 @@ void mods_system::operator()() {
     if (!loaded) {
         if (prg.is_completed()) {
             loaded = true;
-            reg.ctx<entt::dispatcher>().trigger<event::start>();
+            reg.ctx<entt::dispatcher>().enqueue<event::start>();
 
             start_watch_mods();
-        }
-    } else {
-        if (prototypes_changed) {
-            prototypes_changed = false;
-
-            locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
-
-            reg.ctx<entt::dispatcher>().trigger<event::respawn>();
         }
     }
 }
@@ -72,8 +64,13 @@ void mods_system::start_watch_mods() {
 
 void mods_system::receive_file_changed(const event::file_changed& e) {
     spdlog::debug("file changed: {}", e.path.string());
+    if (!loaded) {
+        spdlog::error("can't hot reload: mods system in loading state");
+        return;
+    }
     if (e.path.string().rfind("prototype", 0) == 0) {
-        prototypes_changed = true;
+        locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
+        reg.ctx<entt::dispatcher>().enqueue<event::respawn>();
     }
 }
 

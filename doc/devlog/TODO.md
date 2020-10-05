@@ -8,11 +8,11 @@
 - [x] Prototypes Hot Reload
     - [x] Solve problem with prototypes reload: archetype{position, health} -> position override
     - [x] use test_system to watch changes
-- [ ] Refine Sytem Stages (System Groups)
 - [ ] Events Pipeline
+- [ ] Input
+- [ ] Refine Sytem Stages (System Groups)
 - [ ] Resources
 - [ ] Systems Scripting
-- [ ] Input
 - [ ] Graphics
 - [ ] Code review
 - [ ] vcpkg
