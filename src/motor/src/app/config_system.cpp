@@ -54,10 +54,11 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system(entt::registry& reg) : reg{reg} {
+config_system::config_system(entt::registry& registry)
+    : registry{registry}, config{registry.ctx_or_set<core_config>()} {
     platform::setup_crash_handling(SDL_GetBasePath());
 
-    auto& args = reg.ctx<arg_list>();
+    const auto& args = registry.ctx<arg_list>();
 
     nlohmann::json cli_config{};
     std::string key;
@@ -75,8 +76,6 @@ config_system::config_system(entt::registry& reg) : reg{reg} {
         }
         key = arg.substr(2);
     }
-
-    reg.unset<arg_list>();
 
     std::filesystem::path base_path = SDL_GetBasePath();
     std::filesystem::path data_path = base_path / MOTOR_DATA_DIR;
@@ -107,8 +106,6 @@ config_system::config_system(entt::registry& reg) : reg{reg} {
     spdlog::info("data path: {}", files.get_data_path().string());
     spdlog::info("user path: {}", files.get_user_path().string());
 
-    auto& config = reg.set<core_config>();
-
     std::ifstream cfg_file(locator::files::ref().get_full_path("config.json"));
     try {
         cfg_file >> config;
@@ -125,7 +122,7 @@ config_system::config_system(entt::registry& reg) : reg{reg} {
         spdlog::set_level(static_cast<spdlog::level::level_enum>(ll));
     }
 
-    reg.ctx<entt::dispatcher>()
+    registry.ctx<entt::dispatcher>()
             .sink<event::config_changed>()
             .connect<&config_system::receive_config_changed>(*this);
 
@@ -140,22 +137,14 @@ config_system::~config_system() {
     SDL_Quit();
 }
 
-void config_system::operator()() {
-    if (modified) {
-        try {
-            std::ofstream cfg_file(
-                    locator::files::ref().get_full_path("config.json", true));
-            cfg_file << std::setw(4) << reg.ctx<core_config>();
-        } catch (std::exception& e) {
-            spdlog::error("failed to write config.json save: {}", e.what());
-        }
-
-        modified = false;
-    }
-}
-
 void config_system::receive_config_changed(const event::config_changed&) {
-    modified = true;
+    try {
+        std::ofstream cfg_file(
+                locator::files::ref().get_full_path("config.json", true));
+        cfg_file << std::setw(4) << config;
+    } catch (std::exception& e) {
+        spdlog::error("failed to write config.json save: {}", e.what());
+    }
 }
 
 } // namespace motor

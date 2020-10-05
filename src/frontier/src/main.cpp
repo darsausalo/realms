@@ -6,7 +6,7 @@
 
 namespace frontier {
 
-class app : public motor::app {
+class app final : public motor::app {
 public:
     app(int argc, const char* argv[]) : motor::app(argc, argv) {
         motor::components::define<position,

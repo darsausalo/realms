@@ -1,5 +1,6 @@
 #include "mods_system.hpp"
 #include "motor/app/locator.hpp"
+#include "motor/entity/prototype_registry.hpp"
 #include "motor/mods/mods_service.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -7,21 +8,23 @@
 
 namespace motor {
 
-mods_system::mods_system(entt::registry& reg) : reg{reg}, watcher{reg} {
+mods_system::mods_system(entt::registry& registry)
+    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
+      prototype_registry{registry.ctx<motor::prototype_registry>()},
+      watcher{dispatcher} {
     locator::mods::set<mods_service>();
     spdlog::debug("mods_system::start");
 
-    reg.ctx<entt::dispatcher>()
-            .sink<event::file_changed>()
+    dispatcher.sink<event::file_changed>()
             .connect<&mods_system::receive_file_changed>(*this);
 
-    thread = std::thread([this, &reg] {
+    thread = std::thread([this] {
         prg.update("loading prototypes");
 
-        locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
+        locator::mods::ref().load_prototypes(prototype_registry);
 
         // TODO: remove --->>>
-        auto& protos = reg.ctx<prototype_registry>();
+        auto& protos = prototype_registry;
         if (protos.get("soldier"_hs) != entt::null) {
             spdlog::debug("EXISTS!");
         } else {
@@ -50,7 +53,7 @@ void mods_system::operator()() {
     if (!loaded) {
         if (prg.is_completed()) {
             loaded = true;
-            reg.ctx<entt::dispatcher>().enqueue<event::start>();
+            dispatcher.enqueue<event::start>();
 
             start_watch_mods();
         }
@@ -69,8 +72,8 @@ void mods_system::receive_file_changed(const event::file_changed& e) {
         return;
     }
     if (e.path.string().rfind("prototype", 0) == 0) {
-        locator::mods::ref().load_prototypes(reg.ctx<prototype_registry>());
-        reg.ctx<entt::dispatcher>().enqueue<event::respawn>();
+        locator::mods::ref().load_prototypes(prototype_registry);
+        dispatcher.enqueue<event::respawn>();
     }
 }
 

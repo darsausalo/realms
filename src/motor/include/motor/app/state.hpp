@@ -1,8 +1,8 @@
 #ifndef MOTOR_STATE_HPP
 #define MOTOR_STATE_HPP
 
+#include "motor/app/app.hpp"
 #include "motor/app/transition.hpp"
-#include "motor/entity/system_dispatcher.hpp"
 #include <entt/entity/registry.hpp>
 
 namespace motor {
@@ -14,14 +14,19 @@ public:
     virtual transition update() { return transition_none{}; }
 
 protected:
-    entt::registry& reg;
+    friend class state_machine;
 
-    state(entt::registry& reg);
+    app& app;
+
+    state(motor::app& app) : app{app} {}
+
+    virtual void on_start() {}
+    virtual void on_stop() {}
 
     template<system_group Group, typename System, typename... Args>
     void add_system(Args&&... args) {
-        auto type_id = reg.ctx<system_dispatcher>().add<Group, System>(
-                std::forward<Args>(args)...);
+        auto type_id =
+                app.add_system<Group, System>(std::forward<Args>(args)...);
         systems.push_back(type_id);
     }
 

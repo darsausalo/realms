@@ -94,12 +94,6 @@ private:
         system_group group;
         std::function<void()> function;
         std::unique_ptr<void, void (*)(void*)> instance;
-
-        void operator()() {
-            if (function) {
-                function();
-            }
-        }
     };
 
     std::vector<system> systems{};

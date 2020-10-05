@@ -5,21 +5,26 @@
 #include "motor/core/event.hpp"
 #include "platform/file_watcher.hpp"
 #include <entt/entity/fwd.hpp>
+#include <entt/signal/fwd.hpp>
 #include <memory>
 #include <thread>
 #include <vector>
 
 namespace motor {
 
+class prototype_registry;
+
 class mods_system {
 public:
-    mods_system(entt::registry& reg);
+    mods_system(entt::registry& registry);
     ~mods_system();
 
     void operator()();
 
 private:
-    entt::registry& reg;
+    entt::registry& registry;
+    entt::dispatcher& dispatcher;
+    prototype_registry& prototype_registry;
     file_watcher watcher;
 
     bool loaded{};

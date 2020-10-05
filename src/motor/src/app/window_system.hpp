@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <entt/entity/fwd.hpp>
+#include <entt/signal/fwd.hpp>
 #include <string>
 
 namespace motor {
@@ -26,13 +27,14 @@ struct window_config {
 
 class window_system {
 public:
-    window_system(entt::registry& reg);
+    window_system(entt::registry& registry);
     ~window_system();
 
     void operator()();
 
 private:
-    entt::registry& reg;
+    entt::registry& registry;
+    entt::dispatcher& dispatcher;
     window_config config;
     SDL_Window* window{};
 };

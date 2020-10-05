@@ -7,7 +7,8 @@
 
 namespace motor {
 
-event_system::event_system(entt::registry& reg) noexcept : reg{reg} {
+event_system::event_system(entt::registry& registry) noexcept
+    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()} {
     spdlog::debug("event_system::start");
 }
 
@@ -19,11 +20,11 @@ void event_system::operator()() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         if (sdl_event.type == SDL_QUIT) {
-            reg.ctx<entt::dispatcher>().enqueue<event::quit>();
+            dispatcher.enqueue<event::quit>();
         }
     }
 
-    reg.ctx<entt::dispatcher>().update();
+    dispatcher.update();
 }
 
 } // namespace motor

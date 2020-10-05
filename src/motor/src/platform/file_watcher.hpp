@@ -2,7 +2,7 @@
 #define MOTOR_FILE_WATCHER_HPP
 
 #include <efsw/efsw.hpp>
-#include <entt/entity/registry.hpp>
+#include <entt/signal/fwd.hpp>
 #include <filesystem>
 #include <memory>
 #include <unordered_map>
@@ -23,7 +23,7 @@ struct file_changed {
 
 class file_watcher : public efsw::FileWatchListener {
 public:
-    file_watcher(entt::registry& reg);
+    file_watcher(entt::dispatcher& dispatcher);
 
     void handleFileAction(efsw::WatchID watch_id, const std::string& dir,
                           const std::string& filename, efsw::Action action,
@@ -32,7 +32,7 @@ public:
     void watch_directory(const std::filesystem::path& path);
 
 private:
-    entt::registry& reg;
+    entt::dispatcher& dispatcher;
     std::unique_ptr<efsw::FileWatcher> watcher;
 
     bool started{};

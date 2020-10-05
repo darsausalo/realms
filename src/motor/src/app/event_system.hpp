@@ -2,18 +2,20 @@
 #define MOTOR_EVENT_SYSTEM_HPP
 
 #include <entt/entity/fwd.hpp>
+#include <entt/signal/fwd.hpp>
 
 namespace motor {
 
 class event_system {
 public:
-    event_system(entt::registry& reg) noexcept;
+    event_system(entt::registry& registry) noexcept;
     ~event_system() noexcept;
 
     void operator()();
 
 private:
-    entt::registry& reg;
+    entt::registry& registry;
+    entt::dispatcher& dispatcher;
 };
 
 } // namespace motor

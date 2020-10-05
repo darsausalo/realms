@@ -32,13 +32,12 @@ struct config_changed {
 
 class config_system {
 public:
-    config_system(entt::registry& reg);
+    config_system(entt::registry& registry);
     ~config_system();
 
-    void operator()();
-
 private:
-    entt::registry& reg;
+    entt::registry& registry;
+    core_config& config;
     bool modified{};
 
     void receive_config_changed(const event::config_changed&);

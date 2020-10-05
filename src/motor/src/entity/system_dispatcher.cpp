@@ -12,7 +12,7 @@ system_dispatcher::~system_dispatcher() {
 
 void system_dispatcher::update() {
     for (auto&& order : exec_order) {
-        systems[order]();
+        systems[order].function();
     }
 }
 

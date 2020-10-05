@@ -2,16 +2,15 @@
 #include "frontier/components/base.hpp"
 #include <chrono>
 #include <entt/signal/dispatcher.hpp>
-#include <motor/entity/prototype_registry.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
 
 struct test_system {
-    entt::registry& reg;
+    entt::registry& registry;
     std::chrono::steady_clock::time_point last_time{};
 
-    test_system(entt::registry& reg) : reg{reg} {
+    test_system(entt::registry& registry) : registry{registry} {
         spdlog::debug("test_system::start");
     }
     ~test_system() { spdlog::debug("test_system::stop"); }
@@ -24,31 +23,34 @@ struct test_system {
             spdlog::debug("<<< tick >>>");
             last_time = now;
 
-            reg.view<position>().each([](auto& p) {
+            registry.view<position>().each([](auto& p) {
                 p.x += 1;
                 p.y += 1;
                 spdlog::debug("p = {},{}", p.x, p.y);
             });
 
-            reg.view<health>().each([](const auto& h) {
+            registry.view<health>().each([](const auto& h) {
                 spdlog::debug("h = {},{}", h.max, h.value);
             });
         }
     }
 };
 
-game_state::game_state(entt::registry& reg) : motor::state{reg} {
-    add_system<motor::system_group::on_update, test_system>(world_reg);
-    spdlog::debug("game: start");
+void game_state::on_start() {
+    registry.clear();
 
-    reg.ctx<motor::prototype_registry>().spawn(world_reg, "soldier2"_hs);
+    add_system<motor::system_group::on_update, test_system>(registry);
 
-    reg.ctx<entt::dispatcher>()
-            .sink<motor::event::respawn>()
+    registry.ctx<motor::prototype_registry>().spawn(registry, "soldier2"_hs);
+
+    dispatcher.sink<motor::event::respawn>()
             .connect<&game_state::receive_respawn>(*this);
+
+    spdlog::debug("game: start");
 }
 
-game_state::~game_state() {
+void game_state::on_stop() {
+    dispatcher.sink<motor::event::respawn>().disconnect(*this);
     spdlog::debug("game: stop");
 }
 
@@ -57,7 +59,7 @@ motor::transition game_state::update() {
 }
 
 void game_state::receive_respawn(const motor::event::respawn&) {
-    reg.ctx<motor::prototype_registry>().respawn(world_reg);
+    prototype_registry.respawn(registry);
 }
 
 } // namespace frontier

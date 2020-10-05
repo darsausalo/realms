@@ -3,12 +3,9 @@
 
 namespace motor {
 
-state::state(entt::registry& reg) : reg{reg} {
-}
-
 state::~state() {
     while (!systems.empty()) {
-        reg.ctx<system_dispatcher>().remove(systems.back());
+        app.remove_system(systems.back());
         systems.pop_back();
     }
 }

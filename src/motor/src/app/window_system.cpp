@@ -40,10 +40,11 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("size").get_to(c.size);
 }
 
-window_system::window_system(entt::registry& reg)
-    : reg{reg}, config{"default", false, {0, 0}, {1280, 768}} {
+window_system::window_system(entt::registry& registry)
+    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
+      config{"default", false, {0, 0}, {1280, 768}} {
     try {
-        reg.ctx<core_config>().at("window").get_to(config);
+        registry.ctx<core_config>().at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
@@ -88,8 +89,8 @@ void window_system::operator()() {
 
     if (modified) {
         try {
-            reg.ctx<core_config>()["window"] = config;
-            reg.ctx<entt::dispatcher>().enqueue<event::config_changed>();
+            registry.ctx<core_config>()["window"] = config;
+            dispatcher.enqueue<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());
         }

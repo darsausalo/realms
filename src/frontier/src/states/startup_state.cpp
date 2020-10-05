@@ -6,15 +6,18 @@
 
 namespace frontier {
 
-startup_state::startup_state(entt::registry& reg) : motor::state{reg} {
-    reg.ctx<entt::dispatcher>()
-            .sink<motor::event::start>()
+void startup_state::on_start() {
+    dispatcher.sink<motor::event::start>()
             .connect<&startup_state::receive_start>(*this);
+}
+
+void startup_state::on_stop() {
+    dispatcher.sink<motor::event::start>().disconnect(*this);
 }
 
 motor::transition startup_state::update() {
     if (started) {
-        return motor::transition_switch{std::make_shared<game_state>(reg)};
+        return motor::transition_switch{std::make_shared<game_state>(app)};
     }
 
     return motor::transition_none{};
