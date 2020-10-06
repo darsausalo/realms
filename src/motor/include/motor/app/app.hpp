@@ -28,6 +28,11 @@ public:
         return dispatcher.add<System, Stage>(std::forward<Args>(args)...);
     }
 
+    template<stage Stage = stage::ON_UPDATE, typename Func>
+    auto add_system(Func func) {
+        return dispatcher.add<Stage, Func>(func);
+    }
+
     void remove_system(entt::id_type type_id) { dispatcher.remove(type_id); }
 
     template<typename InitialState>

@@ -114,7 +114,7 @@ TEST_CASE("system dispatcher: topology sorting") {
         dispatcher.add<system_c, motor::stage::ON_UPDATE>();
         dispatcher.add<startup_system, motor::stage::NONE>();
         lambda_system_id = dispatcher.add([&calls]() {});
-        func_system_id = dispatcher.add(func_system);
+        func_system_id = dispatcher.add<motor::stage::ON_UPDATE>(func_system);
 
         dispatcher.visit(
                 [&calls](const auto system_id) { calls.push_back(system_id); });

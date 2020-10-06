@@ -59,7 +59,7 @@ public:
         return type_id;
     }
 
-    template<typename Func, stage Stage = stage::ON_UPDATE>
+    template<stage Stage = stage::ON_UPDATE, typename Func>
     auto add(Func func) {
         static_assert(Stage != stage::NONE);
         auto type_id = entt::type_info<decltype(func)>::id();

@@ -30,6 +30,11 @@ protected:
         systems.push_back(type_id);
     }
 
+    template<stage Stage = stage::ON_UPDATE, typename Func>
+    auto add_system(Func func) {
+        return dispatcher.add<Stage, Func>(func);
+    }
+
 private:
     std::vector<entt::id_type> systems{};
 };
