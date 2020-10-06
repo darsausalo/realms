@@ -19,8 +19,6 @@ public:
     }
 };
 
-using core_config = nlohmann::json;
-
 namespace event {
 
 struct config_changed {
@@ -37,7 +35,7 @@ public:
 
 private:
     entt::registry& registry;
-    core_config& config;
+    nlohmann::json& config;
     bool modified{};
 
     void receive_config_changed(const event::config_changed&);

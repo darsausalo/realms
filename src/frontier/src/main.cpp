@@ -1,6 +1,7 @@
 #include "components/serialization.hpp"
 #include "frontier/components/base.hpp"
 #include "frontier/states/startup_state.hpp"
+#include "frontier/systems/quit_system.hpp"
 #include <motor/app/app.hpp>
 #include <motor/entity/components.hpp>
 
@@ -14,6 +15,8 @@ public:
         motor::components::define<velocity>();
         motor::components::define<health>();
         motor::components::define<sprite>();
+
+        add_system<quit_system>(registry);
     }
 };
 

@@ -44,7 +44,7 @@ window_system::window_system(entt::registry& registry)
     : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
       config{"default", false, {0, 0}, {1280, 768}} {
     try {
-        registry.ctx<core_config>().at("window").get_to(config);
+        registry.ctx<nlohmann::json>().at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
@@ -89,7 +89,7 @@ void window_system::operator()() {
 
     if (modified) {
         try {
-            registry.ctx<core_config>()["window"] = config;
+            registry.ctx<nlohmann::json>()["window"] = config;
             dispatcher.enqueue<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());

@@ -13,5 +13,12 @@
             "height": 768,
             "width": 1280
         }
+    },
+    "input": {
+        "keymap": {
+            "ctrl+q": { "action": "quit" },
+            "mbl": { "action": "select" },
+            "mbr": { "action": "command" }
+        }
     }
 }

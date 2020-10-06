@@ -22,4 +22,13 @@ template<typename T>
 
 } // namespace nameof
 
+namespace motor {
+
+template<typename Type>
+constexpr void hash_combine(Type& seed, Type value) noexcept {
+    seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+} // namespace motor
+
 #endif // MOTOR_UTILITY_HPP

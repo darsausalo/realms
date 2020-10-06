@@ -1,6 +1,7 @@
 #include "motor/app/app.hpp"
 #include "app/config_system.hpp"
 #include "app/event_system.hpp"
+#include "app/input_system.hpp"
 #include "app/state_machine.hpp"
 #include "app/time_system.hpp"
 #include "app/window_system.hpp"
@@ -29,6 +30,7 @@ app::app(int argc, const char* argv[]) {
     add_system<mods_system, stage::PRE_FRAME>(registry);
     add_system<time_system, stage::PRE_EVENT>(registry);
     add_system<timer_system, stage::PRE_EVENT>(registry);
+    add_system<input_system, stage::PRE_EVENT>(registry);
     add_system<event_system, stage::ON_EVENT>(registry);
 }
 

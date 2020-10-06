@@ -20,6 +20,7 @@ set(SOURCES
 	"src/app/config_system.cpp"
 	"src/app/window_system.cpp"
 	"src/app/event_system.cpp"
+	"src/app/input_system.cpp"
 	"src/app/app.cpp"
 
 	# platform
@@ -32,11 +33,14 @@ set(HEADERS
 	# core
 	"include/motor/core/type_traits.hpp"
 	"include/motor/core/utility.hpp"
+	"include/motor/core/algorithm.hpp"
 	"include/motor/core/archive.hpp"
 	"include/motor/core/binary_archive.hpp"
 	"include/motor/core/lua_archive.hpp"
 	"include/motor/core/files_service.hpp"
+	"include/motor/core/time.hpp"
 	"include/motor/core/event.hpp"
+	"include/motor/core/input.hpp"
 
 	"src/core/progress.hpp"
 
@@ -61,6 +65,7 @@ set(HEADERS
 	"src/app/window_system.hpp"
 	"src/app/time_system.hpp"
 	"src/app/event_system.hpp"
+	"src/app/input_system.hpp"
 
 	# platform
 	"src/platform/platform.hpp"

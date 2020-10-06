@@ -23,19 +23,6 @@ mods_system::mods_system(entt::registry& registry)
 
         locator::mods::ref().load_prototypes(prototype_registry);
 
-        // TODO: remove --->>>
-        auto& protos = prototype_registry;
-        if (protos.get("soldier"_hs) != entt::null) {
-            spdlog::debug("EXISTS!");
-        } else {
-            auto id = entt::hashed_string::value("soldier");
-            spdlog::debug("NOT FOUND: {}({})", "soldier", id);
-        }
-
-        // using namespace std::chrono_literals;
-        // std::this_thread::sleep_for(2.1s);
-        // TODO: remove <<<---
-
         prg.complete();
     });
 }

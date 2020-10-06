@@ -55,7 +55,7 @@ static void add_option(nlohmann::json& j, std::string_view key,
 }
 
 config_system::config_system(entt::registry& registry)
-    : registry{registry}, config{registry.ctx_or_set<core_config>()} {
+    : registry{registry}, config{registry.ctx_or_set<nlohmann::json>()} {
     platform::setup_crash_handling(SDL_GetBasePath());
 
     const auto& args = registry.ctx<arg_list>();
