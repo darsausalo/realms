@@ -11,7 +11,9 @@ namespace motor {
 enum class stage {
     NONE,
     PRE_FRAME,
+    PRE_EVENT,
     ON_EVENT,
+    POST_EVENT,
     PRE_UPDATE,
     ON_UPDATE,
     POST_UPDATE,

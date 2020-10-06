@@ -59,6 +59,7 @@ set(HEADERS
 	"src/app/state_machine.hpp"
 	"src/app/config_system.hpp"
 	"src/app/window_system.hpp"
+	"src/app/time_system.hpp"
 	"src/app/event_system.hpp"
 
 	# platform

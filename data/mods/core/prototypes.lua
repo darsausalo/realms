@@ -20,6 +20,7 @@ prototypes:def({
       max = 400,
       value = 2
     },
+    timer = {duration = 1},
     tag = "enemy"
   }
 })

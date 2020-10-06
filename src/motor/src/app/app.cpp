@@ -2,6 +2,7 @@
 #include "app/config_system.hpp"
 #include "app/event_system.hpp"
 #include "app/state_machine.hpp"
+#include "app/time_system.hpp"
 #include "app/window_system.hpp"
 #include "mods/mods_system.hpp"
 #include "motor/entity/components.hpp"
@@ -15,6 +16,7 @@ namespace motor {
 
 app::app(int argc, const char* argv[]) {
     components::define<prototype>();
+    components::define<timer>();
 
     registry.set<arg_list>(argc, argv);
     registry.set<entt::dispatcher>() //
@@ -25,6 +27,8 @@ app::app(int argc, const char* argv[]) {
     add_system<config_system, stage::NONE>(registry);
     add_system<window_system, stage::PRE_FRAME>(registry);
     add_system<mods_system, stage::PRE_FRAME>(registry);
+    add_system<time_system, stage::PRE_EVENT>(registry);
+    add_system<timer_system, stage::PRE_EVENT>(registry);
     add_system<event_system, stage::ON_EVENT>(registry);
 }
 

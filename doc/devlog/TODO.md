@@ -8,7 +8,7 @@
 - [x] Prototypes Hot Reload
     - [x] Solve problem with prototypes reload: archetype{position, health} -> position override
     - [x] use test_system to watch changes
-- [ ] Timer
+- [x] Timer
 - [ ] Events Pipeline
 - [ ] Input
 - [ ] Refine Sytem Stages (System Groups)

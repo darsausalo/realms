@@ -1,38 +1,43 @@
 #include "frontier/states/game_state.hpp"
 #include "frontier/components/base.hpp"
-#include <chrono>
 #include <entt/signal/dispatcher.hpp>
+#include <motor/core/time.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
 
 struct test_system {
     entt::registry& registry;
-    std::chrono::steady_clock::time_point last_time{};
+    motor::time& time;
+    motor::timer timer;
 
-    test_system(entt::registry& registry) : registry{registry} {
+    test_system(entt::registry& registry)
+        : registry{registry}, time{registry.ctx<motor::time>()}, timer{1.0f,
+                                                                       0.0f} {
         spdlog::debug("test_system::start");
     }
     ~test_system() { spdlog::debug("test_system::stop"); }
 
     void operator()() {
-        using namespace std::chrono_literals;
-        auto now = std::chrono::steady_clock::now();
-        auto duration = std::chrono::duration<float>(now - last_time);
-        if (duration >= 1s) {
+        timer.tick(time.delta);
+        if (timer.finished) {
+            timer.reset();
+
             spdlog::debug("<<< tick >>>");
-            last_time = now;
 
-            registry.view<position>().each([](auto& p) {
-                p.x += 1;
-                p.y += 1;
-                spdlog::debug("p = {},{}", p.x, p.y);
-            });
-
-            registry.view<health>().each([](const auto& h) {
+            registry.view<const health>().each([](const auto& h) {
                 spdlog::debug("h = {},{}", h.max, h.value);
             });
         }
+
+        registry.view<motor::timer, position>().each([](auto& t, auto& p) {
+            if (t.finished) {
+                t.reset();
+                p.x += 1;
+                p.y += 1;
+                spdlog::debug("p = {},{}", p.x, p.y);
+            }
+        });
     }
 };
 
