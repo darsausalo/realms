@@ -1,6 +1,7 @@
 #include "file_watcher.hpp"
+#include "core/internal_events.hpp"
 #include "motor/app/locator.hpp"
-#include "motor/core/event.hpp"
+#include "motor/core/events.hpp"
 #include "motor/core/files_service.hpp"
 #include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>

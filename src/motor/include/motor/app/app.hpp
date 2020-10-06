@@ -1,7 +1,7 @@
 #ifndef MOTOR_APP_HPP
 #define MOTOR_APP_HPP
 
-#include "motor/core/event.hpp"
+#include "motor/core/events.hpp"
 #include "motor/entity/system_dispatcher.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>

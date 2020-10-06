@@ -1,7 +1,7 @@
 #ifndef MOTOR_INPUT_SYSTEM_HPP
 #define MOTOR_INPUT_SYSTEM_HPP
 
-#include "motor/core/event.hpp"
+#include "motor/core/events.hpp"
 #include "motor/core/input.hpp"
 #include "motor/core/utility.hpp"
 #include <entt/entity/fwd.hpp>

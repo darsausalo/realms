@@ -9,9 +9,9 @@
     - [x] Solve problem with prototypes reload: archetype{position, health} -> position override
     - [x] use test_system to watch changes
 - [x] Timer
-- [ ] Events Pipeline
-- [ ] Input
-- [ ] Refine Sytem Stages (System Groups)
+- [x] Events Pipeline
+- [x] Input
+- [x] Refine Sytem Stages (System Groups)
 - [ ] Resources
 - [ ] Graphics
 - [ ] Systems Scripting

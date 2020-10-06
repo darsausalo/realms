@@ -1,8 +1,9 @@
 #ifndef MOTOR_MODS_SYSTEM_HPP
 #define MOTOR_MODS_SYSTEM_HPP
 
+#include "core/internal_events.hpp"
 #include "core/progress.hpp"
-#include "motor/core/event.hpp"
+#include "motor/core/events.hpp"
 #include "platform/file_watcher.hpp"
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>

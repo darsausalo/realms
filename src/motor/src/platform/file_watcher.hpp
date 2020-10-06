@@ -9,18 +9,6 @@
 
 namespace motor {
 
-namespace event {
-
-enum class file_action { added, removed, modified, moved };
-
-struct file_changed {
-    file_action action;
-    std::filesystem::path path;
-    std::filesystem::path fullpath;
-};
-
-} // namespace event
-
 class file_watcher : public efsw::FileWatchListener {
 public:
     file_watcher(entt::dispatcher& dispatcher);

@@ -3,7 +3,7 @@
 
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <motor/core/event.hpp>
+#include <motor/core/events.hpp>
 #include <motor/core/input.hpp>
 #include <spdlog/spdlog.h>
 

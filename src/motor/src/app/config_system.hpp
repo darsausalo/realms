@@ -1,6 +1,7 @@
 #ifndef CONFIG_SYSTEM_HPP
 #define CONFIG_SYSTEM_HPP
 
+#include "core/internal_events.hpp"
 #include <entt/entity/fwd.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -19,18 +20,9 @@ public:
     }
 };
 
-namespace event {
-
-struct config_changed {
-    std::string key;
-    nlohmann::json value;
-};
-
-} // namespace event
-
 class config_system {
 public:
-    config_system(entt::registry& registry);
+    config_system(const arg_list& args, entt::registry& registry);
     ~config_system();
 
 private:

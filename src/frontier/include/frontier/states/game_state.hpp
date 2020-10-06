@@ -3,7 +3,7 @@
 
 #include <entt/signal/fwd.hpp>
 #include <motor/app/state.hpp>
-#include <motor/core/event.hpp>
+#include <motor/core/events.hpp>
 #include <motor/entity/prototype_registry.hpp>
 
 namespace frontier {
