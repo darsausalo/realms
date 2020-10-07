@@ -164,21 +164,18 @@ mods_system::mods_system(entt::registry& registry)
       watcher{dispatcher} {
     load_mods(mods, broken_mods);
 
+    dispatcher.sink<event::bootstrap>()
+            .connect<&mods_system::receive_bootstrap>(*this);
     dispatcher.sink<event::file_changed>()
             .connect<&mods_system::receive_file_changed>(*this);
-
-    thread = std::thread([this] {
-        prg.update("loading prototypes");
-
-        load_prototypes();
-
-        prg.complete();
-    });
 
     spdlog::debug("mods_system::start");
 }
 
 mods_system::~mods_system() {
+    dispatcher.sink<event::bootstrap>().disconnect(*this);
+    dispatcher.sink<event::file_changed>().disconnect(*this);
+
     if (thread.joinable()) {
         thread.join();
     }
@@ -235,6 +232,16 @@ void mods_system::start_watch_mods() {
     for (auto&& m : mods) {
         watcher.watch_directory(m.get_path());
     }
+}
+
+void mods_system::receive_bootstrap(const event::bootstrap&) {
+    thread = std::thread([this] {
+        prg.update("loading prototypes");
+
+        load_prototypes();
+
+        prg.complete();
+    });
 }
 
 void mods_system::receive_file_changed(const event::file_changed& e) {

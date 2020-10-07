@@ -34,6 +34,8 @@ app::app(int argc, const char* argv[]) {
 }
 
 void app::run_loop(std::shared_ptr<state>&& initial_state) {
+    registry.ctx<entt::dispatcher>().trigger<event::bootstrap>();
+
     state_machine states{std::move(initial_state)};
     while (states.is_running() && !should_close()) {
         states.update();

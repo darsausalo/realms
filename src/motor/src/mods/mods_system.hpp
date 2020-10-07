@@ -37,8 +37,9 @@ private:
     std::vector<mod> broken_mods{};
 
     void load_prototypes();
-
     void start_watch_mods();
+
+    void receive_bootstrap(const event::bootstrap&);
     void receive_file_changed(const event::file_changed& e);
 };
 

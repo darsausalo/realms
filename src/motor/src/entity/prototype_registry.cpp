@@ -40,6 +40,7 @@ void prototype_registry::transpire(const sol::table& defs) {
                                     : entt::hashed_string::value(
                                               std::data(comp_name));
                     if (!components::is_defined(comp_id)) {
+                        spdlog::warn("component '{}' not defined", comp_name);
                         return;
                     }
 
