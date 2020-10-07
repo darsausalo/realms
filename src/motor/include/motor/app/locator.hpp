@@ -6,11 +6,9 @@
 namespace motor {
 
 class files_service;
-class mods_service;
 
 struct locator {
     using files = entt::service_locator<files_service>;
-    using mods = entt::service_locator<mods_service>;
 };
 
 } // namespace motor

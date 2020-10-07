@@ -5,13 +5,13 @@ set(SOURCES
 	"src/core/binary_archive.cpp"
 	"src/core/lua_archive.cpp"
 	"src/core/files_service.cpp"
+	"src/core/scripts.cpp"
 
 	# entity
 	"src/entity/prototype_registry.cpp"
 	"src/entity/system_dispatcher.cpp"
 
 	# mods
-	"src/mods/mods_service.cpp"
 	"src/mods/mods_system.cpp"
 
 	# resources
@@ -44,6 +44,7 @@ set(HEADERS
 	"include/motor/core/time.hpp"
 	"include/motor/core/events.hpp"
 	"include/motor/core/input.hpp"
+	"include/motor/core/scripts.hpp"
 
 	"src/core/progress.hpp"
 
@@ -54,7 +55,6 @@ set(HEADERS
 
 	# mods
 	"include/motor/mods/mod.hpp"
-	"include/motor/mods/mods_service.hpp"
 
 	"src/mods/mods_system.hpp"
 
