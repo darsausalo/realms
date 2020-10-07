@@ -2,7 +2,10 @@
 #define FRONTIER_COMPONENTS_SERIALIZATION_HPP
 
 #include "frontier/components/base.hpp"
+#include <entt/core/hashed_string.hpp>
 #include <motor/core/archive.hpp>
+#include <motor/resources/image_loader.hpp>
+#include <motor/resources/resources.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -27,11 +30,11 @@ void serialize(Archive& ar, health& value) {
 
 template<typename Archive>
 void serialize(Archive& ar, sprite& value) {
-    std::string sprite_resource;
-    // ar.member("resource", sprite_resource);
-    ar(sprite_resource);
-    spdlog::debug("sprite_resource: {}", sprite_resource);
-    value.resource = sprite_resource;
+    std::string name;
+    ar(name);
+    spdlog::debug("sprite_resource: {}", name);
+    value.image = motor::resources::image.load<motor::image_loader>(
+            entt::hashed_string{std::data(name)}, name);
 }
 
 } // namespace frontier

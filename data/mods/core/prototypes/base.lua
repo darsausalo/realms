@@ -1,5 +1,5 @@
 prototypes:def({
   ["@with_sprite"] = {
-    sprite = "Sprite2"
+    sprite = "core/resources/wabbit.png"
   }
 });

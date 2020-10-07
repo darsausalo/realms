@@ -16,6 +16,8 @@ find_package(EnTT CONFIG REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(efsw CONFIG REQUIRED)
 
+find_path(STB_INCLUDE_DIRS "stb.h")
+
 include(FindLua)
 find_package(Lua REQUIRED)
 

@@ -1,8 +1,8 @@
 #ifndef FRONTIER_COMPONENTS_H
 #define FRONTIER_COMPONENTS_H
 
-#include <entt/core/type_info.hpp>
-#include <string>
+#include <entt/resource/handle.hpp>
+#include <motor/resources/image.hpp>
 
 namespace frontier {
 
@@ -22,7 +22,7 @@ struct health {
 };
 
 struct sprite {
-    std::string resource;
+    entt::handle<motor::image> image;
 };
 
 } // namespace frontier

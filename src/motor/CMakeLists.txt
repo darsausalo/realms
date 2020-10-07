@@ -14,6 +14,9 @@ set(SOURCES
 	"src/mods/mods_service.cpp"
 	"src/mods/mods_system.cpp"
 
+	# resources
+	"src/resources/image.cpp"
+
 	# app
 	"src/app/state.cpp"
 	"src/app/state_machine.cpp"
@@ -39,7 +42,7 @@ set(HEADERS
 	"include/motor/core/lua_archive.hpp"
 	"include/motor/core/files_service.hpp"
 	"include/motor/core/time.hpp"
-	"include/motor/core/event.hpp"
+	"include/motor/core/events.hpp"
 	"include/motor/core/input.hpp"
 
 	"src/core/progress.hpp"
@@ -54,6 +57,11 @@ set(HEADERS
 	"include/motor/mods/mods_service.hpp"
 
 	"src/mods/mods_system.hpp"
+
+	# resources
+	"include/motor/resources/image.hpp"
+	"include/motor/resources/image_loader.hpp"
+	"include/motor/resources/resources.hpp"
 
 	# app
 	"include/motor/app/transition.hpp"
@@ -84,6 +92,7 @@ target_compile_definitions(motor PRIVATE
 	-DMOTOR_TEST_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/data/mods/core"
 )
 target_include_directories(motor PRIVATE
+	${STB_INCLUDE_DIRS}
 	${LUA_INCLUDE_DIR}
 )
 target_link_libraries(motor PRIVATE
