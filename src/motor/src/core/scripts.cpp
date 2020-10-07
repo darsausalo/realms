@@ -1,6 +1,5 @@
 #include "motor/core/scripts.hpp"
-#include "motor/app/locator.hpp"
-#include "motor/core/files_service.hpp"
+#include "motor/core/filesystem.hpp"
 #include <fmt/core.h>
 #include <fstream>
 #include <spdlog/spdlog.h>
@@ -67,17 +66,15 @@ void run(sol::state& lua,
         for (auto&& script_name : libs) {
             lua.require_file(
                     std::string{script_name},
-                    locator::files::ref()
-                            .get_full_path(fmt::format("mods/core/lib/{}.lua",
-                                                       script_name))
+                    filesystem::full_path(
+                            fmt::format("mods/core/lib/{}.lua", script_name))
                             .string());
         }
 
         for (auto&& script_name : preloads) {
             lua.script_file(
-                    locator::files::ref()
-                            .get_full_path(fmt::format("mods/core/lib/{}.lua",
-                                                       script_name))
+                    filesystem::full_path(
+                            fmt::format("mods/core/lib/{}.lua", script_name))
                             .string());
         }
 

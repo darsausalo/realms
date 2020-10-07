@@ -1,6 +1,5 @@
 #include "motor/resources/image.hpp"
-#include "motor/app/locator.hpp"
-#include "motor/core/files_service.hpp"
+#include "motor/core/filesystem.hpp"
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
@@ -11,7 +10,7 @@ namespace motor {
 
 image::image(std::string_view name) {
     std::filesystem::path path =
-            locator::files::ref().get_full_path(fmt::format("mods/{}", name));
+            filesystem::full_path(fmt::format("mods/{}", name));
     path.make_preferred();
     stbi_set_flip_vertically_on_load(true);
     int n;

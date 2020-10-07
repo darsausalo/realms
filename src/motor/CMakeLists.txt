@@ -4,7 +4,7 @@ set(SOURCES
 	# core
 	"src/core/binary_archive.cpp"
 	"src/core/lua_archive.cpp"
-	"src/core/files_service.cpp"
+	"src/core/filesystem.cpp"
 	"src/core/scripts.cpp"
 
 	# entity
@@ -40,7 +40,7 @@ set(HEADERS
 	"include/motor/core/archive.hpp"
 	"include/motor/core/binary_archive.hpp"
 	"include/motor/core/lua_archive.hpp"
-	"include/motor/core/files_service.hpp"
+	"include/motor/core/filesystem.hpp"
 	"include/motor/core/time.hpp"
 	"include/motor/core/events.hpp"
 	"include/motor/core/input.hpp"

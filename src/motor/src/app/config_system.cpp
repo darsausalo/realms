@@ -1,6 +1,6 @@
 #include "config_system.hpp"
-#include "motor/app/locator.hpp"
-#include "motor/core/files_service.hpp"
+#include "core/internal_filesystem.hpp"
+#include "motor/core/filesystem.hpp"
 #include "platform/platform.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -97,14 +97,13 @@ config_system::config_system(const arg_list& args, entt::registry& registry)
     spdlog::info("{} v{} started", MOTOR_PROJECT_TITLE, MOTOR_PROJECT_VERSION);
     spdlog::info("mimalloc: {}", mi_version());
 
-    locator::files::set<files_service>(base_path, data_path, user_path);
-    auto& files = locator::files::ref();
+    filesystem::init(base_path, data_path, user_path);
 
-    spdlog::info("base path: {}", files.get_base_path().string());
-    spdlog::info("data path: {}", files.get_data_path().string());
-    spdlog::info("user path: {}", files.get_user_path().string());
+    spdlog::info("base path: {}", filesystem::base().string());
+    spdlog::info("data path: {}", filesystem::data().string());
+    spdlog::info("user path: {}", filesystem::user().string());
 
-    std::ifstream cfg_file(locator::files::ref().get_full_path("config.json"));
+    std::ifstream cfg_file(filesystem::full_path("config.json"));
     try {
         cfg_file >> config;
     } catch (nlohmann::json::exception& e) {
@@ -130,15 +129,12 @@ config_system::config_system(const arg_list& args, entt::registry& registry)
 config_system::~config_system() {
     spdlog::debug("config_system::stop");
 
-    locator::files::reset();
-
     SDL_Quit();
 }
 
 void config_system::receive_config_changed(const event::config_changed&) {
     try {
-        std::ofstream cfg_file(
-                locator::files::ref().get_full_path("config.json", true));
+        std::ofstream cfg_file(filesystem::full_path("config.json", true));
         cfg_file << std::setw(4) << config;
     } catch (std::exception& e) {
         spdlog::error("failed to write config.json save: {}", e.what());

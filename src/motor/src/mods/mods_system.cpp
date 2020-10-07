@@ -1,7 +1,6 @@
 #include "mods_system.hpp"
-#include "motor/app/locator.hpp"
 #include "motor/core/events.hpp"
-#include "motor/core/files_service.hpp"
+#include "motor/core/filesystem.hpp"
 #include "motor/core/scripts.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -93,7 +92,7 @@ void from_json(const nlohmann::json& j, mod_manifest& m) {
 }
 
 static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
-    auto& mods_path = locator::files::ref().get_data_path() / "mods";
+    auto& mods_path = filesystem::data() / "mods";
 
     if (!std::filesystem::exists(mods_path)) {
         throw std::runtime_error(fmt::format("mods directory '{}' not found",
@@ -110,7 +109,7 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
         mod_descs.push_back(std::make_pair(name, path));
     }
 
-    mods_path = locator::files::ref().get_user_path() / "mods";
+    mods_path = filesystem::user() / "mods";
     if (std::filesystem::exists(mods_path)) {
         for (auto& p : std::filesystem::directory_iterator(mods_path)) {
             auto path = p.path();
