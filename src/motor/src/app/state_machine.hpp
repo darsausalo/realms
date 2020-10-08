@@ -7,8 +7,6 @@
 
 namespace motor {
 
-class system_dispatcher;
-
 class state_machine {
 public:
     state_machine(std::shared_ptr<state>&& initial_state);

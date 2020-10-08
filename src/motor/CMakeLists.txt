@@ -17,6 +17,9 @@ set(SOURCES
 	# resources
 	"src/resources/image.cpp"
 
+	# graphics
+	"src/graphics/graphics_system.cpp"
+
 	# app
 	"src/app/state.cpp"
 	"src/app/state_machine.cpp"
@@ -63,6 +66,11 @@ set(HEADERS
 	"include/motor/resources/image_loader.hpp"
 	"include/motor/resources/resources.hpp"
 
+	# graphics
+	"include/motor/graphics/screen.hpp"
+
+	"src/graphics/graphics_system.hpp"
+
 	# app
 	"include/motor/app/transition.hpp"
 	"include/motor/app/state.hpp"
@@ -93,6 +101,7 @@ target_compile_definitions(motor PRIVATE
 )
 target_include_directories(motor PRIVATE
 	${STB_INCLUDE_DIRS}
+	${SOKOL_INCLUDE_DIRS}
 	${LUA_INCLUDE_DIR}
 )
 target_link_libraries(motor PRIVATE
@@ -101,6 +110,7 @@ target_link_libraries(motor PRIVATE
 	nlohmann_json::nlohmann_json
 	efsw::efsw
 	SDL2::SDL2
+	GLEW::GLEW
 	sol2::sol2
 	${LUA_LIBRARIES}
 )

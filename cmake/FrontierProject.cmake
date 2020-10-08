@@ -17,6 +17,9 @@ find_package(sol2 CONFIG REQUIRED)
 find_package(efsw CONFIG REQUIRED)
 
 find_path(STB_INCLUDE_DIRS "stb.h")
+find_path(SOKOL_INCLUDE_DIRS "sokol_app.h")
+
+find_package(GLEW REQUIRED)
 
 include(FindLua)
 find_package(Lua REQUIRED)

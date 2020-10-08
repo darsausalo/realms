@@ -1,6 +1,7 @@
 #ifndef MOTOR_WINDOW_SYSTEM_HPP
 #define MOTOR_WINDOW_SYSTEM_HPP
 
+#include "motor/graphics/screen.hpp"
 #include <SDL.h>
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
@@ -23,6 +24,7 @@ struct window_config {
     bool fullscreen;
     window_position position;
     window_size size;
+    bool vsync;
 };
 
 class window_system {
@@ -35,8 +37,10 @@ public:
 private:
     entt::registry& registry;
     entt::dispatcher& dispatcher;
+    screen& screen;
     window_config config;
     SDL_Window* window{};
+    SDL_GLContext ctx;
 };
 
 } // namespace motor

@@ -5,6 +5,7 @@
     "window": {
         "fullscreen": false,
         "monitor": "default",
+        "vsync": true,
         "position": {
             "x": 0,
             "y": 0

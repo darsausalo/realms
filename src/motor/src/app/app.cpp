@@ -5,6 +5,7 @@
 #include "app/state_machine.hpp"
 #include "app/time_system.hpp"
 #include "app/window_system.hpp"
+#include "graphics/graphics_system.hpp"
 #include "mods/mods_system.hpp"
 #include "motor/entity/components.hpp"
 #include "motor/entity/prototype_registry.hpp"
@@ -25,12 +26,13 @@ app::app(int argc, const char* argv[]) {
     registry.set<prototype_registry>();
 
     add_system<config_system, stage::NONE>(arg_list{argc, argv}, registry);
-    add_system<window_system, stage::PRE_FRAME>(registry);
+    add_system<window_system, stage::POST_FRAME>(registry);
     add_system<mods_system, stage::PRE_FRAME>(registry);
     add_system<time_system, stage::PRE_EVENT>(registry);
     add_system<timer_system, stage::PRE_EVENT>(registry);
     add_system<input_system, stage::PRE_EVENT>(registry);
     add_system<event_system, stage::ON_EVENT>(registry);
+    add_system<graphics_system, stage::POST_UPDATE>(registry);
 }
 
 void app::run_loop(std::shared_ptr<state>&& initial_state) {

@@ -38,16 +38,26 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("fullscreen").get_to(c.fullscreen);
     j.at("position").get_to(c.position);
     j.at("size").get_to(c.size);
+    j.at("vsync").get_to(c.vsync);
 }
 
 window_system::window_system(entt::registry& registry)
     : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
+      screen{registry.ctx_or_set<motor::screen>()}, //
       config{"default", false, {0, 0}, {1280, 768}} {
     try {
         registry.ctx<nlohmann::json>().at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
+                        SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     int x = config.position.x != 0 ? config.position.x
                                    : SDL_WINDOWPOS_UNDEFINED;
@@ -60,11 +70,18 @@ window_system::window_system(entt::registry& registry)
                 fmt::format("Could not create window: {}", SDL_GetError()));
     }
 
+    ctx = SDL_GL_CreateContext(window);
+    SDL_GL_MakeCurrent(window, ctx);
+    SDL_GL_SetSwapInterval(config.vsync);
+
+    SDL_GL_GetDrawableSize(window, &screen.width, &screen.height);
+
     spdlog::debug("window_system::start");
 }
 
 window_system::~window_system() {
     spdlog::debug("window_system::stop");
+    SDL_GL_DeleteContext(ctx);
     SDL_DestroyWindow(window);
 }
 
@@ -95,6 +112,8 @@ void window_system::operator()() {
             spdlog::error("failed to update config['window']: {}", e.what());
         }
     }
+
+    SDL_GL_SwapWindow(window);
 }
 
 } // namespace motor
