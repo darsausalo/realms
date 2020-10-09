@@ -1,5 +1,5 @@
-#ifndef CONFIG_SYSTEM_HPP
-#define CONFIG_SYSTEM_HPP
+#ifndef CONFIG_PLUGIN_HPP
+#define CONFIG_PLUGIN_HPP
 
 #include "core/internal_events.hpp"
 #include <entt/entity/fwd.hpp>
@@ -22,10 +22,10 @@ public:
     }
 };
 
-class config_system {
+class config_plugin {
 public:
-    config_system(const arg_list& args, app_builder& app);
-    ~config_system();
+    config_plugin(const arg_list& args, app_builder& app);
+    ~config_plugin();
 
 private:
     nlohmann::json& config;
@@ -35,4 +35,4 @@ private:
 
 } // namespace motor
 
-#endif // CONFIG_SYSTEM_HPP
+#endif // CONFIG_PLUGIN_HPP

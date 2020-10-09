@@ -1,5 +1,5 @@
-#ifndef MOTOR_INPUT_SYSTEM_HPP
-#define MOTOR_INPUT_SYSTEM_HPP
+#ifndef MOTOR_INPUT_PLUGIN_HPP
+#define MOTOR_INPUT_PLUGIN_HPP
 
 #include "motor/core/events.hpp"
 #include "motor/core/input.hpp"
@@ -40,10 +40,10 @@ namespace motor {
 
 class app_builder;
 
-class input_system {
+class input_plugin {
 public:
-    input_system(app_builder& app);
-    ~input_system();
+    input_plugin(app_builder& app);
+    ~input_plugin();
 
 private:
     entt::dispatcher& dispatcher;
@@ -68,4 +68,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_INPUT_SYSTEM_HPP
+#endif // MOTOR_INPUT_PLUGIN_HPP

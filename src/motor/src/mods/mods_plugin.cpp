@@ -1,4 +1,4 @@
-#include "mods_system.hpp"
+#include "mods_plugin.hpp"
 #include "motor/app/app_builder.hpp"
 #include "motor/core/events.hpp"
 #include "motor/core/filesystem.hpp"
@@ -159,23 +159,23 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
 
 //==============================================================================
 
-mods_system::mods_system(app_builder& app)
+mods_plugin::mods_plugin(app_builder& app)
     : registry{app.registry()}, dispatcher{app.dispatcher()},
       prototypes{app.registry().ctx<motor::prototype_registry>()},
       watcher{dispatcher} {
     load_mods(mods, broken_mods);
 
     dispatcher.sink<event::bootstrap>()
-            .connect<&mods_system::receive_bootstrap>(*this);
+            .connect<&mods_plugin::receive_bootstrap>(*this);
     dispatcher.sink<event::file_changed>()
-            .connect<&mods_system::receive_file_changed>(*this);
+            .connect<&mods_plugin::receive_file_changed>(*this);
 
-    app.add_system_to_stage<&mods_system::update>("pre_frame"_hs, *this);
+    app.add_system_to_stage<&mods_plugin::update>("pre_frame"_hs, *this);
 
     dispatcher.enqueue<event::bootstrap>();
 }
 
-mods_system::~mods_system() {
+mods_plugin::~mods_plugin() {
     dispatcher.disconnect(*this);
 
     if (thread.joinable()) {
@@ -183,7 +183,7 @@ mods_system::~mods_system() {
     }
 }
 
-void mods_system::update() {
+void mods_plugin::update() {
     if (!loaded) {
         if (prg.is_completed()) {
             loaded = true;
@@ -195,7 +195,7 @@ void mods_system::update() {
     }
 }
 
-void mods_system::load_prototypes() {
+void mods_plugin::load_prototypes() {
     std::vector<std::filesystem::path> script_paths;
     for (auto&& m : mods) {
         script_paths.push_back(m.get_path() / "prototypes.lua");
@@ -229,13 +229,13 @@ void mods_system::load_prototypes() {
     }
 }
 
-void mods_system::start_watch_mods() {
+void mods_plugin::start_watch_mods() {
     for (auto&& m : mods) {
         watcher.watch_directory(m.get_path());
     }
 }
 
-void mods_system::receive_bootstrap(const event::bootstrap&) {
+void mods_plugin::receive_bootstrap(const event::bootstrap&) {
     thread = std::thread([this] {
         prg.update("loading prototypes");
 
@@ -245,7 +245,7 @@ void mods_system::receive_bootstrap(const event::bootstrap&) {
     });
 }
 
-void mods_system::receive_file_changed(const event::file_changed& e) {
+void mods_plugin::receive_file_changed(const event::file_changed& e) {
     spdlog::debug("file changed: {}", e.path.string());
     if (!loaded) {
         spdlog::error("can't hot reload: mods system in loading state");

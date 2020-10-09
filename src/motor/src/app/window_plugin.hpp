@@ -1,5 +1,5 @@
-#ifndef MOTOR_WINDOW_SYSTEM_HPP
-#define MOTOR_WINDOW_SYSTEM_HPP
+#ifndef MOTOR_WINDOW_PLUGIN_HPP
+#define MOTOR_WINDOW_PLUGIN_HPP
 
 #include "motor/graphics/screen.hpp"
 #include <SDL.h>
@@ -30,10 +30,10 @@ struct window_config {
     bool vsync;
 };
 
-class window_system {
+class window_plugin {
 public:
-    window_system(app_builder& app);
-    ~window_system();
+    window_plugin(app_builder& app);
+    ~window_plugin();
 
 private:
     entt::dispatcher& dispatcher;
@@ -50,4 +50,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_WINDOW_SYSTEM_HPP
+#endif // MOTOR_WINDOW_PLUGIN_HPP

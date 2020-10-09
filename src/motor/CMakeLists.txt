@@ -12,18 +12,18 @@ set(SOURCES
 	"src/entity/scheduler.cpp"
 
 	# mods
-	"src/mods/mods_system.cpp"
+	"src/mods/mods_plugin.cpp"
 
 	# resources
 	# "src/resources/image.cpp"
 
 	# graphics
-	"src/graphics/graphics_system.cpp"
+	"src/graphics/graphics_plugin.cpp"
 
 	# app
-	"src/app/config_system.cpp"
-	"src/app/window_system.cpp"
-	"src/app/input_system.cpp"
+	"src/app/config_plugin.cpp"
+	"src/app/window_plugin.cpp"
+	"src/app/input_plugin.cpp"
 	"src/app/app_builder.cpp"
 	"src/app/app.cpp"
 
@@ -58,7 +58,7 @@ set(HEADERS
 	# mods
 	"include/motor/mods/mod.hpp"
 
-	"src/mods/mods_system.hpp"
+	"src/mods/mods_plugin.hpp"
 
 	# resources
 	# "include/motor/resources/image.hpp"
@@ -68,16 +68,16 @@ set(HEADERS
 	# graphics
 	"include/motor/graphics/screen.hpp"
 
-	"src/graphics/graphics_system.hpp"
+	"src/graphics/graphics_plugin.hpp"
 
 	# app
 	"include/motor/app/app.hpp"
 	"include/motor/app/app_builder.hpp"
 
-	"src/app/config_system.hpp"
-	"src/app/window_system.hpp"
-	"src/app/time_system.hpp"
-	"src/app/input_system.hpp"
+	"src/app/config_plugin.hpp"
+	"src/app/window_plugin.hpp"
+	"src/app/time_plugin.hpp"
+	"src/app/input_plugin.hpp"
 
 	# platform
 	"src/platform/platform.hpp"

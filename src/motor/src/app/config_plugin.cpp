@@ -1,4 +1,4 @@
-#include "config_system.hpp"
+#include "config_plugin.hpp"
 #include "core/internal_filesystem.hpp"
 #include "motor/app/app_builder.hpp"
 #include "motor/core/filesystem.hpp"
@@ -55,7 +55,7 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system(const arg_list& args, app_builder& app)
+config_plugin::config_plugin(const arg_list& args, app_builder& app)
     : config{app.registry().ctx_or_set<nlohmann::json>()} {
     platform::setup_crash_handling(SDL_GetBasePath());
 
@@ -122,14 +122,14 @@ config_system::config_system(const arg_list& args, app_builder& app)
 
     app.dispatcher()
             .sink<event::config_changed>()
-            .connect<&config_system::receive>(*this);
+            .connect<&config_plugin::receive>(*this);
 }
 
-config_system::~config_system() {
+config_plugin::~config_plugin() {
     SDL_Quit();
 }
 
-void config_system::receive(const event::config_changed&) {
+void config_plugin::receive(const event::config_changed&) {
     try {
         std::ofstream cfg_file(filesystem::full_path("config.json", true));
         cfg_file << std::setw(4) << config;

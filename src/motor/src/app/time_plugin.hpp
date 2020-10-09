@@ -1,5 +1,5 @@
-#ifndef MOTOR_TIME_SYSTEM_HPP
-#define MOTOR_TIME_SYSTEM_HPP
+#ifndef MOTOR_TIME_PLUGIN_HPP
+#define MOTOR_TIME_PLUGIN_HPP
 
 #include "motor/app/app_builder.hpp"
 #include "motor/core/archive.hpp"
@@ -10,17 +10,17 @@
 
 namespace motor {
 
-class time_system {
+class time_plugin {
     using clock = std::chrono::steady_clock;
     using time_point = clock::time_point;
 
 public:
-    time_system(app_builder& app)
+    time_plugin(app_builder& app)
         : start_point{clock::now()}, last_point{clock::now()} {
         app.define_component<timer>();
-        app.add_system_to_stage<&time_system::update_time>("pre_frame"_hs,
+        app.add_system_to_stage<&time_plugin::update_time>("pre_frame"_hs,
                                                            *this);
-        app.add_system_to_stage<&time_system::update_timer>("pre_frame"_hs,
+        app.add_system_to_stage<&time_plugin::update_timer>("pre_frame"_hs,
                                                             *this);
     }
 
@@ -50,4 +50,4 @@ void serialize(Archive& ar, timer& value) {
 
 } // namespace motor
 
-#endif
+#endif // MOTOR_TIME_PLUGIN_HPP

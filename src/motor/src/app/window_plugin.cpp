@@ -1,5 +1,5 @@
-#include "window_system.hpp"
-#include "config_system.hpp"
+#include "window_plugin.hpp"
+#include "core/internal_events.hpp"
 #include "motor/app/app_builder.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -42,7 +42,7 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("vsync").get_to(c.vsync);
 }
 
-window_system::window_system(app_builder& app)
+window_plugin::window_plugin(app_builder& app)
     : dispatcher{app.dispatcher()},                  //
       screen{app.registry().set<motor::screen>()},   //
       jconfig{app.registry().ctx<nlohmann::json>()}, //
@@ -79,21 +79,21 @@ window_system::window_system(app_builder& app)
 
     SDL_GL_GetDrawableSize(window, &screen.width, &screen.height);
 
-    app.add_system_to_stage<&window_system::update_position>("pre_frame"_hs,
+    app.add_system_to_stage<&window_plugin::update_position>("pre_frame"_hs,
                                                              *this);
-    app.add_system_to_stage<&window_system::poll_events>("event"_hs, *this);
-    app.add_system_to_stage<&window_system::swap_buffers>("post_frame"_hs,
+    app.add_system_to_stage<&window_plugin::poll_events>("event"_hs, *this);
+    app.add_system_to_stage<&window_plugin::swap_buffers>("post_frame"_hs,
                                                           *this);
 
     // TODO: poll_events should be sync point
 }
 
-window_system::~window_system() {
+window_plugin::~window_plugin() {
     SDL_GL_DeleteContext(ctx);
     SDL_DestroyWindow(window);
 }
 
-void window_system::update_position() {
+void window_plugin::update_position() {
     bool modified = false;
 
     int x, y;
@@ -122,7 +122,7 @@ void window_system::update_position() {
     }
 }
 
-void window_system::poll_events() {
+void window_plugin::poll_events() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
@@ -162,7 +162,7 @@ void window_system::poll_events() {
     dispatcher.update();
 }
 
-void window_system::swap_buffers() {
+void window_plugin::swap_buffers() {
     SDL_GL_SwapWindow(window);
 }
 

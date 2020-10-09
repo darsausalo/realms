@@ -1,10 +1,10 @@
 #include "motor/app/app_builder.hpp"
-#include "app/config_system.hpp"
-#include "app/input_system.hpp"
-#include "app/time_system.hpp"
-#include "app/window_system.hpp"
-#include "graphics/graphics_system.hpp"
-#include "mods/mods_system.hpp"
+#include "app/config_plugin.hpp"
+#include "app/input_plugin.hpp"
+#include "app/time_plugin.hpp"
+#include "app/window_plugin.hpp"
+#include "graphics/graphics_plugin.hpp"
+#include "mods/mods_plugin.hpp"
 #include "motor/core/input.hpp"
 #include <spdlog/spdlog.h>
 
@@ -22,12 +22,12 @@ void print_debug_info(const entt::registry& registry) {
 }
 
 app_builder& app_builder::add_default_plugins(int argc, const char* argv[]) {
-    return add_plugin<config_system>(arg_list{argc, argv})
-            .add_plugin<time_system>()
-            .add_plugin<window_system>()
-            .add_plugin<input_system>()
-            .add_plugin<mods_system>()
-            .add_plugin<graphics_system>()
+    return add_plugin<config_plugin>(arg_list{argc, argv})
+            .add_plugin<time_plugin>()
+            .add_plugin<window_plugin>()
+            .add_plugin<input_plugin>()
+            .add_plugin<mods_plugin>()
+            .add_plugin<graphics_plugin>()
             .add_system<&print_debug_info>("post_frame"_hs);
 }
 

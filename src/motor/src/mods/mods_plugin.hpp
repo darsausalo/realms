@@ -1,5 +1,5 @@
-#ifndef MOTOR_MODS_SYSTEM_HPP
-#define MOTOR_MODS_SYSTEM_HPP
+#ifndef MOTOR_MODS_PLUGIN_HPP
+#define MOTOR_MODS_PLUGIN_HPP
 
 #include "core/internal_events.hpp"
 #include "core/progress.hpp"
@@ -17,10 +17,10 @@ namespace motor {
 class app_builder;
 class prototype_registry;
 
-class mods_system {
+class mods_plugin {
 public:
-    mods_system(app_builder& app);
-    ~mods_system();
+    mods_plugin(app_builder& app);
+    ~mods_plugin();
 
 private:
     entt::registry& registry;
@@ -46,4 +46,4 @@ private:
 
 } // namespace motor
 
-#endif // MOTOR_MODS_SYSTEM_HPP
+#endif // MOTOR_MODS_PLUGIN_HPP
