@@ -2,59 +2,48 @@
 #define MOTOR_APP_HPP
 
 #include "motor/core/events.hpp"
-#include "motor/entity/system_dispatcher.hpp"
+#include "motor/entity/prototype_registry.hpp"
+#include "motor/entity/scheduler.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace motor {
 
-class state;
+class app_builder;
 
 class app {
-    using create_state_fn = std::function<std::shared_ptr<state>()>;
+    friend app_builder;
+
+    struct plugin_data {
+        std::string_view name;
+        std::unique_ptr<void, void (*)(void*)> instance;
+    };
+
+    app();
 
 public:
-    app(const app&) = delete;
-    app(app&&) = delete;
-
-    app& operator=(const app&) = delete;
-    app& operator=(app&&) = delete;
-
-    const entt::registry& get_registry() const { return registry; }
-    entt::registry& get_registry() { return registry; }
-
-    template<typename System, stage Stage = stage::ON_UPDATE, typename... Args>
-    entt::id_type add_system(Args&&... args) {
-        return dispatcher.add<System, Stage>(std::forward<Args>(args)...);
-    }
-
-    template<stage Stage = stage::ON_UPDATE, typename Func>
-    auto add_system(Func func) {
-        return dispatcher.add<Stage, Func>(func);
-    }
-
-    void remove_system(entt::id_type type_id) { dispatcher.remove(type_id); }
-
-    template<typename InitialState>
-    int run() {
-        run_loop(std::move(std::make_shared<InitialState>(*this)));
-        return 0;
-    }
-
-protected:
     entt::registry registry{};
-    system_dispatcher dispatcher{};
+    scheduler scheduler{};
+    entt::dispatcher& dispatcher;
+    prototype_registry& prototypes;
 
-    app(int argc, const char* argv[]);
+    app(app&&) = default;
+    app& operator=(app&&) = default;
+
+    ~app();
+
+    static app_builder build();
+
+    void run();
 
 private:
-    bool quit_requested{};
+    bool should_quit{};
+    std::vector<plugin_data> plugins{};
 
-    bool should_close();
-
-    void run_loop(std::shared_ptr<state>&& initial_state);
-
-    void receive_quit(const event::quit&) { quit_requested = true; }
+    void receive(const event::quit&) { should_quit = true; }
 };
 
 } // namespace motor

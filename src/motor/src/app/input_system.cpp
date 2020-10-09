@@ -1,7 +1,7 @@
 #include "app/input_system.hpp"
+#include "motor/app/app_builder.hpp"
 #include "motor/core/algorithm.hpp"
 #include <SDL.h>
-#include <algorithm>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <nlohmann/json.hpp>
@@ -40,7 +40,8 @@ static action_key parse_action_key(std::string_view text) {
     std::string key_name{};
     for (auto&& s : parts) {
         std::string name{s};
-        std::transform(name.begin(), name.end(), name.begin(), std::toupper);
+        std::transform(name.begin(), name.end(), name.begin(),
+                       [](unsigned char c) { return std::toupper(c); });
         if (name == MOD_NAME_CTRL) {
             key_modifiers |= KMOD_CTRL;
         } else if (name == MOD_NAME_SHIFT) {
@@ -69,10 +70,11 @@ parse_keymap(nlohmann::json config,
     }
 }
 
-input_system::input_system(entt::registry& registry)
-    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
-      pointer_position{registry.set<cursor_position>()},
-      actions{registry.set<input_actions>()} {
+input_system::input_system(app_builder& app)
+    : dispatcher{app.dispatcher()},
+      jconfig{app.registry().ctx_or_set<nlohmann::json>()},
+      pointer_position{app.registry().set<cursor_position>()},
+      actions{app.registry().set<input_actions>()} {
     dispatcher.sink<event::keyboard_input>()
             .connect<&input_system::receive_keyboard_input>(*this);
     dispatcher.sink<event::mouse_button_input>()
@@ -85,30 +87,23 @@ input_system::input_system(entt::registry& registry)
     SDL_GetMouseState(&pointer_position.x, &pointer_position.y);
 
     try {
-        auto& config = registry.ctx<nlohmann::json>();
-        if (config.contains("input") && config.at("input").contains("keymap")) {
-            parse_keymap(config.at("input").at("keymap"), keymap);
+        if (jconfig.contains("input") &&
+            jconfig.at("input").contains("keymap")) {
+            parse_keymap(jconfig.at("input").at("keymap"), keymap);
         }
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid input config: {}", e.what());
     }
 
-    spdlog::debug("input_system::start");
+    app.add_system_to_stage<&input_system::update_actions>("pre_event"_hs,
+                                                           *this);
 }
 
 input_system::~input_system() {
-    spdlog::debug("input_system::stop");
-
-    dispatcher.sink<event::keyboard_input>().disconnect(*this);
-    dispatcher.sink<event::mouse_button_input>().disconnect(*this);
-    dispatcher.sink<event::mouse_motion_input>().disconnect(*this);
-    dispatcher.sink<event::mouse_wheel_input>().disconnect(*this);
-
-    registry.unset<input_actions>();
-    registry.unset<cursor_position>();
+    dispatcher.disconnect(*this);
 }
 
-void input_system::operator()() {
+void input_system::update_actions() {
     actions.update();
 }
 

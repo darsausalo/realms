@@ -9,24 +9,22 @@ set(SOURCES
 
 	# entity
 	"src/entity/prototype_registry.cpp"
-	"src/entity/system_dispatcher.cpp"
+	"src/entity/scheduler.cpp"
 
 	# mods
 	"src/mods/mods_system.cpp"
 
 	# resources
-	"src/resources/image.cpp"
+	# "src/resources/image.cpp"
 
 	# graphics
 	"src/graphics/graphics_system.cpp"
 
 	# app
-	"src/app/state.cpp"
-	"src/app/state_machine.cpp"
 	"src/app/config_system.cpp"
 	"src/app/window_system.cpp"
-	"src/app/event_system.cpp"
 	"src/app/input_system.cpp"
+	"src/app/app_builder.cpp"
 	"src/app/app.cpp"
 
 	# platform
@@ -52,9 +50,10 @@ set(HEADERS
 	"src/core/progress.hpp"
 
 	# entity
-	"include/motor/entity/components.hpp"
+	"include/motor/entity/component_registry.hpp"
 	"include/motor/entity/prototype_registry.hpp"
-	"include/motor/entity/system_dispatcher.hpp"
+	"include/motor/entity/scheduler.hpp"
+	"include/motor/entity/executor.hpp"
 
 	# mods
 	"include/motor/mods/mod.hpp"
@@ -62,9 +61,9 @@ set(HEADERS
 	"src/mods/mods_system.hpp"
 
 	# resources
-	"include/motor/resources/image.hpp"
-	"include/motor/resources/image_loader.hpp"
-	"include/motor/resources/resources.hpp"
+	# "include/motor/resources/image.hpp"
+	# "include/motor/resources/image_loader.hpp"
+	# "include/motor/resources/resources.hpp"
 
 	# graphics
 	"include/motor/graphics/screen.hpp"
@@ -72,15 +71,12 @@ set(HEADERS
 	"src/graphics/graphics_system.hpp"
 
 	# app
-	"include/motor/app/transition.hpp"
-	"include/motor/app/state.hpp"
 	"include/motor/app/app.hpp"
+	"include/motor/app/app_builder.hpp"
 
-	"src/app/state_machine.hpp"
 	"src/app/config_system.hpp"
 	"src/app/window_system.hpp"
 	"src/app/time_system.hpp"
-	"src/app/event_system.hpp"
 	"src/app/input_system.hpp"
 
 	# platform

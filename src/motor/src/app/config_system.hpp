@@ -9,6 +9,8 @@
 
 namespace motor {
 
+class app_builder;
+
 class arg_list : public std::vector<std::string> {
 public:
     arg_list(int argc, const char* argv[]) {
@@ -22,15 +24,13 @@ public:
 
 class config_system {
 public:
-    config_system(const arg_list& args, entt::registry& registry);
+    config_system(const arg_list& args, app_builder& app);
     ~config_system();
 
 private:
-    entt::registry& registry;
     nlohmann::json& config;
-    bool modified{};
 
-    void receive_config_changed(const event::config_changed&);
+    void receive(const event::config_changed&);
 };
 
 } // namespace motor

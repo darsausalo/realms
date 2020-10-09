@@ -1,5 +1,6 @@
 #include "config_system.hpp"
 #include "core/internal_filesystem.hpp"
+#include "motor/app/app_builder.hpp"
 #include "motor/core/filesystem.hpp"
 #include "platform/platform.hpp"
 #include <entt/entity/registry.hpp>
@@ -54,8 +55,8 @@ static void add_option(nlohmann::json& j, std::string_view key,
     }
 }
 
-config_system::config_system(const arg_list& args, entt::registry& registry)
-    : registry{registry}, config{registry.ctx_or_set<nlohmann::json>()} {
+config_system::config_system(const arg_list& args, app_builder& app)
+    : config{app.registry().ctx_or_set<nlohmann::json>()} {
     platform::setup_crash_handling(SDL_GetBasePath());
 
     nlohmann::json cli_config{};
@@ -119,20 +120,16 @@ config_system::config_system(const arg_list& args, entt::registry& registry)
         spdlog::set_level(static_cast<spdlog::level::level_enum>(ll));
     }
 
-    registry.ctx<entt::dispatcher>()
+    app.dispatcher()
             .sink<event::config_changed>()
-            .connect<&config_system::receive_config_changed>(*this);
-
-    spdlog::debug("config_system::start");
+            .connect<&config_system::receive>(*this);
 }
 
 config_system::~config_system() {
-    spdlog::debug("config_system::stop");
-
     SDL_Quit();
 }
 
-void config_system::receive_config_changed(const event::config_changed&) {
+void config_system::receive(const event::config_changed&) {
     try {
         std::ofstream cfg_file(filesystem::full_path("config.json", true));
         cfg_file << std::setw(4) << config;

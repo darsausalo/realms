@@ -1,4 +1,5 @@
 #include "mods_system.hpp"
+#include "motor/app/app_builder.hpp"
 #include "motor/core/events.hpp"
 #include "motor/core/filesystem.hpp"
 #include "motor/core/scripts.hpp"
@@ -158,9 +159,9 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
 
 //==============================================================================
 
-mods_system::mods_system(entt::registry& registry)
-    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
-      prototype_registry{registry.ctx<motor::prototype_registry>()},
+mods_system::mods_system(app_builder& app)
+    : registry{app.registry()}, dispatcher{app.dispatcher()},
+      prototypes{app.registry().ctx<motor::prototype_registry>()},
       watcher{dispatcher} {
     load_mods(mods, broken_mods);
 
@@ -169,24 +170,24 @@ mods_system::mods_system(entt::registry& registry)
     dispatcher.sink<event::file_changed>()
             .connect<&mods_system::receive_file_changed>(*this);
 
-    spdlog::debug("mods_system::start");
+    app.add_system_to_stage<&mods_system::update>("pre_frame"_hs, *this);
+
+    dispatcher.enqueue<event::bootstrap>();
 }
 
 mods_system::~mods_system() {
-    dispatcher.sink<event::bootstrap>().disconnect(*this);
-    dispatcher.sink<event::file_changed>().disconnect(*this);
+    dispatcher.disconnect(*this);
 
     if (thread.joinable()) {
         thread.join();
     }
-
-    spdlog::debug("mods_system::stop");
 }
 
-void mods_system::operator()() {
+void mods_system::update() {
     if (!loaded) {
         if (prg.is_completed()) {
             loaded = true;
+
             dispatcher.enqueue<event::start>();
 
             start_watch_mods();
@@ -205,18 +206,18 @@ void mods_system::load_prototypes() {
 
     sol::optional<sol::table> maybe_prototypes = lua["prototypes"];
     if (maybe_prototypes) {
-        auto prototypes = maybe_prototypes.value();
+        auto prototypes_table = maybe_prototypes.value();
         try {
-            sol::function inherits = prototypes["inherits"];
+            sol::function inherits = prototypes_table["inherits"];
             if (inherits != sol::lua_nil) {
-                inherits(prototypes);
+                inherits(prototypes_table);
             } else {
                 spdlog::error("missing inherits function in prototypes");
             }
 
-            sol::optional<sol::table> maybe_defs = prototypes["defs"];
+            sol::optional<sol::table> maybe_defs = prototypes_table["defs"];
             if (maybe_defs) {
-                prototype_registry.transpire(maybe_defs.value());
+                prototypes.transpire(maybe_defs.value());
             } else {
                 spdlog::error("missing defs in prototypes table");
             }
@@ -252,7 +253,8 @@ void mods_system::receive_file_changed(const event::file_changed& e) {
     }
     if (e.path.string().rfind("prototype", 0) == 0) {
         load_prototypes();
-        dispatcher.enqueue<event::respawn>();
+        prototypes.respawn(registry);
+        dispatcher.enqueue<event::respawn>(); // TODO: REMOVE?!!!
     }
 }
 

@@ -14,19 +14,18 @@
 
 namespace motor {
 
+class app_builder;
 class prototype_registry;
 
 class mods_system {
 public:
-    mods_system(entt::registry& registry);
+    mods_system(app_builder& app);
     ~mods_system();
-
-    void operator()();
 
 private:
     entt::registry& registry;
     entt::dispatcher& dispatcher;
-    prototype_registry& prototype_registry;
+    prototype_registry& prototypes;
     file_watcher watcher;
 
     bool loaded{};
@@ -35,6 +34,8 @@ private:
 
     std::vector<mod> mods{};
     std::vector<mod> broken_mods{};
+
+    void update();
 
     void load_prototypes();
     void start_watch_mods();

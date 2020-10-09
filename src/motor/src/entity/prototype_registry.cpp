@@ -1,5 +1,4 @@
 #include "motor/entity/prototype_registry.hpp"
-#include "motor/entity/components.hpp"
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
 
@@ -24,10 +23,10 @@ void prototype_registry::transpire(const sol::table& defs) {
                             auto comp_id = entt::hashed_string::value(
                                     std::data(tag.as<std::string>()));
 
-                            if (components::is_defined(comp_id)) {
-                                components::transpire(reg, def_e,
-                                                      lua_input_archive{tag},
-                                                      comp_id);
+                            if (components.is_defined(comp_id)) {
+                                components.transpire(reg, def_e,
+                                                     lua_input_archive{tag},
+                                                     comp_id);
                             }
                         }
                         return;
@@ -39,13 +38,13 @@ void prototype_registry::transpire(const sol::table& defs) {
                                               value.as<std::string>()))
                                     : entt::hashed_string::value(
                                               std::data(comp_name));
-                    if (!components::is_defined(comp_id)) {
+                    if (!components.is_defined(comp_id)) {
                         spdlog::warn("component '{}' not defined", comp_name);
                         return;
                     }
 
-                    components::transpire(reg, def_e, lua_input_archive{value},
-                                          comp_id);
+                    components.transpire(reg, def_e, lua_input_archive{value},
+                                         comp_id);
                 }
             });
         }
@@ -58,7 +57,7 @@ entt::entity prototype_registry::spawn(entt::registry& to,
     if (src != entt::null) {
         auto dst = to.create();
         to.emplace<prototype>(dst, src);
-        components::stamp(reg, src, to, dst);
+        components.stamp(reg, src, to, dst);
         return dst;
     }
     return {entt::null};
@@ -75,7 +74,7 @@ void prototype_registry::respawn(entt::registry& to) {
     to.view<prototype>().each([this, &to](entt::entity dst, auto& p) {
         auto src = p.value;
         if (reg.valid(src)) {
-            components::patch(reg, src, to, dst);
+            components.patch(reg, src, to, dst);
         }
     });
 }
@@ -163,14 +162,13 @@ defs = {
         timer = { duration = 1001 },
         health = { max = 101 },
         -- just ignore unknown tag
-        tags = {"enemy", "ingored_tag", "tag1"}
+        tags = {"enemy", "tag1"}
     },
     entity2 = {
         id = 2,
         position = { x = 102, y = 202 },
         health = { max = 102 },
-        tag1 = {},
-        ingored_comp = {} -- just ignore unknown component
+        tag1 = {}
     },
     entity3 = {
         id = 3,
@@ -189,14 +187,13 @@ defs = {
         timer = { duration = 1001 },
         health = { max = 111 },
         -- just ignore unknown tag
-        tags = {"enemy", "ingored_tag", "tag1"}
+        tags = {"enemy", "tag1"}
     },
     entity2 = {
         id = 2,
         position = { x = 112, y = 202 },
         health = { max = 112 },
-        tag1 = {},
-        ingored_comp = {} -- just ignore unknown component
+        tag1 = {}
     },
     entity3 = {
         id = 3,
@@ -224,15 +221,16 @@ defs = {
 TEST_CASE("prototype_registry: transpire components") {
     using namespace motor::test::prototype_registry;
 
-    motor::components::define<id>();
-    motor::components::define<position>();
-    motor::components::define<timer>();
-    motor::components::define<health>();
-    motor::components::define<sprite>();
-    motor::components::define<tag1>();
-    motor::components::define<"enemy"_hs>();
-
     motor::prototype_registry prototypes;
+
+    prototypes.components.define<id>();
+    prototypes.components.define<position>();
+    prototypes.components.define<timer>();
+    prototypes.components.define<health>();
+    prototypes.components.define<sprite>();
+    prototypes.components.define<tag1>();
+    prototypes.components.define<"enemy"_hs>();
+
     {
         sol::state lua{};
         lua.script(script);
@@ -322,15 +320,16 @@ TEST_CASE("prototype_registry: transpire components") {
 TEST_CASE("prototype_registry: ignore bad values") {
     using namespace motor::test::prototype_registry;
 
-    motor::components::define<id>();
-    motor::components::define<position>();
-    motor::components::define<timer>();
-    motor::components::define<health>();
-    motor::components::define<sprite>();
-    motor::components::define<tag1>();
-    motor::components::define<"enemy"_hs>();
-
     motor::prototype_registry prototypes;
+
+    prototypes.components.define<id>();
+    prototypes.components.define<position>();
+    prototypes.components.define<timer>();
+    prototypes.components.define<health>();
+    prototypes.components.define<sprite>();
+    prototypes.components.define<tag1>();
+    prototypes.components.define<"enemy"_hs>();
+
     {
         sol::state lua{};
         lua.script(bad_script);

@@ -22,7 +22,7 @@ struct health {
 };
 
 struct sprite {
-    entt::handle<motor::image> image;
+    entt::resource_handle<motor::image> image;
 };
 
 } // namespace frontier

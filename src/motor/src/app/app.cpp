@@ -1,52 +1,45 @@
 #include "motor/app/app.hpp"
-#include "app/config_system.hpp"
-#include "app/event_system.hpp"
-#include "app/input_system.hpp"
-#include "app/state_machine.hpp"
-#include "app/time_system.hpp"
-#include "app/window_system.hpp"
-#include "graphics/graphics_system.hpp"
-#include "mods/mods_system.hpp"
-#include "motor/entity/components.hpp"
+#include "motor/app/app_builder.hpp"
+#include "motor/entity/executor.hpp"
 #include "motor/entity/prototype_registry.hpp"
-#include "motor/entity/system_dispatcher.hpp"
-#include <entt/entity/registry.hpp>
-#include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>
 
 namespace motor {
 
-app::app(int argc, const char* argv[]) {
-    components::define<prototype>();
-    components::define<timer>();
-
-    registry.set<entt::dispatcher>() //
-            .sink<event::quit>()     //
-            .connect<&app::receive_quit>(*this);
-    registry.set<prototype_registry>();
-
-    add_system<config_system, stage::NONE>(arg_list{argc, argv}, registry);
-    add_system<window_system, stage::POST_FRAME>(registry);
-    add_system<mods_system, stage::PRE_FRAME>(registry);
-    add_system<time_system, stage::PRE_EVENT>(registry);
-    add_system<timer_system, stage::PRE_EVENT>(registry);
-    add_system<input_system, stage::PRE_EVENT>(registry);
-    add_system<event_system, stage::ON_EVENT>(registry);
-    add_system<graphics_system, stage::POST_UPDATE>(registry);
+app::app()
+    : dispatcher{registry.set<entt::dispatcher>()},
+      prototypes{registry.set<prototype_registry>()} {
+    spdlog::set_level(spdlog::level::debug);
 }
 
-void app::run_loop(std::shared_ptr<state>&& initial_state) {
-    registry.ctx<entt::dispatcher>().trigger<event::bootstrap>();
-
-    state_machine states{std::move(initial_state)};
-    while (states.is_running() && !should_close()) {
-        states.update();
-        dispatcher.update();
+app::~app() {
+    while (!plugins.empty()) {
+        spdlog::debug("removed plugin: {}", plugins.back().name);
+        plugins.pop_back();
     }
 }
 
-bool app::should_close() {
-    return quit_requested;
+app_builder app::build() {
+    app_builder builder{};
+    builder.add_stage("pre_frame"_hs)
+            .add_stage("pre_event"_hs)
+            .add_stage("event"_hs)
+            .add_stage("post_event"_hs)
+            .add_stage("pre_update"_hs)
+            .add_stage("update"_hs)
+            .add_stage("post_update"_hs)
+            .add_stage("post_frame"_hs);
+
+    return std::move(builder);
+}
+
+void app::run() {
+    dispatcher.sink<event::quit>().connect<&app::receive>(*this);
+
+    executor executor{scheduler};
+    while (!should_quit) {
+        executor.run(registry);
+    }
 }
 
 } // namespace motor

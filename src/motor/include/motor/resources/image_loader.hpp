@@ -7,7 +7,7 @@
 
 namespace motor {
 
-struct image_loader : entt::loader<image_loader, image> {
+struct image_loader : entt::resource_loader<image_loader, image> {
     std::shared_ptr<image> load(std::string_view name) const {
         return std::make_shared<image>(name);
     }

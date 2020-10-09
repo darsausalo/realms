@@ -12,8 +12,13 @@
 - [x] Events Pipeline
 - [x] Input
 - [x] Refine Sytem Stages (System Groups)
+- [ ] Rework Architecture based on entt::organizer: plugins, scheduler, etc.
 - [ ] Resources
 - [ ] Graphics
 - [ ] Systems Scripting
 - [ ] Code review
+    - [ ] fwd.hpp
+    - [ ] noexcept, ctors, dtors etc
+    - [ ] use constexpr in serialize
+    - [ ] improve code formatting
 - [ ] vcpkg

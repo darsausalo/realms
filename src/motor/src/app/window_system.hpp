@@ -5,9 +5,12 @@
 #include <SDL.h>
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace motor {
+
+class app_builder;
 
 struct window_position {
     int x;
@@ -29,18 +32,20 @@ struct window_config {
 
 class window_system {
 public:
-    window_system(entt::registry& registry);
+    window_system(app_builder& app);
     ~window_system();
 
-    void operator()();
-
 private:
-    entt::registry& registry;
     entt::dispatcher& dispatcher;
     screen& screen;
+    nlohmann::json& jconfig;
     window_config config;
     SDL_Window* window{};
     SDL_GLContext ctx;
+
+    void update_position();
+    void poll_events();
+    void swap_buffers();
 };
 
 } // namespace motor

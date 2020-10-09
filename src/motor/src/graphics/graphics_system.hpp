@@ -2,20 +2,20 @@
 #define MOTOR_GRAPHICS_SYSTEM_HPP
 
 #include "motor/graphics/screen.hpp"
-#include <entt/entity/fwd.hpp>
 
 namespace motor {
 
+class app_builder;
+
 class graphics_system {
 public:
-    graphics_system(entt::registry& registry);
+    graphics_system(app_builder& app);
     ~graphics_system();
 
-    void operator()();
-
 private:
-    entt::registry& registry;
     screen& screen;
+
+    void update();
 };
 
 } // namespace motor

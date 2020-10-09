@@ -11,7 +11,7 @@ struct resources {
     resources() = delete;
     ~resources() = delete;
 
-    inline static entt::cache<image> image;
+    inline static entt::resource_cache<image> image;
 };
 
 } // namespace motor

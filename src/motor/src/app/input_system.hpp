@@ -7,6 +7,7 @@
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <functional>
+#include <nlohmann/json_fwd.hpp>
 #include <unordered_map>
 
 namespace motor {
@@ -37,20 +38,22 @@ struct hash<motor::action_key> {
 
 namespace motor {
 
+class app_builder;
+
 class input_system {
 public:
-    input_system(entt::registry& registry);
+    input_system(app_builder& app);
     ~input_system();
 
-    void operator()();
-
 private:
-    entt::registry& registry;
     entt::dispatcher& dispatcher;
+    nlohmann::json& jconfig;
     cursor_position& pointer_position;
     input_actions& actions;
 
     std::unordered_map<action_key, entt::id_type> keymap;
+
+    void update_actions();
 
     bool handle_ui_keyboard(const event::keyboard_input& e);
     bool handle_ui_mouse_button(const event::mouse_button_input& e);

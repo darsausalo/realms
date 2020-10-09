@@ -2,6 +2,7 @@
 #define MOTOR_PROTOTYPE_REGISTRY_HPP
 
 #include "motor/core/lua_archive.hpp"
+#include "motor/entity/component_registry.hpp"
 #include <entt/entity/registry.hpp>
 #include <sol/forward.hpp>
 #include <unordered_map>
@@ -11,8 +12,11 @@ namespace motor {
 
 class prototype_registry {
 public:
-    prototype_registry() noexcept = default;
-    ~prototype_registry() noexcept = default;
+    component_registry components{};
+
+    prototype_registry() = default;
+    prototype_registry(prototype_registry&&) = default;
+    prototype_registry& operator=(prototype_registry&&) = default;
 
     void transpire(const sol::table& defs);
 

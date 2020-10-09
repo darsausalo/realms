@@ -1,5 +1,6 @@
 #include "window_system.hpp"
 #include "config_system.hpp"
+#include "motor/app/app_builder.hpp"
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
 #include <fmt/format.h>
@@ -41,12 +42,14 @@ void from_json(const nlohmann::json& j, window_config& c) {
     j.at("vsync").get_to(c.vsync);
 }
 
-window_system::window_system(entt::registry& registry)
-    : registry{registry}, dispatcher{registry.ctx<entt::dispatcher>()},
-      screen{registry.ctx_or_set<motor::screen>()}, //
-      config{"default", false, {0, 0}, {1280, 768}} {
+window_system::window_system(app_builder& app)
+    : dispatcher{app.dispatcher()},                  //
+      screen{app.registry().set<motor::screen>()},   //
+      jconfig{app.registry().ctx<nlohmann::json>()}, //
+      config{"default", false, {0, 0}, {1280, 768}}  //
+{
     try {
-        registry.ctx<nlohmann::json>().at("window").get_to(config);
+        jconfig.at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid window config: {}", e.what());
     }
@@ -76,16 +79,21 @@ window_system::window_system(entt::registry& registry)
 
     SDL_GL_GetDrawableSize(window, &screen.width, &screen.height);
 
-    spdlog::debug("window_system::start");
+    app.add_system_to_stage<&window_system::update_position>("pre_frame"_hs,
+                                                             *this);
+    app.add_system_to_stage<&window_system::poll_events>("event"_hs, *this);
+    app.add_system_to_stage<&window_system::swap_buffers>("post_frame"_hs,
+                                                          *this);
+
+    // TODO: poll_events should be sync point
 }
 
 window_system::~window_system() {
-    spdlog::debug("window_system::stop");
     SDL_GL_DeleteContext(ctx);
     SDL_DestroyWindow(window);
 }
 
-void window_system::operator()() {
+void window_system::update_position() {
     bool modified = false;
 
     int x, y;
@@ -106,13 +114,55 @@ void window_system::operator()() {
 
     if (modified) {
         try {
-            registry.ctx<nlohmann::json>()["window"] = config;
+            jconfig["window"] = config;
             dispatcher.enqueue<event::config_changed>();
         } catch (nlohmann::json::exception& e) {
             spdlog::error("failed to update config['window']: {}", e.what());
         }
     }
+}
 
+void window_system::poll_events() {
+    SDL_Event sdl_event;
+    while (SDL_PollEvent(&sdl_event)) {
+        switch (sdl_event.type) {
+        case SDL_QUIT:
+            dispatcher.enqueue<event::quit>();
+            break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            dispatcher.enqueue<event::keyboard_input>(
+                    {static_cast<std::uint16_t>(sdl_event.key.keysym.scancode),
+                     static_cast<std::uint16_t>(sdl_event.key.keysym.sym),
+                     sdl_event.type == SDL_KEYDOWN && !sdl_event.key.repeat,
+                     sdl_event.type == SDL_KEYUP,
+                     static_cast<bool>(sdl_event.key.repeat)});
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            if (sdl_event.button.button == SDL_BUTTON_LEFT ||
+                sdl_event.button.button == SDL_BUTTON_RIGHT)
+                dispatcher.enqueue<event::mouse_button_input>(
+                        {sdl_event.button.button == SDL_BUTTON_LEFT ? 0u : 1u,
+                         sdl_event.button.clicks,
+                         static_cast<bool>(sdl_event.button.state)});
+            break;
+        case SDL_MOUSEMOTION:
+            dispatcher.enqueue<event::mouse_motion_input>(
+                    {sdl_event.motion.x, sdl_event.motion.y,
+                     sdl_event.motion.xrel, sdl_event.motion.yrel});
+            break;
+        case SDL_MOUSEWHEEL:
+            dispatcher.enqueue<event::mouse_wheel_input>(
+                    {sdl_event.wheel.x, sdl_event.wheel.y});
+            break;
+        }
+    }
+
+    dispatcher.update();
+}
+
+void window_system::swap_buffers() {
     SDL_GL_SwapWindow(window);
 }
 
