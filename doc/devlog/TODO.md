@@ -15,9 +15,14 @@
 - [x] Rework Architecture based on entt::organizer: plugins, scheduler, etc.
 - [x] Resources
 - [ ] Graphics
+    - [ ] sprite_sheet update by index
+    - [ ] sg_buffer rewinding?
+    - [ ] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
+    - [ ] dealloc sg_image in image?
 - [ ] Systems Scripting
 - [ ] Code review
     - [ ] add core/fwd.hpp with M macros
+    - [ ] review: failed image loading
     - [ ] check prepare for entt::organizer
     - [ ] fwd.hpp
     - [ ] noexcept, ctors, dtors etc

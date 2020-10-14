@@ -112,8 +112,11 @@ sprite_plugin::sprite_plugin(app_builder& app) {
     pipeline = sg_make_pipeline(&pip_desc);
 
     app.define_component<sprite>()
-        .add_system_to_stage<&sprite_plugin::alloc_sg_images>("pre_render"_hs,
+        .define_component<sprite_sheet>()
+        .add_system_to_stage<&sprite_plugin::prepare_sprites>("pre_render"_hs,
                                                               *this)
+        .add_system_to_stage<&sprite_plugin::prepare_sprite_sheets>(
+            "pre_render"_hs, *this)
         .add_system_to_stage<&sprite_plugin::emplace_sprites>("pre_render"_hs,
                                                               *this)
         .add_system_to_stage<&sprite_plugin::render_sprites>("render"_hs,
@@ -122,11 +125,25 @@ sprite_plugin::sprite_plugin(app_builder& app) {
     app.registry().set<camera2d>(glm::vec2{0.0f, 0.0f}, 2.0f);
 }
 
-void sprite_plugin::alloc_sg_images(
+void sprite_plugin::prepare_sprites(
     entt::view<entt::exclude_t<sg_image>, sprite> view,
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
         registry.emplace<sg_image>(e, s.image->upload());
+        registry.emplace<rect>(e, glm::vec2{0.0f, 0.0f}, s.image->size());
+        registry.emplace<image_atlas>(e, s.image->size());
+    });
+}
+
+void sprite_plugin::prepare_sprite_sheets(
+    entt::view<entt::exclude_t<sg_image>, sprite_sheet> view,
+    entt::registry& registry) {
+    view.each([&registry](auto e, auto& s) {
+        registry.emplace<sg_image>(e, s.image->upload());
+        registry.emplace<rect>(e,
+                               glm::vec2{0.0f, 0.0f},
+                               s.image->size() / glm::vec2{s.columns, s.rows});
+        registry.emplace<image_atlas>(e, s.image->size());
     });
 }
 
@@ -134,24 +151,27 @@ void sprite_plugin::emplace_sprites(
     entt::view<entt::exclude_t<entt::tag<"hidden"_hs>>,
                const sg_image,
                const transform,
-               const rect> view) {
+               const rect,
+               const image_atlas> view) {
     sprites.clear();
-    view.each([this](const auto& image, const auto& tfm, const auto& r) {
-        sprites.push_back({image,
-                           tfm.value,
-                           {
-                               glm::vec2{r.min.x, r.max.y}, // top left
-                               glm::vec2{r.max.x, r.max.y}, // top right
-                               glm::vec2{r.max.x, r.min.y}, // bottom right
-                               glm::vec2{r.min.y, r.min.y}, // bottom left
-                           }});
-    });
+    view.each(
+        [this](
+            const auto& image, const auto& tfm, const auto& r, const auto& ia) {
+            sprites.push_back({image,
+                               tfm.value,
+                               {
+                                   glm::vec2{r.min.x, r.max.y}, // top left
+                                   glm::vec2{r.max.x, r.max.y}, // top right
+                                   glm::vec2{r.max.x, r.min.y}, // bottom right
+                                   glm::vec2{r.min.y, r.min.y}, // bottom left
+                               },
+                               ia.size});
+        });
 
-    std::sort(sprites.begin(),
-              sprites.end(),
-              [](const auto& lhs, const auto& rhs) noexcept -> bool {
-                  return lhs.tfm[3].z < lhs.tfm[3].z;
-              });
+    std::sort(
+        sprites.begin(), sprites.end(), [](const auto& lhs, const auto& rhs) {
+            return lhs.tfm[3].z < lhs.tfm[3].z;
+        });
 }
 
 void sprite_plugin::render_sprites(const screen& screen,
@@ -160,10 +180,9 @@ void sprite_plugin::render_sprites(const screen& screen,
         return;
     }
 
-    vs_params_t vs_params{
-        {static_cast<float>(screen.width), static_cast<float>(screen.height)},
-        camera.position,
-        std::max(camera.zoom, 1.0f)};
+    vs_params_t vs_params{glm::vec2{screen.width, screen.height},
+                          camera.position,
+                          std::max(camera.zoom, 1.0f)};
 
     sg_apply_pipeline(pipeline);
     sg_apply_uniforms(SG_SHADERSTAGE_VS, 0, &vs_params, sizeof(vs_params_t));
@@ -187,9 +206,20 @@ void sprite_plugin::render_sprites(const screen& screen,
         batch_image, &sprites[batch_start], sprites.size() - batch_start);
 }
 
+// TODO: hack to sokol
+void sg_rewind_buffer(sg_buffer buf_id);
+
 void sprite_plugin::render_batch(sg_image image,
                                  const sprite_data* sprites,
                                  std::size_t count) {
+    // clang-format off
+    static std::array<glm::vec2, 4> corners = {
+        glm::vec2{-0.5f,  0.5f},
+        glm::vec2{ 0.5f,  0.5f},
+        glm::vec2{ 0.5f, -0.5f},
+        glm::vec2{-0.5f, -0.5f},
+    };
+    // clang-format on
     std::array<vertex, 4> vertices;
     while (count > 0) {
         auto batch_size = std::min(count, max_batch_size);
@@ -198,8 +228,8 @@ void sprite_plugin::render_batch(sg_image image,
             auto size = (sprite.rect[1] - sprite.rect[3]);
             for (std::size_t j = 0u; j < sprite.rect.size(); ++j) {
                 vertices[j].position =
-                    sprite.tfm * glm::vec4(sprite.rect[j], 0.0f, 1.0f);
-                vertices[j].uv = (sprite.rect[j] + sprite.rect[1]) / size;
+                    sprite.tfm * glm::vec4(corners[j] * size, 0.0f, 1.0f);
+                vertices[j].uv = sprite.rect[j] / sprite.atlas_size;
                 vertices[j].color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
             }
             sg_append_buffer(bindings.vertex_buffers[0],
@@ -208,7 +238,10 @@ void sprite_plugin::render_batch(sg_image image,
         }
         bindings.fs_images[0] = image;
         sg_apply_bindings(bindings);
-        sg_draw(0, count * 6, 1);
+        sg_draw(0, count * 6, 1); // TODO: rewind or overflow?
+
+        // TODO: hack to sokol
+        sg_rewind_buffer(bindings.vertex_buffers[0]);
 
         sprites += batch_size;
         count -= batch_size;

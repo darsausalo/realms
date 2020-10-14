@@ -31,3 +31,14 @@ prototypes:def({
     }
   }
 })
+
+prototypes:def({
+  gabe = {
+    sprite_sheet = {
+      image = "core/resources/gabe-idle-run.png",
+      columns = 7,
+      rows = 1
+    },
+    position = {x = 50, y = 50}
+  }
+})

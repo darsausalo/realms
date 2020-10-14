@@ -30,6 +30,7 @@ void from_json(const nlohmann::json& j, window_position& p) {
 void to_json(nlohmann::json& j, const window_config& c) {
     j = nlohmann::json{{"monitor", c.monitor},
                        {"fullscreen", c.fullscreen},
+                       {"vsync", c.vsync},
                        {"position", c.position},
                        {"size", c.size}};
 }
@@ -62,15 +63,19 @@ window_plugin::window_plugin(app_builder& app)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    int x = config.position.x != 0 ? config.position.x
-                                   : SDL_WINDOWPOS_UNDEFINED;
-    int y = config.position.y != 0 ? config.position.y
-                                   : SDL_WINDOWPOS_UNDEFINED;
-    window = SDL_CreateWindow("frontier", x, y, config.size.width,
-                              config.size.height, SDL_WINDOW_OPENGL);
+    int x =
+        config.position.x != 0 ? config.position.x : SDL_WINDOWPOS_UNDEFINED;
+    int y =
+        config.position.y != 0 ? config.position.y : SDL_WINDOWPOS_UNDEFINED;
+    window = SDL_CreateWindow("frontier",
+                              x,
+                              y,
+                              config.size.width,
+                              config.size.height,
+                              SDL_WINDOW_OPENGL);
     if (!window) {
         throw std::runtime_error(
-                fmt::format("Could not create window: {}", SDL_GetError()));
+            fmt::format("Could not create window: {}", SDL_GetError()));
     }
 
     ctx = SDL_GL_CreateContext(window);
@@ -132,29 +137,31 @@ void window_plugin::poll_events() {
         case SDL_KEYDOWN:
         case SDL_KEYUP:
             dispatcher.enqueue<event::keyboard_input>(
-                    {static_cast<std::uint16_t>(sdl_event.key.keysym.scancode),
-                     static_cast<std::uint16_t>(sdl_event.key.keysym.sym),
-                     sdl_event.type == SDL_KEYDOWN && !sdl_event.key.repeat,
-                     sdl_event.type == SDL_KEYUP,
-                     static_cast<bool>(sdl_event.key.repeat)});
+                {static_cast<std::uint16_t>(sdl_event.key.keysym.scancode),
+                 static_cast<std::uint16_t>(sdl_event.key.keysym.sym),
+                 sdl_event.type == SDL_KEYDOWN && !sdl_event.key.repeat,
+                 sdl_event.type == SDL_KEYUP,
+                 static_cast<bool>(sdl_event.key.repeat)});
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
             if (sdl_event.button.button == SDL_BUTTON_LEFT ||
                 sdl_event.button.button == SDL_BUTTON_RIGHT)
                 dispatcher.enqueue<event::mouse_button_input>(
-                        {sdl_event.button.button == SDL_BUTTON_LEFT ? 0u : 1u,
-                         sdl_event.button.clicks,
-                         static_cast<bool>(sdl_event.button.state)});
+                    {sdl_event.button.button == SDL_BUTTON_LEFT ? 0u : 1u,
+                     sdl_event.button.clicks,
+                     static_cast<bool>(sdl_event.button.state)});
             break;
         case SDL_MOUSEMOTION:
             dispatcher.enqueue<event::mouse_motion_input>(
-                    {sdl_event.motion.x, sdl_event.motion.y,
-                     sdl_event.motion.xrel, sdl_event.motion.yrel});
+                {sdl_event.motion.x,
+                 sdl_event.motion.y,
+                 sdl_event.motion.xrel,
+                 sdl_event.motion.yrel});
             break;
         case SDL_MOUSEWHEEL:
             dispatcher.enqueue<event::mouse_wheel_input>(
-                    {sdl_event.wheel.x, sdl_event.wheel.y});
+                {sdl_event.wheel.x, sdl_event.wheel.y});
             break;
         }
     }

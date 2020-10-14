@@ -71,19 +71,10 @@ struct test_plugin {
         registry
             .on_construct<position>() //
             .connect<&test_plugin::emplace_transform>(*this);
-        registry
-            .on_construct<motor::sprite>() //
-            .connect<&test_plugin::emplace_rect>(*this);
     }
 
     void emplace_transform(entt::registry& registry, entt::entity e) {
         registry.emplace<motor::transform>(e, glm::mat4{1.0f});
-    }
-
-    void emplace_rect(entt::registry& registry, entt::entity e) {
-        const auto& sprite = registry.get<motor::sprite>(e);
-        registry.emplace<motor::rect>(
-            e, -sprite.image->size() / 2.0f, sprite.image->size() / 2.0f);
     }
 
     void receive_start(const motor::event::start&) {
@@ -98,6 +89,19 @@ struct test_plugin {
         e = prototypes.spawn(registry, "soldier2"_hs);
         registry.replace<position>(e, 100.0f, 100.0f);
         spdlog::debug(info);
+
+        e = prototypes.spawn(registry, "gabe"_hs);
+        if (e == entt::null) {
+            spdlog::error("failed to spawn gabe");
+        } else {
+            info = "spawned gabe with:\n";
+            registry.visit(e, [&info](auto&& type_info) {
+                info += "  ";
+                info += type_info.name();
+                info += "\n";
+            });
+            spdlog::debug(info);
+        }
     }
 };
 

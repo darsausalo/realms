@@ -10,6 +10,12 @@
 
 namespace motor {
 
+// TODO: hack to sokol
+void sg_rewind_buffer(sg_buffer buf_id) {
+    _sg_buffer_t* buf = _sg_lookup_buffer(&_sg.pools, buf_id.id);
+    buf->cmn.append_pos = 0;
+}
+
 graphics_plugin::graphics_plugin(app_builder& app)
     : screen{app.registry().ctx<motor::screen>()} {
     auto err = glewInit();
