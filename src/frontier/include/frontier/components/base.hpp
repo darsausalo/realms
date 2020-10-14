@@ -1,9 +1,6 @@
 #ifndef FRONTIER_COMPONENTS_H
 #define FRONTIER_COMPONENTS_H
 
-#include <entt/resource/handle.hpp>
-#include <motor/resources/image.hpp>
-
 namespace frontier {
 
 struct position {
@@ -19,10 +16,6 @@ struct velocity {
 struct health {
     int max;
     int value;
-};
-
-struct sprite {
-    entt::resource_handle<motor::image> image;
 };
 
 } // namespace frontier

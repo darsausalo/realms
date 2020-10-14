@@ -15,7 +15,8 @@ public:
 private:
     screen& screen;
 
-    void update();
+    void pre_render();
+    void post_render();
 };
 
 } // namespace motor

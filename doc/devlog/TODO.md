@@ -12,11 +12,13 @@
 - [x] Events Pipeline
 - [x] Input
 - [x] Refine Sytem Stages (System Groups)
-- [ ] Rework Architecture based on entt::organizer: plugins, scheduler, etc.
-- [ ] Resources
+- [x] Rework Architecture based on entt::organizer: plugins, scheduler, etc.
+- [x] Resources
 - [ ] Graphics
 - [ ] Systems Scripting
 - [ ] Code review
+    - [ ] add core/fwd.hpp with M macros
+    - [ ] check prepare for entt::organizer
     - [ ] fwd.hpp
     - [ ] noexcept, ctors, dtors etc
     - [ ] use constexpr in serialize

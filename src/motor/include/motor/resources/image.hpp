@@ -2,7 +2,9 @@
 #define MOTOR_IMAGE_HPP
 
 #include <cstdint>
+#include <glm/ext/vector_float2.hpp>
 #include <memory>
+#include <sokol_gfx.h>
 #include <string_view>
 
 namespace motor {
@@ -14,13 +16,17 @@ public:
     image(image&&) = default;
     image& operator=(image&&) = default;
 
-    std::int32_t get_width() const noexcept { return width; };
-    std::int32_t get_height() const noexcept { return height; };
+    sg_image upload() noexcept;
+
+    glm::vec2 size() const noexcept {
+        return {width, height};
+    }
 
 private:
     std::int32_t width;
     std::int32_t height;
     std::unique_ptr<std::uint8_t> pixels;
+    sg_image internal_image;
 };
 
 } // namespace motor

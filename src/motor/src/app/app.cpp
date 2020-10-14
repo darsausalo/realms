@@ -28,6 +28,9 @@ app_builder app::build() {
             .add_stage("pre_update"_hs)
             .add_stage("update"_hs)
             .add_stage("post_update"_hs)
+            .add_stage("pre_render"_hs)
+            .add_stage("render"_hs)
+            .add_stage("post_render"_hs)
             .add_stage("post_frame"_hs);
 
     return std::move(builder);

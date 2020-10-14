@@ -15,9 +15,10 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(efsw CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 find_path(STB_INCLUDE_DIRS "stb.h")
-find_path(SOKOL_INCLUDE_DIRS "sokol_app.h")
+find_path(SOKOL_INCLUDE_DIRS "sokol_gfx.h")
 
 find_package(GLEW REQUIRED)
 

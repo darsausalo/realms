@@ -5,6 +5,9 @@
 #include <motor/core/events.hpp>
 #include <motor/core/input.hpp>
 #include <motor/core/time.hpp>
+#include <motor/entity/rect.hpp>
+#include <motor/entity/transform.hpp>
+#include <motor/graphics/sprite.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -17,7 +20,7 @@ void quit_system(const motor::input_actions& input,
 }
 
 void test_system(
-        entt::view<entt::exclude_t<>, motor::timer, position, health> view) {
+    entt::view<entt::exclude_t<>, motor::timer, position, health> view) {
     view.each([](auto& t, auto& p, auto& h) {
         if (t.finished) {
             t.reset();
@@ -29,6 +32,23 @@ void test_system(
     });
 }
 
+void test2_system(
+    entt::view<entt::exclude_t<>, const motor::timer, const motor::sprite>
+        view) {
+    view.each([](const auto& t, const auto& s) {
+        if (t.finished) {
+            spdlog::debug("sprite");
+        }
+    });
+}
+
+void update_transforms(
+    entt::view<entt::exclude_t<>, const position, motor::transform> view) {
+    view.each([](const auto& p, auto& tfm) {
+        tfm.value[3] = glm::vec4{p.x, p.y, 0.0f, 1.0f};
+    });
+}
+
 struct test_plugin {
     entt::registry& registry;
     motor::prototype_registry& prototypes;
@@ -36,19 +56,48 @@ struct test_plugin {
     test_plugin(motor::app_builder& app)
         : registry{app.registry()}, prototypes{app.prototypes()} {
         app.define_component<position, motor::component_specifier::FINAL>()
-                .define_component<velocity>()
-                .define_component<health>()
-                // .define_component<sprite>()
-                .add_system<&quit_system>()
-                .add_system<&test_system>();
+            .define_component<velocity>()
+            .define_component<health>()
+            .add_system<&quit_system>()
+            .add_system<&update_transforms>()
+            /*.add_system<&test2_system>()
+            .add_system<&test_system>()*/
+            ;
 
         app.dispatcher()
-                .sink<motor::event::start>()
-                .connect<&test_plugin::receive_start>(*this);
+            .sink<motor::event::start>()
+            .connect<&test_plugin::receive_start>(*this);
+
+        registry
+            .on_construct<position>() //
+            .connect<&test_plugin::emplace_transform>(*this);
+        registry
+            .on_construct<motor::sprite>() //
+            .connect<&test_plugin::emplace_rect>(*this);
+    }
+
+    void emplace_transform(entt::registry& registry, entt::entity e) {
+        registry.emplace<motor::transform>(e, glm::mat4{1.0f});
+    }
+
+    void emplace_rect(entt::registry& registry, entt::entity e) {
+        const auto& sprite = registry.get<motor::sprite>(e);
+        registry.emplace<motor::rect>(
+            e, -sprite.image->size() / 2.0f, sprite.image->size() / 2.0f);
     }
 
     void receive_start(const motor::event::start&) {
-        prototypes.spawn(registry, "soldier2"_hs);
+        auto e = prototypes.spawn(registry, "soldier2"_hs);
+        registry.replace<position>(e, -100.0f, -100.0f);
+        std::string info{"spawned soldier2 with:\n"};
+        registry.visit(e, [&info](auto&& type_info) {
+            info += "  ";
+            info += type_info.name();
+            info += "\n";
+        });
+        e = prototypes.spawn(registry, "soldier2"_hs);
+        registry.replace<position>(e, 100.0f, 100.0f);
+        spdlog::debug(info);
     }
 };
 
@@ -56,9 +105,9 @@ struct test_plugin {
 
 int main(int argc, char const* argv[]) {
     motor::app::build()
-            .add_default_plugins(argc, argv)
-            .add_plugin<frontier::test_plugin>()
-            .run();
+        .add_default_plugins(argc, argv)
+        .add_plugin<frontier::test_plugin>()
+        .run();
 
     return 0;
 }

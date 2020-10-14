@@ -2,20 +2,19 @@ require("prototypes/base")
 
 prototypes:def({
   ["@infantry"] = {
-    name = "",
     health = {
       max = 100
     },
     position = {
-      x = 100,
-      y = 200
+      x = 50,
+      y = -100
     }
   },
   soldier = {
-    base = {"@infantry", "@with_sprite"}
+    base = "@infantry",
   },
   soldier2 = {
-    base = "@infantry",
+    base = {"@infantry", "@with_sprite"},
     health = {
       max = 400,
       value = 2
@@ -28,7 +27,7 @@ prototypes:def({
 prototypes:def({
   ["@infantry"] = {
     position = {
-      x = 300
+      x = 150
     }
   }
 })

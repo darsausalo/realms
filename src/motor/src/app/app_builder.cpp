@@ -12,12 +12,16 @@ namespace motor {
 
 void print_debug_info(const entt::registry& registry) {
     if (registry.ctx<input_actions>().is_just_pressed("print_debug_info"_hs)) {
+        std::string info{};
+
         std::size_t cnt = 0u;
-        registry.ctx([&cnt](auto& ti) {
-            spdlog::debug("ctx var: {}", ti.name());
+        registry.ctx([&cnt, &info](auto& ti) {
+            info += fmt::format("    ctx var: {}\n", ti.name());
             cnt++;
         });
-        spdlog::debug("ctx var count: {}", cnt);
+        info += fmt::format("  ctx var count: {}", cnt);
+
+        spdlog::debug("registry:\n{}", info);
     }
 }
 

@@ -15,10 +15,11 @@ set(SOURCES
 	"src/mods/mods_plugin.cpp"
 
 	# resources
-	# "src/resources/image.cpp"
+	"src/resources/image.cpp"
 
 	# graphics
 	"src/graphics/graphics_plugin.cpp"
+	"src/graphics/sprite_plugin.cpp"
 
 	# app
 	"src/app/config_plugin.cpp"
@@ -54,6 +55,8 @@ set(HEADERS
 	"include/motor/entity/prototype_registry.hpp"
 	"include/motor/entity/scheduler.hpp"
 	"include/motor/entity/executor.hpp"
+	"include/motor/entity/transform.hpp"
+	"include/motor/entity/rect.hpp"
 
 	# mods
 	"include/motor/mods/mod.hpp"
@@ -61,14 +64,16 @@ set(HEADERS
 	"src/mods/mods_plugin.hpp"
 
 	# resources
-	# "include/motor/resources/image.hpp"
-	# "include/motor/resources/image_loader.hpp"
-	# "include/motor/resources/resources.hpp"
+	"include/motor/resources/image.hpp"
+	"include/motor/resources/image_loader.hpp"
+	"include/motor/resources/resources.hpp"
 
 	# graphics
 	"include/motor/graphics/screen.hpp"
+	"include/motor/graphics/sprite.hpp"
 
 	"src/graphics/graphics_plugin.hpp"
+	"src/graphics/sprite_plugin.hpp"
 
 	# app
 	"include/motor/app/app.hpp"
@@ -114,6 +119,7 @@ target_link_libraries(motor PUBLIC
 	nameof::nameof
 	fmt::fmt
 	spdlog::spdlog
+	glm
 	EnTT::EnTT
 )
 add_backward(motor)
