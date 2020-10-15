@@ -163,7 +163,7 @@ void sprite_plugin::emplace_sprites(
                                    glm::vec2{r.min.x, r.max.y}, // top left
                                    glm::vec2{r.max.x, r.max.y}, // top right
                                    glm::vec2{r.max.x, r.min.y}, // bottom right
-                                   glm::vec2{r.min.y, r.min.y}, // bottom left
+                                   glm::vec2{r.min.x, r.min.y}, // bottom left
                                },
                                ia.size});
         });
