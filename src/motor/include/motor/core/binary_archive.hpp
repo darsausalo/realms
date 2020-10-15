@@ -19,11 +19,11 @@ public:
     void find_key(std::string_view) {}
 
     void save_data(const void* data, std::streamsize size) {
-        const auto write_size = stream.rdbuf()->sputn(
-                reinterpret_cast<const char*>(data), size);
+        const auto write_size =
+            stream.rdbuf()->sputn(reinterpret_cast<const char*>(data), size);
         if (write_size != size) {
             throw serialize_error(fmt::format(
-                    "failed to write {} bytes, wrote {}", size, write_size));
+                "failed to write {} bytes, wrote {}", size, write_size));
         }
     }
 
@@ -43,10 +43,10 @@ public:
 
     void load_data(void* data, std::streamsize size) {
         const auto read_size =
-                stream.rdbuf()->sgetn(reinterpret_cast<char*>(data), size);
+            stream.rdbuf()->sgetn(reinterpret_cast<char*>(data), size);
         if (read_size != size) {
             throw serialize_error(fmt::format(
-                    "failed to read {} bytes, read {}", size, read_size));
+                "failed to read {} bytes, read {}", size, read_size));
         }
     }
 
@@ -58,38 +58,38 @@ private:
 
 template<typename T>
 auto serialize(binary_output_archive& ar, T& value)
-        -> std::enable_if_t<is_array_v<T>, void> {
+    -> std::enable_if_t<is_array_v<T>, void> {
     ar.save_data(std::addressof(value), sizeof(value));
 }
 
 template<typename T>
 auto serialize(binary_output_archive& ar, T& value)
-        -> std::enable_if_t<std::is_arithmetic_v<T>, void> {
+    -> std::enable_if_t<std::is_arithmetic_v<T>, void> {
     ar.save_data(std::addressof(value), sizeof(value));
 }
 
 template<typename T>
 auto serialize(binary_output_archive& ar, T& value)
-        -> std::enable_if_t<std::is_enum_v<T>, void> {
+    -> std::enable_if_t<std::is_enum_v<T>, void> {
     using base_type = std::underlying_type_t<T>;
     ar.save_data(std::addressof(value), sizeof(base_type));
 }
 
 template<typename T>
 auto serialize(binary_input_archive& ar, T& value) ->
-        typename std::enable_if_t<is_array_v<T>, void> {
+    typename std::enable_if_t<is_array_v<T>, void> {
     ar.load_data(std::addressof(value), sizeof(value));
 }
 
 template<typename T>
 auto serialize(binary_input_archive& ar, T& value)
-        -> std::enable_if_t<std::is_arithmetic<T>::value, void> {
+    -> std::enable_if_t<std::is_arithmetic<T>::value, void> {
     ar.load_data(std::addressof(value), sizeof(value));
 }
 
 template<typename T>
 auto serialize(binary_input_archive& ar, T& value)
-        -> std::enable_if_t<std::is_enum_v<T>, void> {
+    -> std::enable_if_t<std::is_enum_v<T>, void> {
     using base_type = std::underlying_type_t<T>;
     ar.load_data(std::addressof(value), sizeof(base_type));
 }

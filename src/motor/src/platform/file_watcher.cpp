@@ -8,8 +8,8 @@
 namespace motor {
 
 file_watcher::file_watcher(entt::dispatcher& dispatcher)
-    : dispatcher{dispatcher}, watcher{std::make_unique<efsw::FileWatcher>()} {
-}
+    : dispatcher{dispatcher}
+    , watcher{std::make_unique<efsw::FileWatcher>()} {}
 
 void file_watcher::watch_directory(const std::filesystem::path& path) {
     auto dir = path;
@@ -70,7 +70,7 @@ void file_watcher::handleFileAction(efsw::WatchID watch_id,
     }
 
     dispatcher.enqueue<event::file_changed>(
-            {f_action, path.generic_string(), fullpath});
+        {f_action, path.generic_string(), fullpath});
 }
 
 } // namespace motor

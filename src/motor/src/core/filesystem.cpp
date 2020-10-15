@@ -8,7 +8,8 @@ static std::filesystem::path base_path;
 static std::filesystem::path data_path;
 static std::filesystem::path user_path;
 
-void init(const std::filesystem::path& base, const std::filesystem::path& data,
+void init(const std::filesystem::path& base,
+          const std::filesystem::path& data,
           const std::filesystem::path& user) {
     base_path = base;
     data_path = data;
@@ -20,7 +21,7 @@ void init(const std::filesystem::path& base, const std::filesystem::path& data,
 
     if (!std::filesystem::exists(data_path)) {
         throw std::runtime_error(fmt::format(
-                "data directory '{}' was not found", data_path.string()));
+            "data directory '{}' was not found", data_path.string()));
     }
     if (!std::filesystem::exists(user_path)) {
         std::error_code ec;
@@ -47,14 +48,8 @@ std::filesystem::path full_path(const std::filesystem::path& relative_path,
     return data_path / relative_path;
 }
 
-const std::filesystem::path& base() {
-    return base_path;
-}
-const std::filesystem::path& data() {
-    return data_path;
-}
-const std::filesystem::path& user() {
-    return user_path;
-}
+const std::filesystem::path& base() { return base_path; }
+const std::filesystem::path& data() { return data_path; }
+const std::filesystem::path& user() { return user_path; }
 
 } // namespace motor::filesystem

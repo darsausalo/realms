@@ -14,8 +14,8 @@ static std::filesystem::path current_mod_path{};
 
 inline int script_panic(lua_State* L) {
     sol::optional<std::string_view> message =
-            sol::stack::unqualified_check_get<std::string_view>(L, -1,
-                                                                sol::no_panic);
+        sol::stack::unqualified_check_get<std::string_view>(L, -1,
+                                                            sol::no_panic);
     lua_settop(L, 0);
 
     throw motor::scripts::error{message ? message.value()
@@ -28,7 +28,7 @@ static int load_file_require(lua_State* L) {
 
     if (!std::filesystem::exists(package_path)) {
         sol::stack::push(
-                L, fmt::format(" file '{}' is missing", package_path.string()));
+            L, fmt::format(" file '{}' is missing", package_path.string()));
         return 1;
     }
 
@@ -65,17 +65,17 @@ void run(sol::state& lua,
 
         for (auto&& script_name : libs) {
             lua.require_file(
-                    std::string{script_name},
-                    filesystem::full_path(
-                            fmt::format("mods/core/lib/{}.lua", script_name))
-                            .string());
+                std::string{script_name},
+                filesystem::full_path(
+                    fmt::format("mods/core/lib/{}.lua", script_name))
+                    .string());
         }
 
         for (auto&& script_name : preloads) {
             lua.script_file(
-                    filesystem::full_path(
-                            fmt::format("mods/core/lib/{}.lua", script_name))
-                            .string());
+                filesystem::full_path(
+                    fmt::format("mods/core/lib/{}.lua", script_name))
+                    .string());
         }
 
         for (auto&& script_path : script_paths) {

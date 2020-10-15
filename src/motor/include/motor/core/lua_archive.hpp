@@ -26,7 +26,7 @@ public:
         auto current_value = node_stack.back();
         if (current_value && current_value.is<sol::table>()) {
             sol::optional<sol::object> maybe_member =
-                    current_value.as<sol::table>()[std::data(key)];
+                current_value.as<sol::table>()[std::data(key)];
             current_member = maybe_member ? maybe_member.value() : sol::lua_nil;
         } else {
             current_member = sol::object{};
@@ -82,13 +82,13 @@ private:
 
 template<typename T>
 auto prologue(lua_input_archive& ar, const T&)
-        -> std::enable_if_t<std::is_class_v<T>, void> {
+    -> std::enable_if_t<std::is_class_v<T>, void> {
     ar.start_node();
 }
 
 template<typename T>
 auto epilogue(lua_input_archive& ar, const T&)
-        -> std::enable_if_t<std::is_class_v<T>, void> {
+    -> std::enable_if_t<std::is_class_v<T>, void> {
     ar.end_node();
 }
 
@@ -96,19 +96,19 @@ auto epilogue(lua_input_archive& ar, const T&)
 
 template<typename T>
 auto serialize(lua_input_archive& ar, T& value)
-        -> std::enable_if_t<is_array_v<T>, void> {
+    -> std::enable_if_t<is_array_v<T>, void> {
     ar.load_array(value);
 }
 
 template<typename T>
 auto serialize(lua_input_archive& ar, T& value)
-        -> std::enable_if_t<std::is_arithmetic_v<T>, void> {
+    -> std::enable_if_t<std::is_arithmetic_v<T>, void> {
     ar.load_value(value);
 }
 
 template<typename T>
 auto serialize(lua_input_archive& ar, T& value) ->
-        typename std::enable_if_t<std::is_enum_v<T>, void> {
+    typename std::enable_if_t<std::is_enum_v<T>, void> {
     ar.load_value(value);
 }
 

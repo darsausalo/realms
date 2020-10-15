@@ -8,6 +8,7 @@ cmake-build-*
 
 ## make
 CMakeFiles
+CMakeSettings.json
 */CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
@@ -18,6 +19,7 @@ prebuilt
 /bin
 /build
 /lib
+/out
 
 ## windows build process
 .vs

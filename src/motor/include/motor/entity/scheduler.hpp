@@ -46,14 +46,16 @@ public:
     }
 
     template<auto Candidate, typename... Req, typename Type>
-    void add_system_to_stage(entt::id_type stage, Type& value_or_instance,
+    void add_system_to_stage(entt::id_type stage,
+                             Type& value_or_instance,
                              const char* name = nullptr) {
         assert(stages.find(stage) != stages.end());
         stages[stage].emplace<Candidate, Req..., Type>(value_or_instance, name);
     }
 
     template<typename... Req>
-    void add_system_to_stage(entt::id_type stage, function_type* func,
+    void add_system_to_stage(entt::id_type stage,
+                             function_type* func,
                              const void* payload = nullptr,
                              const char* name = nullptr) {
         assert(stages.find(stage) != stages.end());

@@ -16,7 +16,8 @@ class time_plugin {
 
 public:
     time_plugin(app_builder& app)
-        : start_point{clock::now()}, last_point{clock::now()} {
+        : start_point{clock::now()}
+        , last_point{clock::now()} {
         app.define_component<timer>();
         app.add_system_to_stage<&time_plugin::update_time>("pre_frame"_hs,
                                                            *this);
@@ -31,9 +32,9 @@ private:
     void update_time(time& game_time) {
         auto now = clock::now();
         game_time.delta =
-                std::chrono::duration<float>(now - last_point).count();
+            std::chrono::duration<float>(now - last_point).count();
         game_time.elapsed =
-                std::chrono::duration<float>(now - start_point).count();
+            std::chrono::duration<float>(now - start_point).count();
         last_point = now;
     }
 

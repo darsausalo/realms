@@ -62,12 +62,13 @@ public:
                                      Type& value_or_instance,
                                      const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Candidate, Req..., Type>(
-                stage, value_or_instance, name);
+            stage, value_or_instance, name);
         return *this;
     }
 
     template<typename... Req>
-    app_builder& add_system_to_stage(entt::id_type stage, function_type* func,
+    app_builder& add_system_to_stage(entt::id_type stage,
+                                     function_type* func,
                                      const void* payload = nullptr,
                                      const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Req...>(stage, func, payload, name);
@@ -85,12 +86,13 @@ public:
     app_builder& add_system(Type& value_or_instance,
                             const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Candidate, Req..., Type>(
-                default_stage, value_or_instance, name);
+            default_stage, value_or_instance, name);
         return *this;
     }
 
     template<typename... Req>
-    app_builder& add_system(function_type* func, const void* payload = nullptr,
+    app_builder& add_system(function_type* func,
+                            const void* payload = nullptr,
                             const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Req...>(default_stage, func, payload,
                                                   name);

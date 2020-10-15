@@ -33,12 +33,10 @@ public:
 // prologue and epilogue
 
 template<typename Archive, typename T>
-inline void prologue(Archive&, const T&) {
-}
+inline void prologue(Archive&, const T&) {}
 
 template<typename Archive, typename T>
-inline void epilogue(Archive&, const T&) {
-}
+inline void epilogue(Archive&, const T&) {}
 
 // base output archive
 

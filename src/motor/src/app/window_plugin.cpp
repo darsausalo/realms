@@ -44,11 +44,10 @@ void from_json(const nlohmann::json& j, window_config& c) {
 }
 
 window_plugin::window_plugin(app_builder& app)
-    : dispatcher{app.dispatcher()},                  //
-      screen{app.registry().set<motor::screen>()},   //
-      jconfig{app.registry().ctx<nlohmann::json>()}, //
-      config{"default", false, {0, 0}, {1280, 768}}  //
-{
+    : dispatcher{app.dispatcher()}
+    , screen{app.registry().set<motor::screen>()}
+    , jconfig{app.registry().ctx<nlohmann::json>()}
+    , config{"default", false, {0, 0}, {1280, 768}} {
     try {
         jconfig.at("window").get_to(config);
     } catch (nlohmann::json::exception& e) {
@@ -67,12 +66,8 @@ window_plugin::window_plugin(app_builder& app)
         config.position.x != 0 ? config.position.x : SDL_WINDOWPOS_UNDEFINED;
     int y =
         config.position.y != 0 ? config.position.y : SDL_WINDOWPOS_UNDEFINED;
-    window = SDL_CreateWindow("frontier",
-                              x,
-                              y,
-                              config.size.width,
-                              config.size.height,
-                              SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("frontier", x, y, config.size.width,
+                              config.size.height, SDL_WINDOW_OPENGL);
     if (!window) {
         throw std::runtime_error(
             fmt::format("Could not create window: {}", SDL_GetError()));
@@ -154,9 +149,7 @@ void window_plugin::poll_events() {
             break;
         case SDL_MOUSEMOTION:
             dispatcher.enqueue<event::mouse_motion_input>(
-                {sdl_event.motion.x,
-                 sdl_event.motion.y,
-                 sdl_event.motion.xrel,
+                {sdl_event.motion.x, sdl_event.motion.y, sdl_event.motion.xrel,
                  sdl_event.motion.yrel});
             break;
         case SDL_MOUSEWHEEL:
@@ -169,8 +162,6 @@ void window_plugin::poll_events() {
     dispatcher.update();
 }
 
-void window_plugin::swap_buffers() {
-    SDL_GL_SwapWindow(window);
-}
+void window_plugin::swap_buffers() { SDL_GL_SwapWindow(window); }
 
 } // namespace motor

@@ -5,7 +5,8 @@
 
 namespace motor::filesystem {
 
-void init(const std::filesystem::path& base, const std::filesystem::path& data,
+void init(const std::filesystem::path& base,
+          const std::filesystem::path& data,
           const std::filesystem::path& user);
 
 } // namespace motor::filesystem

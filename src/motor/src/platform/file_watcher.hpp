@@ -13,8 +13,10 @@ class file_watcher : public efsw::FileWatchListener {
 public:
     file_watcher(entt::dispatcher& dispatcher);
 
-    void handleFileAction(efsw::WatchID watch_id, const std::string& dir,
-                          const std::string& filename, efsw::Action action,
+    void handleFileAction(efsw::WatchID watch_id,
+                          const std::string& dir,
+                          const std::string& filename,
+                          efsw::Action action,
                           std::string oldFilename = "") override;
 
     void watch_directory(const std::filesystem::path& path);

@@ -11,15 +11,18 @@ namespace motor {
 enum class component_specifier : std::uint8_t { FINAL, OVERRIDABLE };
 
 class component_registry {
-    using transpire_fn_type = void(entt::registry& reg, entt::entity e,
+    using transpire_fn_type = void(entt::registry& reg,
+                                   entt::entity e,
                                    lua_input_archive& ar);
-    using stamp_fn_type = void(const entt::registry&, const entt::entity,
-                               entt::registry&, const entt::entity);
+    using stamp_fn_type = void(const entt::registry&,
+                               const entt::entity,
+                               entt::registry&,
+                               const entt::entity);
     using clone_fn_type = void(const entt::registry&, entt::registry&);
 
     template<typename Component>
-    static void transpire(entt::registry& reg, entt::entity e,
-                          lua_input_archive& ar) {
+    static void
+    transpire(entt::registry& reg, entt::entity e, lua_input_archive& ar) {
         if constexpr (std::is_empty_v<Component>) {
             reg.template emplace_or_replace<Component>(e);
         } else {
@@ -31,8 +34,10 @@ class component_registry {
     }
 
     template<typename Component>
-    static void stamp(const entt::registry& from, const entt::entity src,
-                      entt::registry& to, const entt::entity dst) {
+    static void stamp(const entt::registry& from,
+                      const entt::entity src,
+                      entt::registry& to,
+                      const entt::entity dst) {
         if constexpr (std::is_empty_v<Component>) {
             to.template emplace_or_replace<Component>(dst);
         } else {
@@ -41,8 +46,10 @@ class component_registry {
     }
 
     template<typename Component>
-    static void patch(const entt::registry& from, const entt::entity src,
-                      entt::registry& to, const entt::entity dst) {
+    static void patch(const entt::registry& from,
+                      const entt::entity src,
+                      entt::registry& to,
+                      const entt::entity dst) {
         if constexpr (std::is_empty_v<Component>) {
             if (to.template has<Component>(dst)) {
                 to.template emplace_or_replace<Component>(dst);
@@ -75,7 +82,7 @@ public:
         auto name_id = entt::hashed_string::value(std::data(name));
         constexpr auto type_id = entt::type_hash<Component>::value();
         transpire_functions[name_id] =
-                &component_registry::transpire<Component>;
+            &component_registry::transpire<Component>;
         stamp_functions[type_id] = &component_registry::stamp<Component>;
         clone_functions[type_id] = &component_registry::clone<Component>;
         patch_functions[type_id] = &component_registry::patch<Component>;
@@ -88,7 +95,7 @@ public:
         constexpr auto name_id = Value;
         constexpr auto type_id = entt::type_hash<entt::tag<Value>>::value();
         transpire_functions[name_id] =
-                &component_registry::transpire<entt::tag<Value>>;
+            &component_registry::transpire<entt::tag<Value>>;
         stamp_functions[type_id] = &component_registry::stamp<entt::tag<Value>>;
         clone_functions[type_id] = &component_registry::clone<entt::tag<Value>>;
         patch_functions[type_id] = &component_registry::patch<entt::tag<Value>>;
@@ -99,20 +106,26 @@ public:
         return transpire_functions.find(name_id) != transpire_functions.cend();
     }
 
-    void transpire(entt::registry& reg, entt::entity e, lua_input_archive& ar,
+    void transpire(entt::registry& reg,
+                   entt::entity e,
+                   lua_input_archive& ar,
                    entt::id_type name_id) noexcept {
         transpire_functions[name_id](reg, e, ar);
     }
 
-    void stamp(const entt::registry& from, const entt::entity src,
-               entt::registry& to, const entt::entity dst) noexcept {
+    void stamp(const entt::registry& from,
+               const entt::entity src,
+               entt::registry& to,
+               const entt::entity dst) noexcept {
         from.visit(src, [this, &from, &to, src, dst](const auto type) {
             stamp_functions[type.hash()](from, src, to, dst);
         });
     }
 
-    void patch(const entt::registry& from, const entt::entity src,
-               entt::registry& to, const entt::entity dst) noexcept {
+    void patch(const entt::registry& from,
+               const entt::entity src,
+               entt::registry& to,
+               const entt::entity dst) noexcept {
         from.visit(src, [this, &from, &to, src, dst](const auto type) {
             if (specifiers[type.hash()] == component_specifier::OVERRIDABLE) {
                 patch_functions[type.hash()](from, src, to, dst);

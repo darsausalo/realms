@@ -22,7 +22,8 @@ void serialize(Archive& ar, sprite_sheet& value) {
     ar.member("image", name);
     ar.member(M(value.columns));
     ar.member(M(value.rows));
-    value.image = resources::image.load<image_loader>(entt::hashed_string{std::data(name)}, name);
+    value.image = resources::image.load<image_loader>(
+        entt::hashed_string{std::data(name)}, name);
 }
 
 } // namespace motor

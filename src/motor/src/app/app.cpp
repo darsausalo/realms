@@ -7,8 +7,8 @@
 namespace motor {
 
 app::app()
-    : dispatcher{registry.set<entt::dispatcher>()},
-      prototypes{registry.set<prototype_registry>()} {
+    : dispatcher{registry.set<entt::dispatcher>()}
+    , prototypes{registry.set<prototype_registry>()} {
     spdlog::set_level(spdlog::level::debug);
 }
 
@@ -22,16 +22,16 @@ app::~app() {
 app_builder app::build() {
     app_builder builder{};
     builder.add_stage("pre_frame"_hs)
-            .add_stage("pre_event"_hs)
-            .add_stage("event"_hs)
-            .add_stage("post_event"_hs)
-            .add_stage("pre_update"_hs)
-            .add_stage("update"_hs)
-            .add_stage("post_update"_hs)
-            .add_stage("pre_render"_hs)
-            .add_stage("render"_hs)
-            .add_stage("post_render"_hs)
-            .add_stage("post_frame"_hs);
+        .add_stage("pre_event"_hs)
+        .add_stage("event"_hs)
+        .add_stage("post_event"_hs)
+        .add_stage("pre_update"_hs)
+        .add_stage("update"_hs)
+        .add_stage("post_update"_hs)
+        .add_stage("pre_render"_hs)
+        .add_stage("render"_hs)
+        .add_stage("post_render"_hs)
+        .add_stage("post_frame"_hs);
 
     return std::move(builder);
 }

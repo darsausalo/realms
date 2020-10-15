@@ -16,9 +16,12 @@ struct mod_manifest {
 
 class mod {
 public:
-    mod(std::string_view name, const std::filesystem::path& path,
+    mod(std::string_view name,
+        const std::filesystem::path& path,
         const mod_manifest& manifest) noexcept
-        : name{name}, path{path}, manifest{std::move(manifest)} {}
+        : name{name}
+        , path{path}
+        , manifest{std::move(manifest)} {}
 
     const std::string& get_name() const { return name; }
     const std::filesystem::path& get_path() const { return path; }

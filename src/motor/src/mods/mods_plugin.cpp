@@ -26,15 +26,14 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
         auto& dependencies = all_dependencies.back();
         auto& mod_dependencies = m.get_manifest().dependencies;
         std::transform(
-                std::cbegin(mod_dependencies), std::cend(mod_dependencies),
-                std::back_inserter(dependencies),
-                [&mods](auto&& name) -> std::size_t {
-                    auto it = std::find_if(std::cbegin(mods), std::cend(mods),
-                                           [&name](auto&& dm) {
-                                               return dm.get_name() == name;
-                                           });
-                    return it - std::cbegin(mods);
-                });
+            std::cbegin(mod_dependencies), std::cend(mod_dependencies),
+            std::back_inserter(dependencies),
+            [&mods](auto&& name) -> std::size_t {
+                auto it = std::find_if(
+                    std::cbegin(mods), std::cend(mods),
+                    [&name](auto&& dm) { return dm.get_name() == name; });
+                return it - std::cbegin(mods);
+            });
     }
 
     std::vector<bool> visited;
@@ -42,9 +41,9 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     std::fill(visited.begin(), visited.end(), false);
 
     auto core_idx =
-            std::find_if(std::cbegin(mods), std::cend(mods),
-                         [](auto&& m) { return m.get_name() == core_name; }) -
-            std::cbegin(mods);
+        std::find_if(std::cbegin(mods), std::cend(mods),
+                     [](auto&& m) { return m.get_name() == core_name; }) -
+        std::cbegin(mods);
 
     visited[core_idx] = true;
 
@@ -56,7 +55,7 @@ static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
             if (i >= visited.size() ||
                 std::find_if(std::cbegin(broken), std::cend(broken),
                              [i](auto& it) { return i == it; }) !=
-                        std::cend(broken)) {
+                    std::cend(broken)) {
                 broken.push_back(v);
                 return;
             }
@@ -96,8 +95,8 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     auto& mods_path = filesystem::data() / "mods";
 
     if (!std::filesystem::exists(mods_path)) {
-        throw std::runtime_error(fmt::format("mods directory '{}' not found",
-                                             mods_path.string()));
+        throw std::runtime_error(
+            fmt::format("mods directory '{}' not found", mods_path.string()));
     }
 
     using mod_desc = std::pair<std::string, std::filesystem::path>;
@@ -117,9 +116,9 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
             auto name = path.filename().string();
             path.remove_filename();
 
-            auto it = std::find_if(
-                    mod_descs.begin(), mod_descs.end(),
-                    [&name](auto&& md) { return md.first == name; });
+            auto it =
+                std::find_if(mod_descs.begin(), mod_descs.end(),
+                             [&name](auto&& md) { return md.first == name; });
             if (it != mod_descs.end()) {
                 it->second = path;
             } else {
@@ -151,7 +150,7 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
         }
 
         mods.push_back(
-                {mod_desc.first, mod_desc.second / mod_desc.first, manifest});
+            {mod_desc.first, mod_desc.second / mod_desc.first, manifest});
     }
 
     sort_mods(mods, broken_mods);
@@ -160,15 +159,16 @@ static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
 //==============================================================================
 
 mods_plugin::mods_plugin(app_builder& app)
-    : registry{app.registry()}, dispatcher{app.dispatcher()},
-      prototypes{app.registry().ctx<motor::prototype_registry>()},
-      watcher{dispatcher} {
+    : registry{app.registry()}
+    , dispatcher{app.dispatcher()}
+    , prototypes{app.registry().ctx<motor::prototype_registry>()}
+    , watcher{dispatcher} {
     load_mods(mods, broken_mods);
 
     dispatcher.sink<event::bootstrap>()
-            .connect<&mods_plugin::receive_bootstrap>(*this);
+        .connect<&mods_plugin::receive_bootstrap>(*this);
     dispatcher.sink<event::file_changed>()
-            .connect<&mods_plugin::receive_file_changed>(*this);
+        .connect<&mods_plugin::receive_file_changed>(*this);
 
     app.add_system_to_stage<&mods_plugin::update>("pre_frame"_hs, *this);
 

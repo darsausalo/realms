@@ -21,7 +21,7 @@ void prototype_registry::transpire(const sol::table& defs) {
                     if (comp_name == "tags" && value.is<sol::table>()) {
                         for (auto&& [_, tag] : value.as<sol::table>()) {
                             auto comp_id = entt::hashed_string::value(
-                                    std::data(tag.as<std::string>()));
+                                std::data(tag.as<std::string>()));
 
                             if (components.is_defined(comp_id)) {
                                 components.transpire(reg, def_e,
@@ -33,11 +33,10 @@ void prototype_registry::transpire(const sol::table& defs) {
                     }
 
                     auto comp_id =
-                            comp_name == "tag" || comp_name == "tags"
-                                    ? entt::hashed_string::value(std::data(
-                                              value.as<std::string>()))
-                                    : entt::hashed_string::value(
-                                              std::data(comp_name));
+                        comp_name == "tag" || comp_name == "tags"
+                            ? entt::hashed_string::value(
+                                  std::data(value.as<std::string>()))
+                            : entt::hashed_string::value(std::data(comp_name));
                     if (!components.is_defined(comp_id)) {
                         spdlog::warn("component '{}' not defined", comp_name);
                         return;

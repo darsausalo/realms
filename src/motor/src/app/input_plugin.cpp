@@ -71,18 +71,18 @@ parse_keymap(nlohmann::json config,
 }
 
 input_plugin::input_plugin(app_builder& app)
-    : dispatcher{app.dispatcher()},
-      jconfig{app.registry().ctx_or_set<nlohmann::json>()},
-      pointer_position{app.registry().set<cursor_position>()},
-      actions{app.registry().set<input_actions>()} {
+    : dispatcher{app.dispatcher()}
+    , jconfig{app.registry().ctx_or_set<nlohmann::json>()}
+    , pointer_position{app.registry().set<cursor_position>()}
+    , actions{app.registry().set<input_actions>()} {
     dispatcher.sink<event::keyboard_input>()
-            .connect<&input_plugin::receive_keyboard_input>(*this);
+        .connect<&input_plugin::receive_keyboard_input>(*this);
     dispatcher.sink<event::mouse_button_input>()
-            .connect<&input_plugin::receive_mouse_button_input>(*this);
+        .connect<&input_plugin::receive_mouse_button_input>(*this);
     dispatcher.sink<event::mouse_motion_input>()
-            .connect<&input_plugin::receive_mouse_motion_input>(*this);
+        .connect<&input_plugin::receive_mouse_motion_input>(*this);
     dispatcher.sink<event::mouse_wheel_input>()
-            .connect<&input_plugin::receive_mouse_wheel_input>(*this);
+        .connect<&input_plugin::receive_mouse_wheel_input>(*this);
 
     SDL_GetMouseState(&pointer_position.x, &pointer_position.y);
 
@@ -99,13 +99,9 @@ input_plugin::input_plugin(app_builder& app)
                                                            *this);
 }
 
-input_plugin::~input_plugin() {
-    dispatcher.disconnect(*this);
-}
+input_plugin::~input_plugin() { dispatcher.disconnect(*this); }
 
-void input_plugin::update_actions() {
-    actions.update();
-}
+void input_plugin::update_actions() { actions.update(); }
 
 bool input_plugin::handle_ui_keyboard(const event::keyboard_input& e) {
     // TODO: use ImGui
@@ -130,7 +126,7 @@ bool input_plugin::handle_ui_mouse_wheel(const event::mouse_wheel_input& e) {
 void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {
     if (!handle_ui_keyboard(e) && (e.pressed || e.released)) {
         entt::hashed_string key_name{
-                SDL_GetKeyName(static_cast<SDL_Keycode>(e.key_code))};
+            SDL_GetKeyName(static_cast<SDL_Keycode>(e.key_code))};
         action_key key{key_name, get_key_modifiers()};
         if (auto it = keymap.find(key); it != keymap.cend()) {
             if (e.pressed) {
@@ -143,7 +139,7 @@ void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {
 }
 
 void input_plugin::receive_mouse_button_input(
-        const event::mouse_button_input& e) {
+    const event::mouse_button_input& e) {
     if (!handle_ui_mouse_button(e)) {
         auto key_name = e.key == 0 ? MBL : MBR;
         action_key key{key_name, get_key_modifiers()};
@@ -158,7 +154,7 @@ void input_plugin::receive_mouse_button_input(
 }
 
 void input_plugin::receive_mouse_motion_input(
-        const event::mouse_motion_input& e) {
+    const event::mouse_motion_input& e) {
     if (!handle_ui_mouse_motion(e)) {
         pointer_position.x = e.x;
         pointer_position.y = e.y;
@@ -166,7 +162,7 @@ void input_plugin::receive_mouse_motion_input(
 }
 
 void input_plugin::receive_mouse_wheel_input(
-        const event::mouse_wheel_input& e) {
+    const event::mouse_wheel_input& e) {
     if (!handle_ui_mouse_wheel(e) && e.y != 0) {
         auto key_name = e.y > 0 ? MWU : MWD;
         // TODO: mouse wheel without focus not receive key modifiers

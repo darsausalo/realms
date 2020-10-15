@@ -21,16 +21,14 @@ graphics_plugin::graphics_plugin(app_builder& app)
     sg_setup(&sg_desc{});
     assert(sg_isvalid());
 
-    app.add_system_to_stage<&graphics_plugin::pre_render>("pre_render"_hs,
-                                                          *this)
-        .add_plugin<sprite_plugin>()
-        .add_system_to_stage<&graphics_plugin::post_render>("post_render"_hs,
-                                                            *this);
+    app.add_system_to_stage //
+        <&graphics_plugin::pre_render>("pre_render"_hs, *this)
+            .add_plugin<sprite_plugin>()
+            .add_system_to_stage //
+        <&graphics_plugin::post_render>("post_render"_hs, *this);
 }
 
-graphics_plugin::~graphics_plugin() {
-    sg_shutdown();
-}
+graphics_plugin::~graphics_plugin() { sg_shutdown(); }
 
 void graphics_plugin::pre_render() {
     sg_pass_action pass_action{};
