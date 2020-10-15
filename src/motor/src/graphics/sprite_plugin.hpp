@@ -41,6 +41,8 @@ private:
     void prepare_sprite_sheets(
         entt::view<entt::exclude_t<sg_image>, sprite_sheet> view,
         entt::registry& registry);
+    void update_sprite_sheets(
+        entt::view<entt::exclude_t<>, const sprite_sheet, rect> view);
     void emplace_sprites(entt::view<entt::exclude_t<entt::tag<"hidden"_hs>>,
                                     const sg_image,
                                     const transform,

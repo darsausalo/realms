@@ -8,6 +8,7 @@
 #include <motor/entity/rect.hpp>
 #include <motor/entity/transform.hpp>
 #include <motor/graphics/sprite.hpp>
+#include <motor/graphics/sprite_sheet.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -60,6 +61,7 @@ struct test_plugin {
             .define_component<health>()
             .add_system<&quit_system>()
             .add_system<&update_transforms>()
+            .add_system<&test_plugin::update_anim>(*this)
             /*.add_system<&test2_system>()
             .add_system<&test_system>()*/
             ;
@@ -101,6 +103,17 @@ struct test_plugin {
                 info += "\n";
             });
             spdlog::debug(info);
+        }
+    }
+
+    motor::timer timer{0.1f};
+
+    void update_anim(entt::view<entt::exclude_t<>, motor::sprite_sheet> view,
+                     const motor::time& time) {
+        timer.tick(time.delta);
+        if (timer.finished) {
+            timer.reset();
+            view.each([](auto& s) { s.index++; });
         }
     }
 };

@@ -107,12 +107,14 @@ sprite_plugin::sprite_plugin(app_builder& app) {
     pip_desc.blend.enabled = true;
     pip_desc.blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
     pip_desc.blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-    pip_desc.blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
-    pip_desc.blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+    pip_desc.blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
+    pip_desc.blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
     pipeline = sg_make_pipeline(&pip_desc);
 
     app.define_component<sprite>()
         .define_component<sprite_sheet>()
+        .add_system_to_stage<&sprite_plugin::update_sprite_sheets>(
+            "post_update"_hs, *this)
         .add_system_to_stage<&sprite_plugin::prepare_sprites>("pre_render"_hs,
                                                               *this)
         .add_system_to_stage<&sprite_plugin::prepare_sprite_sheets>(
@@ -144,6 +146,17 @@ void sprite_plugin::prepare_sprite_sheets(
                                glm::vec2{0.0f, 0.0f},
                                s.image->size() / glm::vec2{s.columns, s.rows});
         registry.emplace<image_atlas>(e, s.image->size());
+    });
+}
+
+void sprite_plugin::update_sprite_sheets(
+    entt::view<entt::exclude_t<>, const sprite_sheet, rect> view) {
+    view.each([](auto e, auto& s, auto& r) {
+        auto column = s.index % s.columns;
+        auto row = (s.index / s.columns) % s.rows;
+        auto size = s.image->size() / glm::vec2{s.columns, s.rows};
+        r.min = glm::vec2{column, row} * size;
+        r.max = r.min + size;
     });
 }
 
