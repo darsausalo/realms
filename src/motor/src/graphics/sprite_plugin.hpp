@@ -50,8 +50,10 @@ private:
                                     const image_atlas> view);
     void render_sprites(const screen& screen, const camera2d& camera);
 
-    void
-    render_batch(sg_image image, const sprite_data* sprites, std::size_t count);
+    void render_batch(sg_image image,
+                      const sprite_data* sprites,
+                      std::size_t count,
+                      std::size_t& base_element);
 };
 
 } // namespace motor

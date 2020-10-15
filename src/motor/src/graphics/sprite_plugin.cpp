@@ -43,7 +43,7 @@ void main() {
 }
 )";
 
-static constexpr const std::size_t max_batch_size = 1024 * 10;
+static constexpr const std::size_t max_batch_size = 1024 * 16;
 static constexpr const std::size_t max_vertices = max_batch_size * 4;
 static constexpr const std::size_t max_indices = max_batch_size * 6;
 
@@ -201,13 +201,15 @@ void sprite_plugin::render_sprites(const screen& screen,
     sg_apply_uniforms(SG_SHADERSTAGE_VS, 0, &vs_params, sizeof(vs_params_t));
 
     sg_image batch_image{};
-    std::size_t batch_start{};
+    std::size_t batch_start{}, batch_element{};
     for (std::size_t i = 0u; i < sprites.size(); ++i) {
         sg_image image = sprites[i].image;
         if (image.id != batch_image.id) {
             if (i > batch_start) {
-                render_batch(
-                    batch_image, &sprites[batch_start], i - batch_start);
+                render_batch(batch_image,
+                             &sprites[batch_start],
+                             i - batch_start,
+                             batch_element);
             }
 
             batch_image = image;
@@ -215,16 +217,16 @@ void sprite_plugin::render_sprites(const screen& screen,
         }
     }
 
-    render_batch(
-        batch_image, &sprites[batch_start], sprites.size() - batch_start);
+    render_batch(batch_image,
+                 &sprites[batch_start],
+                 sprites.size() - batch_start,
+                 batch_element);
 }
-
-// TODO: hack to sokol
-void sg_rewind_buffer(sg_buffer buf_id);
 
 void sprite_plugin::render_batch(sg_image image,
                                  const sprite_data* sprites,
-                                 std::size_t count) {
+                                 std::size_t count,
+                                 std::size_t& base_element) {
     // clang-format off
     static std::array<glm::vec2, 4> corners = {
         glm::vec2{-0.5f,  0.5f},
@@ -234,6 +236,7 @@ void sprite_plugin::render_batch(sg_image image,
     };
     // clang-format on
     std::array<vertex, 4> vertices;
+    auto vbuf_info = sg_query_buffer_info(bindings.vertex_buffers[0]);
     while (count > 0) {
         auto batch_size = std::min(count, max_batch_size);
         for (std::size_t i = 0u; i < batch_size; ++i) {
@@ -251,10 +254,8 @@ void sprite_plugin::render_batch(sg_image image,
         }
         bindings.fs_images[0] = image;
         sg_apply_bindings(bindings);
-        sg_draw(0, count * 6, 1); // TODO: rewind or overflow?
-
-        // TODO: hack to sokol
-        sg_rewind_buffer(bindings.vertex_buffers[0]);
+        sg_draw(static_cast<int>(base_element), batch_size * 6, 1);
+        base_element += batch_size * 6;
 
         sprites += batch_size;
         count -= batch_size;

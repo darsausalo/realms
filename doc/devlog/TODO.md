@@ -16,10 +16,12 @@
 - [x] Resources
 - [ ] Graphics
     - [x] sprite_sheet update by index
-    - [ ] sg_buffer rewinding?
+    - [x] sg_buffer rewinding?
     - [ ] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
     - [ ] dealloc sg_image in image?
     - [ ] TileMaps
+- [ ] Remove clang-format using, use "wide source code text"
+- [ ] ImGui
 - [ ] Systems Scripting
 - [ ] Code review
     - [ ] add core/fwd.hpp with M macros
