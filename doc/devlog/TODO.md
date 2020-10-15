@@ -31,3 +31,10 @@
     - [ ] use constexpr in serialize
     - [ ] improve code formatting
 - [ ] vcpkg
+
+- [ ] Motor ROADMAP
+    - [ ] Make the atlases creation during multiple frames
+    - [ ] Fire the start event after atlases loading
+    - [ ] Clear the images after the atlases creation
+    - [ ] Cache the atlases
+    - [ ] Cache the prototypes

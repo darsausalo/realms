@@ -20,6 +20,7 @@ set(SOURCES
 	# graphics
 	"src/graphics/graphics_plugin.cpp"
 	"src/graphics/sprite_plugin.cpp"
+	"src/graphics/rect_packer.cpp"
 
 	# app
 	"src/app/config_plugin.cpp"
@@ -73,6 +74,7 @@ set(HEADERS
 	"include/motor/graphics/sprite.hpp"
 	"include/motor/graphics/sprite_sheet.hpp"
 	"include/motor/graphics/image_region.hpp"
+	"include/motor/graphics/rect_packer.hpp"
 
 	"src/graphics/graphics_plugin.hpp"
 	"src/graphics/sprite_plugin.hpp"
