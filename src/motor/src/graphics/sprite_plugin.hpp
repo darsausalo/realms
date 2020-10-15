@@ -1,10 +1,9 @@
 #ifndef MOTOR_SPRITE_PLUGIN_HPP
 #define MOTOR_SPRITE_PLUGIN_HPP
 
-#include "motor/entity/rect.hpp"
 #include "motor/entity/transform.hpp"
 #include "motor/graphics/camera2d.hpp"
-#include "motor/graphics/image_atlas.hpp"
+#include "motor/graphics/image_region.hpp"
 #include "motor/graphics/screen.hpp"
 #include "motor/graphics/sprite.hpp"
 #include "motor/graphics/sprite_sheet.hpp"
@@ -42,12 +41,11 @@ private:
         entt::view<entt::exclude_t<sg_image>, sprite_sheet> view,
         entt::registry& registry);
     void update_sprite_sheets(
-        entt::view<entt::exclude_t<>, const sprite_sheet, rect> view);
+        entt::view<entt::exclude_t<>, const sprite_sheet, image_region> view);
     void emplace_sprites(entt::view<entt::exclude_t<entt::tag<"hidden"_hs>>,
                                     const sg_image,
                                     const transform,
-                                    const rect,
-                                    const image_atlas> view);
+                                    const image_region> view);
     void render_sprites(const screen& screen, const camera2d& camera);
 
     void render_batch(sg_image image,

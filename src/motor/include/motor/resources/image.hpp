@@ -16,9 +16,17 @@ public:
     image(image&&) = default;
     image& operator=(image&&) = default;
 
-    sg_image upload() noexcept;
+    [[no_discard]] sg_image upload() noexcept;
 
-    glm::vec2 size() const noexcept {
+    [[no_discard]] glm::vec2 size() const noexcept {
+        return {width, height};
+    }
+
+    [[no_discard]] glm::vec2 atlas_origin() const noexcept {
+        return glm::vec2{0.0f, 0.0f};
+    }
+
+    [[no_discard]] glm::vec2 atlas_size() const noexcept {
         return {width, height};
     }
 

@@ -5,7 +5,6 @@
 #include <motor/core/events.hpp>
 #include <motor/core/input.hpp>
 #include <motor/core/time.hpp>
-#include <motor/entity/rect.hpp>
 #include <motor/entity/transform.hpp>
 #include <motor/graphics/sprite.hpp>
 #include <motor/graphics/sprite_sheet.hpp>

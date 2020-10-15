@@ -71,6 +71,8 @@ set(HEADERS
 	# graphics
 	"include/motor/graphics/screen.hpp"
 	"include/motor/graphics/sprite.hpp"
+	"include/motor/graphics/sprite_sheet.hpp"
+	"include/motor/graphics/image_region.hpp"
 
 	"src/graphics/graphics_plugin.hpp"
 	"src/graphics/sprite_plugin.hpp"

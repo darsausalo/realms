@@ -113,11 +113,11 @@ sprite_plugin::sprite_plugin(app_builder& app) {
 
     app.define_component<sprite>()
         .define_component<sprite_sheet>()
-        .add_system_to_stage<&sprite_plugin::update_sprite_sheets>(
-            "post_update"_hs, *this)
         .add_system_to_stage<&sprite_plugin::prepare_sprites>("pre_render"_hs,
                                                               *this)
         .add_system_to_stage<&sprite_plugin::prepare_sprite_sheets>(
+            "pre_render"_hs, *this)
+        .add_system_to_stage<&sprite_plugin::update_sprite_sheets>(
             "pre_render"_hs, *this)
         .add_system_to_stage<&sprite_plugin::emplace_sprites>("pre_render"_hs,
                                                               *this)
@@ -132,8 +132,11 @@ void sprite_plugin::prepare_sprites(
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
         registry.emplace<sg_image>(e, s.image->upload());
-        registry.emplace<rect>(e, glm::vec2{0.0f, 0.0f}, s.image->size());
-        registry.emplace<image_atlas>(e, s.image->size());
+        registry.emplace<image_region>(e,
+                                       glm::vec2{0.0f, 0.0f},
+                                       s.image->size(),
+                                       s.image->atlas_origin(),
+                                       s.image->atlas_size());
     });
 }
 
@@ -142,21 +145,21 @@ void sprite_plugin::prepare_sprite_sheets(
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
         registry.emplace<sg_image>(e, s.image->upload());
-        registry.emplace<rect>(e,
-                               glm::vec2{0.0f, 0.0f},
-                               s.image->size() / glm::vec2{s.columns, s.rows});
-        registry.emplace<image_atlas>(e, s.image->size());
+        registry.emplace<image_region>(e,
+                                       glm::vec2{0.0f, 0.0f},
+                                       s.image->size() /
+                                           glm::vec2{s.columns, s.rows},
+                                       s.image->atlas_origin(),
+                                       s.image->atlas_size());
     });
 }
 
 void sprite_plugin::update_sprite_sheets(
-    entt::view<entt::exclude_t<>, const sprite_sheet, rect> view) {
+    entt::view<entt::exclude_t<>, const sprite_sheet, image_region> view) {
     view.each([](auto e, auto& s, auto& r) {
         auto column = s.index % s.columns;
         auto row = (s.index / s.columns) % s.rows;
-        auto size = s.image->size() / glm::vec2{s.columns, s.rows};
-        r.min = glm::vec2{column, row} * size;
-        r.max = r.min + size;
+        r.origin = r.atlas_origin + glm::vec2{column, row} * r.size;
     });
 }
 
@@ -164,22 +167,21 @@ void sprite_plugin::emplace_sprites(
     entt::view<entt::exclude_t<entt::tag<"hidden"_hs>>,
                const sg_image,
                const transform,
-               const rect,
-               const image_atlas> view) {
+               const image_region> view) {
     sprites.clear();
-    view.each(
-        [this](
-            const auto& image, const auto& tfm, const auto& r, const auto& ia) {
-            sprites.push_back({image,
-                               tfm.value,
-                               {
-                                   glm::vec2{r.min.x, r.max.y}, // top left
-                                   glm::vec2{r.max.x, r.max.y}, // top right
-                                   glm::vec2{r.max.x, r.min.y}, // bottom right
-                                   glm::vec2{r.min.x, r.min.y}, // bottom left
-                               },
-                               ia.size});
-        });
+    view.each([this](const auto& image, const auto& tfm, const auto& r) {
+        sprites.push_back(
+            {image,
+             tfm.value,
+             {
+                 glm::vec2{r.origin.x, r.origin.y + r.size.y}, // top left
+                 glm::vec2{r.origin.x + r.size.x,
+                           r.origin.y + r.size.y},             // top right
+                 glm::vec2{r.origin.x + r.size.x, r.origin.y}, // bottom right
+                 glm::vec2{r.origin.x, r.origin.y},            // bottom left
+             },
+             r.atlas_size});
+    });
 
     std::sort(
         sprites.begin(), sprites.end(), [](const auto& lhs, const auto& rhs) {
