@@ -77,8 +77,8 @@ public:
 
     template<auto Candidate, typename... Req>
     app_builder& add_system(const char* name = nullptr) {
-        app.scheduler.add_system_to_stage<Candidate, Req...>(default_stage,
-                                                             name);
+        app.scheduler.add_system_to_stage<Candidate, Req...>(
+            default_stage, name);
         return *this;
     }
 
@@ -94,8 +94,30 @@ public:
     app_builder& add_system(function_type* func,
                             const void* payload = nullptr,
                             const char* name = nullptr) {
-        app.scheduler.add_system_to_stage<Req...>(default_stage, func, payload,
-                                                  name);
+        app.scheduler.add_system_to_stage<Req...>(
+            default_stage, func, payload, name);
+        return *this;
+    }
+
+    template<auto Candidate, typename... Req>
+    app_builder& add_startup_system(const char* name = nullptr) {
+        app.scheduler.add_startup_system<Candidate, Req...>(name);
+        return *this;
+    }
+
+    template<auto Candidate, typename... Req, typename Type>
+    app_builder& add_startup_system(Type& value_or_instance,
+                                    const char* name = nullptr) {
+        app.scheduler.add_startup_system<Candidate, Req..., Type>(
+            value_or_instance, name);
+        return *this;
+    }
+
+    template<typename... Req>
+    app_builder& add_startup_system(function_type* func,
+                                    const void* payload = nullptr,
+                                    const char* name = nullptr) {
+        app.scheduler.add_startup_system<Req...>(func, payload, name);
         return *this;
     }
 

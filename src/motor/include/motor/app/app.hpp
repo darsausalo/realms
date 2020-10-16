@@ -8,6 +8,7 @@
 #include <entt/signal/dispatcher.hpp>
 #include <functional>
 #include <memory>
+#include <thread>
 #include <vector>
 
 namespace motor {
@@ -25,25 +26,27 @@ class app {
     app();
 
 public:
-    entt::registry registry{};
-    scheduler scheduler{};
-    entt::dispatcher& dispatcher;
-    prototype_registry& prototypes;
-
     app(app&&) = default;
     app& operator=(app&&) = default;
 
     ~app();
 
-    static app_builder build();
+    static app_builder& build();
 
     void run();
 
 private:
+    entt::registry registry{};
+    scheduler scheduler{};
+    entt::dispatcher& dispatcher;
+    prototype_registry& prototypes;
     bool should_quit{};
     std::vector<plugin_data> plugins{};
+    std::thread startup_thread{};
 
-    void receive(const event::quit&) { should_quit = true; }
+    void request_quit() { should_quit = true; }
+
+    void startup(entt::registry& startup_registry);
 };
 
 } // namespace motor

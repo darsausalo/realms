@@ -50,8 +50,7 @@ set(HEADERS
 	"include/motor/core/input.hpp"
 	"include/motor/core/scripts.hpp"
 	"include/motor/core/rect.hpp"
-
-	"src/core/progress.hpp"
+	"include/motor/core/progress.hpp"
 
 	# entity
 	"include/motor/entity/component_registry.hpp"

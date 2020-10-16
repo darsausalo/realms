@@ -19,7 +19,7 @@
     - [x] sg_buffer rewinding? (no yet!)
     - [x] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
     - [ ] TileMaps
-- [ ] Rework Bootstrap: move to app, add startup_systems
+- [x] Rework Bootstrap: move to app, add startup_systems
 - [ ] ImGui
 - [ ] Systems Scripting
 - [ ] Code review
@@ -41,3 +41,4 @@
     - [ ] Cache the atlases
     - [ ] Cache the prototypes
     - [ ] Loading progress screen
+    - [ ] Move SOKOL_IMPLEMENTED, STB_IMPLEMENTED to CMake

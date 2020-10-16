@@ -9,6 +9,7 @@
 #include <SDL.h>
 #include <entt/entity/registry.hpp>
 #include <nlohmann/json.hpp>
+
 #define SOKOL_IMPL
 #define SOKOL_GLCORE33
 #include <sokol_gfx.h>
@@ -42,21 +43,21 @@ graphics_plugin::graphics_plugin(app_builder& app)
     sg_setup(&sg_desc{});
     assert(sg_isvalid());
 
-    app.add_system_to_stage<&graphics_plugin::pre_render>(
-           "pre_render"_hs, *this)
+    app.add_startup_system<&graphics_plugin::build_atlases>(*this)
+        .add_system_to_stage<&graphics_plugin::pre_render>(
+            "pre_render"_hs, *this)
         .add_plugin<sprite_plugin>()
         .add_system_to_stage<&graphics_plugin::post_render>(
             "post_render"_hs, *this);
 
     app.dispatcher()
         .sink<event::start>()
-        .connect<&graphics_plugin::build_atlases>(*this);
+        .connect<&graphics_plugin::prepare_atlases>(*this);
 }
 
 graphics_plugin::~graphics_plugin() { sg_shutdown(); }
 
 void graphics_plugin::build_atlases() {
-    // TODO: move to startup system
     std::vector<entt::resource_handle<image>> images;
     resources::image.each(
         [&images](auto&&, auto&& image) { images.push_back(image); });
@@ -90,7 +91,9 @@ void graphics_plugin::build_atlases() {
             break;
         }
     }
+}
 
+void graphics_plugin::prepare_atlases() {
     for (auto&& atlas : atlases) {
         atlas->upload();
     }

@@ -5,8 +5,6 @@
 
 namespace motor::event {
 
-struct bootstrap {};
-
 struct config_changed {};
 
 enum class file_action { added, removed, modified, moved };

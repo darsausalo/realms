@@ -31,6 +31,7 @@ private:
     void post_render();
 
     void build_atlases();
+    void prepare_atlases();
 };
 
 } // namespace motor

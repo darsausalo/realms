@@ -1,5 +1,6 @@
 #include "motor/app/app.hpp"
 #include "motor/app/app_builder.hpp"
+#include "motor/core/progress.hpp"
 #include "motor/entity/executor.hpp"
 #include "motor/entity/prototype_registry.hpp"
 #include <spdlog/spdlog.h>
@@ -17,10 +18,13 @@ app::~app() {
         spdlog::debug("removed plugin: {}", plugins.back().name);
         plugins.pop_back();
     }
+    if (startup_thread.joinable()) {
+        startup_thread.join();
+    }
 }
 
-app_builder app::build() {
-    app_builder builder{};
+app_builder& app::build() {
+    static app_builder builder{};
     builder.add_stage("pre_frame"_hs)
         .add_stage("pre_event"_hs)
         .add_stage("event"_hs)
@@ -33,16 +37,36 @@ app_builder app::build() {
         .add_stage("post_render"_hs)
         .add_stage("post_frame"_hs);
 
-    return std::move(builder);
+    return builder;
 }
 
 void app::run() {
-    dispatcher.sink<event::quit>().connect<&app::receive>(*this);
+    dispatcher.sink<event::quit>().connect<&app::request_quit>(*this);
+
+    bool started{};
+    entt::registry startup_registry{};
+    startup_registry.set<progress>();
+
+    startup(startup_registry);
 
     executor executor{scheduler};
     while (!should_quit) {
+        if (!started && startup_registry.ctx<progress>().is_completed()) {
+            dispatcher.enqueue<event::start>();
+            started = true;
+        }
         executor.run(registry);
     }
+}
+
+void app::startup(entt::registry& startup_registry) {
+    startup_thread = std::thread([this, &startup_registry] {
+        auto starup_systems = scheduler.startup_graph();
+        for (auto&& system : starup_systems) {
+            system.callback()(system.data(), startup_registry);
+        }
+        startup_registry.ctx<progress>().complete();
+    });
 }
 
 } // namespace motor

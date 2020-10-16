@@ -10,13 +10,9 @@ namespace motor {
 class progress {
 public:
     progress() noexcept = default;
-    progress(progress&) = delete;
-    progress(progress&&) = delete;
+    progress(progress&&) = default;
 
-    progress& operator=(progress&) = delete;
-    progress& operator=(progress&&) = delete;
-
-    ~progress() noexcept = default;
+    progress& operator=(progress&&) = default;
 
     void update(int32_t v) noexcept { value.store(value); }
 

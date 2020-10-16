@@ -165,34 +165,12 @@ mods_plugin::mods_plugin(app_builder& app)
     , watcher{dispatcher} {
     load_mods(mods, broken_mods);
 
-    dispatcher.sink<event::bootstrap>()
-        .connect<&mods_plugin::receive_bootstrap>(*this);
+    dispatcher.sink<event::start>().connect<&mods_plugin::start_watch_mods>(
+        *this);
     dispatcher.sink<event::file_changed>()
         .connect<&mods_plugin::receive_file_changed>(*this);
 
-    app.add_system_to_stage<&mods_plugin::update>("pre_frame"_hs, *this);
-
-    dispatcher.enqueue<event::bootstrap>();
-}
-
-mods_plugin::~mods_plugin() {
-    dispatcher.disconnect(*this);
-
-    if (thread.joinable()) {
-        thread.join();
-    }
-}
-
-void mods_plugin::update() {
-    if (!loaded) {
-        if (prg.is_completed()) {
-            loaded = true;
-
-            dispatcher.enqueue<event::start>();
-
-            start_watch_mods();
-        }
-    }
+    app.add_startup_system<&mods_plugin::load_prototypes>(*this);
 }
 
 void mods_plugin::load_prototypes() {
@@ -235,22 +213,8 @@ void mods_plugin::start_watch_mods() {
     }
 }
 
-void mods_plugin::receive_bootstrap(const event::bootstrap&) {
-    thread = std::thread([this] {
-        prg.update("loading prototypes");
-
-        load_prototypes();
-
-        prg.complete();
-    });
-}
-
 void mods_plugin::receive_file_changed(const event::file_changed& e) {
     spdlog::debug("file changed: {}", e.path.string());
-    if (!loaded) {
-        spdlog::error("can't hot reload: mods system in loading state");
-        return;
-    }
     if (e.path.string().rfind("prototype", 0) == 0) {
         load_prototypes();
         prototypes.respawn(registry);
