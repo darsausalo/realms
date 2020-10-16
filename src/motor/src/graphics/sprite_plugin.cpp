@@ -114,16 +114,16 @@ sprite_plugin::sprite_plugin(app_builder& app) {
 
     app.define_component<sprite>()
         .define_component<sprite_sheet>()
-        .add_system_to_stage<&sprite_plugin::prepare_sprites>("pre_render"_hs,
-                                                              *this)
+        .add_system_to_stage<&sprite_plugin::prepare_sprites>(
+            "pre_render"_hs, *this)
         .add_system_to_stage<&sprite_plugin::prepare_sprite_sheets>(
             "pre_render"_hs, *this)
         .add_system_to_stage<&sprite_plugin::update_sprite_sheets>(
             "pre_render"_hs, *this)
-        .add_system_to_stage<&sprite_plugin::emplace_sprites>("pre_render"_hs,
-                                                              *this)
-        .add_system_to_stage<&sprite_plugin::render_sprites>("render"_hs,
-                                                             *this);
+        .add_system_to_stage<&sprite_plugin::emplace_sprites>(
+            "pre_render"_hs, *this)
+        .add_system_to_stage<&sprite_plugin::render_sprites>(
+            "render"_hs, *this);
 
     app.registry().set<camera2d>(glm::vec2{0.0f, 0.0f}, 2.0f);
 }
@@ -132,10 +132,12 @@ void sprite_plugin::prepare_sprites(
     entt::view<entt::exclude_t<sg_image>, sprite> view,
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
-        registry.emplace<sg_image>(e, s.image->upload());
-        registry.emplace<image_region>(e, glm::vec2{0.0f, 0.0f},
-                                       s.image->size(), s.image->atlas_origin(),
-                                       s.image->atlas_size());
+        if (s.image->valid()) {
+            registry.emplace<sg_image>(e, s.image->resource());
+            registry.emplace<image_region>(e, s.image->origin(),
+                                           s.image->size(), s.image->origin(),
+                                           s.image->atlas_size());
+        }
     });
 }
 
@@ -143,11 +145,13 @@ void sprite_plugin::prepare_sprite_sheets(
     entt::view<entt::exclude_t<sg_image>, sprite_sheet> view,
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
-        registry.emplace<sg_image>(e, s.image->upload());
-        registry.emplace<image_region>(
-            e, glm::vec2{0.0f, 0.0f},
-            s.image->size() / glm::vec2{s.columns, s.rows},
-            s.image->atlas_origin(), s.image->atlas_size());
+        if (s.image->valid()) {
+            registry.emplace<sg_image>(e, s.image->resource());
+            registry.emplace<image_region>(
+                e, s.image->origin(),
+                s.image->size() / glm::vec2{s.columns, s.rows},
+                s.image->origin(), s.image->atlas_size());
+        }
     });
 }
 
@@ -180,10 +184,10 @@ void sprite_plugin::emplace_sprites(
         });
     });
 
-    std::sort(sprites.begin(), sprites.end(),
-              [](const auto& lhs, const auto& rhs) {
-                  return lhs.tfm[3].z < lhs.tfm[3].z;
-              });
+    std::sort(
+        sprites.begin(), sprites.end(), [](const auto& lhs, const auto& rhs) {
+            return lhs.tfm[3].z < lhs.tfm[3].z;
+        });
 }
 
 void sprite_plugin::render_sprites(const screen& screen,

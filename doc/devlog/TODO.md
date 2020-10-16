@@ -16,13 +16,14 @@
 - [x] Resources
 - [ ] Graphics
     - [x] sprite_sheet update by index
-    - [x] sg_buffer rewinding?
-    - [ ] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
-    - [ ] dealloc sg_image in image?
+    - [x] sg_buffer rewinding? (no yet!)
+    - [x] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
     - [ ] TileMaps
+- [ ] Rework Bootstrap: move to app, add startup_systems
 - [ ] ImGui
 - [ ] Systems Scripting
 - [ ] Code review
+    - [ ] remove non-sense event parameters (e.c. receive_start(event::start))
     - [ ] add core/fwd.hpp with M macros
     - [ ] review: failed image loading
     - [ ] check prepare for entt::organizer
@@ -33,8 +34,10 @@
 - [ ] vcpkg
 
 - [ ] Motor ROADMAP
+    - [ ] Merge config SAVE->DATA
     - [ ] Make the atlases creation during multiple frames
     - [ ] Fire the start event after atlases loading
     - [ ] Clear the images after the atlases creation
     - [ ] Cache the atlases
     - [ ] Cache the prototypes
+    - [ ] Loading progress screen

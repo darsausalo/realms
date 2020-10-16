@@ -16,6 +16,7 @@ set(SOURCES
 
 	# resources
 	"src/resources/image.cpp"
+	"src/resources/image_atlas.cpp"
 
 	# graphics
 	"src/graphics/graphics_plugin.cpp"
@@ -48,6 +49,7 @@ set(HEADERS
 	"include/motor/core/events.hpp"
 	"include/motor/core/input.hpp"
 	"include/motor/core/scripts.hpp"
+	"include/motor/core/rect.hpp"
 
 	"src/core/progress.hpp"
 
@@ -57,7 +59,6 @@ set(HEADERS
 	"include/motor/entity/scheduler.hpp"
 	"include/motor/entity/executor.hpp"
 	"include/motor/entity/transform.hpp"
-	"include/motor/entity/rect.hpp"
 
 	# mods
 	"include/motor/mods/mod.hpp"

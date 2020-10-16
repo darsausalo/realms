@@ -15,6 +15,9 @@
             "width": 1280
         }
     },
+    "graphics": {
+        "max_texture_size": 8192
+    },
     "input": {
         "keymap": {
             "ctrl+q": { "action": "quit" },
