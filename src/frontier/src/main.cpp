@@ -127,7 +127,7 @@ struct test_plugin {
             auto tile_set = registry.get<motor::tile_set>(map_e);
             spdlog::debug("map: tile_size={},{}; chunk_size={},{}; tile_set={}",
                           map.tile_size.x, map.tile_size.y, map.chunk_size.x,
-                          map.chunk_size.y, tile_set.value.size());
+                          map.chunk_size.y, tile_set.tiles.size());
 
             static constexpr const auto N = 3u;
             for (std::size_t i{}; i < N; i++) {

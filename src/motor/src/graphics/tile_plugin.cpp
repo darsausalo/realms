@@ -1,6 +1,5 @@
 #include "tile_plugin.hpp"
 #include "motor/app/app_builder.hpp"
-#include "motor/entity/map.hpp"
 #include "motor/resources/image_loader.hpp"
 
 namespace motor {
@@ -128,8 +127,61 @@ tile_plugin::tile_plugin(app_builder& app) {
 
     app.define_component<tile_set>()
         .define_component<tile_chunk>()
+        .add_system_to_stage<&tile_plugin::update_tilesets>(
+            "pre_render"_hs, *this)
         .add_system_to_stage<&tile_plugin::update_tiles>("pre_render"_hs, *this)
         .add_system_to_stage<&tile_plugin::render_tiles>("render"_hs, *this);
+}
+
+void tile_plugin::update_tilesets(
+    entt::view<entt::exclude_t<>, const map, tile_set> view) {
+    for (auto&& [_, m, ts] : view.proxy()) {
+        if (ts.tiles.empty()) {
+            continue;
+        }
+
+        // prepare internal structure
+        if (ts.images.empty()) {
+            ts.images.resize(ts.tiles.size());
+            ts.dims.resize(ts.tiles.size());
+            ts.regions.resize(ts.tiles.size());
+            ts.indices.resize(ts.tiles.size());
+            ts.rects.resize(ts.tiles.size());
+
+            for (std::size_t i{}; i < ts.tiles.size(); ++i) {
+                ts.images[i] = ts.tiles[i]->resource();
+            }
+            for (std::size_t i{}; i < ts.tiles.size(); ++i) {
+                ts.dims[i] = glm::uvec2{
+                    std::max(1.0f, ts.tiles[i]->size().x / m.tile_size.x),
+                    std::max(1.0f, ts.tiles[i]->size().y / m.tile_size.y),
+                };
+            }
+            for (std::size_t i{}; i < ts.tiles.size(); ++i) {
+                ts.regions[i] = image_region{
+                    ts.tiles[i]->origin(),
+                    ts.tiles[i]->size() / glm::vec2{ts.dims[i].x, ts.dims[i].y},
+                    ts.tiles[i]->origin(),
+                    ts.tiles[i]->atlas_size(),
+                };
+            }
+        }
+
+        // update uv's for tiles (rects)
+        for (std::size_t i{}; i < ts.tiles.size(); ++i) {
+            auto column = ts.indices[i] % ts.dims[i].x;
+            auto row = (ts.indices[i] / ts.dims[i].x) % ts.dims[i].y;
+            const auto& r = ts.regions[i];
+            auto origin = r.atlas_origin + glm::vec2{column, row} * r.size;
+            ts.rects[i] = {
+                glm::vec2{origin.x, origin.y + r.size.y} / r.atlas_size,
+                glm::vec2{origin.x + r.size.x, origin.y + r.size.y} /
+                    r.atlas_size,
+                glm::vec2{origin.x + r.size.x, origin.y} / r.atlas_size,
+                glm::vec2{origin.x, origin.y} / r.atlas_size,
+            };
+        }
+    }
 }
 
 void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
@@ -137,12 +189,11 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
                                           const tile_chunk,
                                           const transform> view,
                                const entt::registry& registry) {
-    static bool first{true}, checked{};
     static std::array<glm::vec2, 4> corners = {
-        glm::vec2{-0.5f, 0.5f},  //
-        glm::vec2{0.5f, 0.5f},   //
-        glm::vec2{0.5f, -0.5f},  //
-        glm::vec2{-0.5f, -0.5f}, //
+        glm::vec2{-0.5f, 0.5f},
+        glm::vec2{0.5f, 0.5f},
+        glm::vec2{0.5f, -0.5f},
+        glm::vec2{-0.5f, -0.5f},
     };
     std::array<vertex, 4> vertices;
     std::array<glm::vec2, 4> rect;
@@ -150,37 +201,32 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
     sg_image chunk_image{};
 
     chunks.clear();
-    for (auto&& [e, p, tc, tfm] : view.proxy()) {
+    for (auto&& [_, p, tc, tfm] : view.proxy()) {
         const auto& m = registry.get<map>(p.value);
         const auto& ts = registry.get<tile_set>(p.value);
+
         std::size_t chunk_start{}, chunk_size{};
         for (std::size_t i{}; i < tc.tiles.size(); ++i) {
             auto t = tc.tiles[i];
-            assert(t >= 0u && t < ts.value.size());
-            if (t == 0u) {
+            assert(t >= 0u && t < ts.tiles.size());
+            if (t == 0u || ts.images[t].id == SG_INVALID_ID) {
                 continue;
             }
-            auto image = ts.value[t]->resource();
+            auto image = ts.images[t];
             if (image.id != chunk_image.id) {
                 if (current_element > chunk_start) {
-                    chunks.push_back({tc.layer, chunk_image, chunk_start * 6,
-                                      (current_element - chunk_start) * 6});
+                    chunks.push_back({
+                        tc.layer,
+                        chunk_image,
+                        chunk_start * 6,
+                        (current_element - chunk_start) * 6,
+                    });
                 }
 
                 chunk_image = image;
                 chunk_start = current_element;
             }
 
-            // TODO: refactor
-            const auto rorigin = ts.value[t]->origin();
-            const auto rsize = ts.value[t]->size();
-            const auto atlas_size = ts.value[t]->atlas_size();
-            rect[0] = glm::vec2{rorigin.x, rorigin.y + rsize.y};
-            rect[1] = glm::vec2{rorigin.x + rsize.x, rorigin.y + rsize.y};
-            rect[2] = glm::vec2{rorigin.x + rsize.x, rorigin.y};
-            rect[3] = glm::vec2{rorigin.x, rorigin.y};
-
-            // TODO: fill vbuf
             glm::vec2 coord{
                 i % m.chunk_size.x, m.chunk_size.y - i / m.chunk_size.y};
             for (std::size_t j{}; j < 4; ++j) {
@@ -188,7 +234,7 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
                     tfm.value *
                     glm::vec4(corners[j] * m.tile_size + coord * m.tile_size,
                               0.0f, 1.0f);
-                vertices[j].uv = rect[j] / atlas_size;
+                vertices[j].uv = ts.rects[t][j];
                 vertices[j].color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
             }
             sg_append_buffer(
@@ -197,14 +243,12 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
             current_element++;
         }
 
-        chunks.push_back({tc.layer, chunk_image, chunk_start * 6,
-                          (current_element - chunk_start) * 6});
-
-        if (first) {
-            checked = true;
-            spdlog::debug("layer={}; last-element_count={}", tc.layer,
-                          (current_element - chunk_start) * 6);
-        }
+        chunks.push_back({
+            tc.layer,
+            chunk_image,
+            chunk_start * 6,
+            (current_element - chunk_start) * 6,
+        });
     };
 
     std::sort(
@@ -214,14 +258,6 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
             }
             return lhs.layer < rhs.layer;
         });
-
-    if (first && checked) {
-        for (auto&& chunk : chunks) {
-            spdlog::debug("chunk: layer={}; image={}; element_count={};",
-                          chunk.layer, chunk.image.id, chunk.element_count);
-        }
-        first = false;
-    }
 }
 
 void tile_plugin::render_tiles(const screen& screen, const camera2d& camera) {
@@ -238,7 +274,7 @@ void tile_plugin::render_tiles(const screen& screen, const camera2d& camera) {
     for (auto&& chunk : chunks) {
         bindings.fs_images[0] = chunk.image;
         sg_apply_bindings(bindings);
-        sg_draw(static_cast<int>(chunk.start_element), chunk.element_count, 1);
+        sg_draw(chunk.start_element, chunk.element_count, 1);
     }
 }
 

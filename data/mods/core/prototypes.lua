@@ -133,6 +133,7 @@ prototypes:def({
     },
     tile_set = {
       "core/resources/tmp/generic-rpg-tile01.png",
+      "core/resources/tmp/generic-rpg-anim-tile1.png",
       "core/resources/tmp/generic-rpg-tile02.png",
       "core/resources/tmp/generic-rpg-tile03.png",
       "core/resources/tmp/generic-rpg-tile04.png",

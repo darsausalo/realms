@@ -1,6 +1,7 @@
 #ifndef MOTOR_TILE_PLUGIN_HPP
 #define MOTOR_TILE_PLUGIN_HPP
 
+#include "motor/entity/map.hpp"
 #include "motor/entity/parent.hpp"
 #include "motor/entity/transform.hpp"
 #include "motor/graphics/camera2d.hpp"
@@ -26,13 +27,14 @@ private:
         sg_image image;
         std::size_t start_element{};
         std::size_t element_count{};
-        // TODO: transform, etc.
     };
 
     sg_pipeline pipeline{};
     sg_bindings bindings{};
     std::vector<chunk_data> chunks{};
 
+    void update_tilesets(
+        entt::view<entt::exclude_t<>, const map, tile_set> view);
     void update_tiles(entt::view<entt::exclude_t<>,
                                  const parent,
                                  const tile_chunk,

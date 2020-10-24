@@ -180,15 +180,15 @@ void sprite_plugin::emplace_sprites(
     sprites.clear();
     view.each([this](const auto& image, const auto& tfm, const auto& r) {
         sprites.push_back({
-            image,     //
-            tfm.value, //
+            image,
+            tfm.value,
             {
-                glm::vec2{r.origin.x, r.origin.y + r.size.y},            //
-                glm::vec2{r.origin.x + r.size.x, r.origin.y + r.size.y}, //
-                glm::vec2{r.origin.x + r.size.x, r.origin.y},            //
-                glm::vec2{r.origin.x, r.origin.y},                       //
+                glm::vec2{r.origin.x, r.origin.y + r.size.y},
+                glm::vec2{r.origin.x + r.size.x, r.origin.y + r.size.y},
+                glm::vec2{r.origin.x + r.size.x, r.origin.y},
+                glm::vec2{r.origin.x, r.origin.y},
             },
-            r.atlas_size //
+            r.atlas_size,
         });
     });
 
@@ -234,10 +234,10 @@ void sprite_plugin::render_batch(sg_image image,
                                  std::size_t count,
                                  std::size_t& base_element) {
     static std::array<glm::vec2, 4> corners = {
-        glm::vec2{-0.5f, 0.5f},  //
-        glm::vec2{0.5f, 0.5f},   //
-        glm::vec2{0.5f, -0.5f},  //
-        glm::vec2{-0.5f, -0.5f}, //
+        glm::vec2{-0.5f, 0.5f},
+        glm::vec2{0.5f, 0.5f},
+        glm::vec2{0.5f, -0.5f},
+        glm::vec2{-0.5f, -0.5f},
     };
     std::array<vertex, 4> vertices;
     auto vbuf_info = sg_query_buffer_info(bindings.vertex_buffers[0]);
@@ -257,7 +257,7 @@ void sprite_plugin::render_batch(sg_image image,
         }
         bindings.fs_images[0] = image;
         sg_apply_bindings(bindings);
-        sg_draw(static_cast<int>(base_element), batch_size * 6, 1);
+        sg_draw(base_element, batch_size * 6, 1);
         base_element += batch_size * 6;
 
         sprites += batch_size;
