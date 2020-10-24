@@ -6,10 +6,13 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+static std::size_t last_id = 1u;
+
 namespace motor {
 
 image_atlas::image_atlas(std::size_t width, std::size_t height) noexcept
-    : width(width)
+    : id{last_id++}
+    , width(width)
     , height(height) {
     auto size = width * height * 4u;
     pixels = std::make_unique<uint8_t[]>(size);
@@ -33,13 +36,10 @@ void image_atlas::upload() noexcept {
 
 void image_atlas::save() noexcept {
     static constexpr const auto pixel_stride = 4u * sizeof(uint8_t);
-    static std::size_t id = 1u;
 
-    const auto atlas_stride = width * pixel_stride;
     const auto path =
-        filesystem::full_path(fmt::format("test_atlas-{}.png", id++), true);
-    stbi_write_png(
-        std::data(path.string()), width, height, 4, pixels.get(), atlas_stride);
+        filesystem::full_path(fmt::format("test_atlas-{}.tga", id), true);
+    stbi_write_tga(std::data(path.string()), width, height, 4, pixels.get());
 }
 
 } // namespace motor

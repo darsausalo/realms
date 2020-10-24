@@ -2,6 +2,7 @@
 #define MOTOR_GRAPHICS_PLUGIN_HPP
 
 #include "motor/graphics/screen.hpp"
+#include <entt/entity/fwd.hpp>
 #include <memory>
 #include <nlohmann/json_fwd.hpp>
 #include <vector>
@@ -32,6 +33,7 @@ private:
 
     void build_atlases();
     void prepare_atlases();
+    void dump_atlases(const entt::registry& registry);
 };
 
 } // namespace motor

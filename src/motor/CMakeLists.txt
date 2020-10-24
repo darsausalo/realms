@@ -21,6 +21,7 @@ set(SOURCES
 	# graphics
 	"src/graphics/graphics_plugin.cpp"
 	"src/graphics/sprite_plugin.cpp"
+	"src/graphics/tile_plugin.cpp"
 	"src/graphics/rect_packer.cpp"
 
 	# app
@@ -58,6 +59,10 @@ set(HEADERS
 	"include/motor/entity/scheduler.hpp"
 	"include/motor/entity/executor.hpp"
 	"include/motor/entity/transform.hpp"
+	"include/motor/entity/map.hpp"
+	"include/motor/entity/parent.hpp"
+
+	"src/entity/map_plugin.hpp"
 
 	# mods
 	"include/motor/mods/mod.hpp"
@@ -75,9 +80,12 @@ set(HEADERS
 	"include/motor/graphics/sprite_sheet.hpp"
 	"include/motor/graphics/image_region.hpp"
 	"include/motor/graphics/rect_packer.hpp"
+	"include/motor/graphics/tile_set.hpp"
+	"include/motor/graphics/tile_chunk.hpp"
 
 	"src/graphics/graphics_plugin.hpp"
 	"src/graphics/sprite_plugin.hpp"
+	"src/graphics/tile_plugin.hpp"
 
 	# app
 	"include/motor/app/app.hpp"

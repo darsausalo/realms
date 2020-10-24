@@ -6,6 +6,8 @@
 
 namespace motor {
 
+namespace {
+
 static constexpr const char* vs_source = R"(
 #version 330
 
@@ -60,7 +62,9 @@ struct vs_params_t {
     float camera_zoom;
 };
 
-sprite_plugin::sprite_plugin(app_builder& app) {
+} // namespace
+
+static void init_pipeline(sg_pipeline& pipeline, sg_bindings& bindings) {
     sg_buffer_desc vbuf_desc{};
     vbuf_desc.size = max_vertices * sizeof(vertex);
     vbuf_desc.type = SG_BUFFERTYPE_VERTEXBUFFER;
@@ -111,6 +115,10 @@ sprite_plugin::sprite_plugin(app_builder& app) {
     pip_desc.blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
     pip_desc.blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
     pipeline = sg_make_pipeline(&pip_desc);
+}
+
+sprite_plugin::sprite_plugin(app_builder& app) {
+    init_pipeline(pipeline, bindings);
 
     app.define_component<sprite>()
         .define_component<sprite_sheet>()
@@ -125,7 +133,7 @@ sprite_plugin::sprite_plugin(app_builder& app) {
         .add_system_to_stage<&sprite_plugin::render_sprites>(
             "render"_hs, *this);
 
-    app.registry().set<camera2d>(glm::vec2{0.0f, 0.0f}, 2.0f);
+    app.registry().set<camera2d>(glm::vec2{0.0f, 0.0f}, 1.0f);
 }
 
 void sprite_plugin::prepare_sprites(
@@ -204,7 +212,7 @@ void sprite_plugin::render_sprites(const screen& screen,
 
     sg_image batch_image{};
     std::size_t batch_start{}, batch_element{};
-    for (std::size_t i = 0u; i < sprites.size(); ++i) {
+    for (std::size_t i{}; i < sprites.size(); ++i) {
         sg_image image = sprites[i].image;
         if (image.id != batch_image.id) {
             if (i > batch_start) {
@@ -235,10 +243,10 @@ void sprite_plugin::render_batch(sg_image image,
     auto vbuf_info = sg_query_buffer_info(bindings.vertex_buffers[0]);
     while (count > 0) {
         auto batch_size = std::min(count, max_batch_size);
-        for (std::size_t i = 0u; i < batch_size; ++i) {
+        for (std::size_t i{}; i < batch_size; ++i) {
             auto& sprite = sprites[i];
             auto size = (sprite.rect[1] - sprite.rect[3]);
-            for (std::size_t j = 0u; j < sprite.rect.size(); ++j) {
+            for (std::size_t j{}; j < sprite.rect.size(); ++j) {
                 vertices[j].position =
                     sprite.tfm * glm::vec4(corners[j] * size, 0.0f, 1.0f);
                 vertices[j].uv = sprite.rect[j] / sprite.atlas_size;

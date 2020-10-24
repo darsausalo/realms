@@ -1,7 +1,9 @@
 #include "graphics_plugin.hpp"
 #include "graphics/sprite_plugin.hpp"
+#include "graphics/tile_plugin.hpp"
 #include "motor/app/app_builder.hpp"
 #include "motor/core/events.hpp"
+#include "motor/core/input.hpp"
 #include "motor/graphics/rect_packer.hpp"
 #include "motor/resources/image_atlas.hpp"
 #include "motor/resources/resources.hpp"
@@ -46,9 +48,12 @@ graphics_plugin::graphics_plugin(app_builder& app)
     app.add_startup_system<&graphics_plugin::build_atlases>(*this)
         .add_system_to_stage<&graphics_plugin::pre_render>(
             "pre_render"_hs, *this)
+        .add_plugin<tile_plugin>()
         .add_plugin<sprite_plugin>()
         .add_system_to_stage<&graphics_plugin::post_render>(
-            "post_render"_hs, *this);
+            "post_render"_hs, *this)
+        .add_system_to_stage<&graphics_plugin::dump_atlases>(
+            "post_frame"_hs, *this);
 
     app.dispatcher()
         .sink<event::start>()
@@ -96,6 +101,16 @@ void graphics_plugin::build_atlases() {
 void graphics_plugin::prepare_atlases() {
     for (auto&& atlas : atlases) {
         atlas->upload();
+    }
+}
+
+void graphics_plugin::dump_atlases(const entt::registry& registry) {
+    if (registry.ctx<input_actions>().is_just_pressed("print_debug_info"_hs)) {
+        for (auto&& atlas : atlases) {
+            atlas->save();
+        }
+        spdlog::debug("image atlases saved: atlases.size={}, image.size={}",
+                      atlases.size(), resources::image.size());
     }
 }
 

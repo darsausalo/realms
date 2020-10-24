@@ -9,7 +9,8 @@ namespace motor {
 class lua_input_archive : public input_archive<lua_input_archive> {
 public:
     explicit lua_input_archive(const sol::object& object) noexcept
-        : input_archive{this}, current_member{object} {
+        : input_archive{this}
+        , current_member{object} {
         node_stack.push_back(object);
     }
 
@@ -56,6 +57,30 @@ public:
             }
         } else {
             arr.fill(T{});
+        }
+    }
+
+    template<typename T>
+    void load_vector(std::vector<T>& v) {
+        if (current_member && current_member.is<sol::table>()) {
+            std::size_t i = 0;
+            auto tbl = current_member.as<sol::table>();
+            v.resize(tbl.size());
+            for (auto&& it : tbl) {
+                if (!it.first.is<int>()) {
+                    continue;
+                }
+                auto index = it.first.as<int>() - 1;
+                if (index < 0 || (index >= tbl.size())) {
+                    continue;
+                }
+                auto save_member = current_member;
+                current_member = it.second;
+                process(v[index]);
+                current_member = save_member;
+            }
+        } else {
+            v.clear();
         }
     }
 
@@ -110,6 +135,11 @@ template<typename T>
 auto serialize(lua_input_archive& ar, T& value) ->
     typename std::enable_if_t<std::is_enum_v<T>, void> {
     ar.load_value(value);
+}
+
+template<typename T>
+void serialize(lua_input_archive& ar, std::vector<T>& value) {
+    ar.load_vector(value);
 }
 
 inline void serialize(lua_input_archive& ar, std::string& value) {

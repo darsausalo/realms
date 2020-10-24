@@ -23,6 +23,7 @@ public:
     void save() noexcept;
 
 private:
+    std::size_t id;
     std::size_t width;
     std::size_t height;
     std::unique_ptr<std::uint8_t[]> pixels{};

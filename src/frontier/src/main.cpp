@@ -5,9 +5,14 @@
 #include <motor/core/events.hpp>
 #include <motor/core/input.hpp>
 #include <motor/core/time.hpp>
+#include <motor/entity/map.hpp>
+#include <motor/entity/parent.hpp>
 #include <motor/entity/transform.hpp>
+#include <motor/graphics/camera2d.hpp>
 #include <motor/graphics/sprite.hpp>
 #include <motor/graphics/sprite_sheet.hpp>
+#include <motor/graphics/tile_chunk.hpp>
+#include <motor/graphics/tile_set.hpp>
 #include <spdlog/spdlog.h>
 
 namespace frontier {
@@ -54,7 +59,8 @@ struct test_plugin {
     motor::prototype_registry& prototypes;
 
     test_plugin(motor::app_builder& app)
-        : registry{app.registry()}, prototypes{app.prototypes()} {
+        : registry{app.registry()}
+        , prototypes{app.prototypes()} {
         app.define_component<position, motor::component_specifier::FINAL>()
             .define_component<velocity>()
             .define_component<health>()
@@ -71,10 +77,12 @@ struct test_plugin {
 
         registry
             .on_construct<position>() //
-            .connect<&test_plugin::emplace_transform>(*this);
+            .connect<&test_plugin::emplace_transform>();
+
+        registry.ctx<motor::camera2d>().zoom = 2.0f;
     }
 
-    void emplace_transform(entt::registry& registry, entt::entity e) {
+    static void emplace_transform(entt::registry& registry, entt::entity e) {
         registry.emplace<motor::transform>(e, glm::mat4{1.0f});
     }
 
@@ -102,6 +110,52 @@ struct test_plugin {
                 info += "\n";
             });
             spdlog::debug(info);
+        }
+
+        auto map_e = prototypes.spawn(registry, "tstmap1"_hs);
+        if (map_e == entt::null) {
+            spdlog::error("failed to spawn tstmap");
+        } else {
+            info = "spawned tstmap with:\n";
+            registry.visit(map_e, [&info](auto&& type_info) {
+                info += "  ";
+                info += type_info.name();
+                info += "\n";
+            });
+            spdlog::debug(info);
+            auto map = registry.get<motor::map>(map_e);
+            auto tile_set = registry.get<motor::tile_set>(map_e);
+            spdlog::debug("map: tile_size={},{}; chunk_size={},{}; tile_set={}",
+                          map.tile_size.x, map.tile_size.y, map.chunk_size.x,
+                          map.chunk_size.y, tile_set.value.size());
+
+            static constexpr const auto N = 3u;
+            for (std::size_t i{}; i < N; i++) {
+                const auto e = registry.create();
+                registry.emplace<motor::parent>(e, map_e);
+                auto& tfm =
+                    registry.emplace<motor::transform>(e, glm::mat4{1.0f});
+                tfm.value[3].x = i * 20.0f;
+                tfm.value[3].y = i * -20.0f;
+                auto& tile_chunk = registry.emplace<motor::tile_chunk>(e);
+                spdlog::debug("add tile_chunk: e={}; layer={};", e, i);
+                tile_chunk.layer = i;
+                tile_chunk.tiles.resize(map.chunk_size.x * map.chunk_size.y);
+                const auto w = map.chunk_size.x;
+                const auto h = map.chunk_size.y;
+                for (std::size_t x{}; x < map.chunk_size.x; x++) {
+                    if (i > 0u) {
+                        tile_chunk.tiles[x + (0) * w] = i + 1u;
+                    }
+                    tile_chunk.tiles[x + (h - 1) * w] = i + 1u;
+                }
+                if (i == 0u) {
+                    for (std::size_t y{}; y < map.chunk_size.y; y++) {
+                        tile_chunk.tiles[(0) + y * w] = i + 1u;
+                        tile_chunk.tiles[(w - 1) + y * w] = i + 1u;
+                    }
+                }
+            }
         }
     }
 

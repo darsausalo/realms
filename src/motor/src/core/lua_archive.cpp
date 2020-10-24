@@ -108,3 +108,20 @@ TEST_CASE("lua table deserialization: struct") {
     CHECK(monster1.inventory[1] == 0);
     CHECK(monster1.inventory[2] == 6);
 }
+
+TEST_CASE("lua table deserialization: vector") {
+    sol::state lua;
+    lua.script("my_arr = {'val1', 'val2', 'val3'}");
+
+    sol::table tbl = lua["my_arr"];
+
+    std::vector<std::string> v;
+    {
+        motor::lua_input_archive input{tbl};
+        serialize(input, v);
+    }
+    CHECK(v.size() == 3);
+    CHECK(v[0] == "val1");
+    CHECK(v[1] == "val2");
+    CHECK(v[2] == "val3");
+}

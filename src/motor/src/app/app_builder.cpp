@@ -3,6 +3,7 @@
 #include "app/input_plugin.hpp"
 #include "app/time_plugin.hpp"
 #include "app/window_plugin.hpp"
+#include "entity/map_plugin.hpp"
 #include "graphics/graphics_plugin.hpp"
 #include "mods/mods_plugin.hpp"
 #include "motor/core/input.hpp"
@@ -28,6 +29,7 @@ void print_debug_info(const entt::registry& registry) {
 app_builder& app_builder::add_default_plugins(int argc, const char* argv[]) {
     return add_plugin<config_plugin>(arg_list{argc, argv})
         .add_plugin<time_plugin>()
+        .add_plugin<map_plugin>()
         .add_plugin<window_plugin>()
         .add_plugin<input_plugin>()
         .add_plugin<mods_plugin>()

@@ -1,6 +1,8 @@
 #ifndef MOTOR_TIME_HPP
 #define MOTOR_TIME_HPP
 
+#include "motor/core/archive.hpp"
+
 namespace motor {
 
 struct time {
@@ -25,6 +27,11 @@ struct timer {
         finished = false;
     }
 };
+
+template<typename Archive>
+void serialize(Archive& ar, timer& value) {
+    ar.member(M(value.duration));
+}
 
 } // namespace motor
 

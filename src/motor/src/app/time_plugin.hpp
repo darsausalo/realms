@@ -2,7 +2,6 @@
 #define MOTOR_TIME_PLUGIN_HPP
 
 #include "motor/app/app_builder.hpp"
-#include "motor/core/archive.hpp"
 #include "motor/core/time.hpp"
 #include <chrono>
 #include <entt/entity/registry.hpp>
@@ -19,10 +18,10 @@ public:
         : start_point{clock::now()}
         , last_point{clock::now()} {
         app.define_component<timer>();
-        app.add_system_to_stage<&time_plugin::update_time>("pre_frame"_hs,
-                                                           *this);
-        app.add_system_to_stage<&time_plugin::update_timer>("pre_frame"_hs,
-                                                            *this);
+        app.add_system_to_stage<&time_plugin::update_time>(
+            "pre_frame"_hs, *this);
+        app.add_system_to_stage<&time_plugin::update_timer>(
+            "pre_frame"_hs, *this);
     }
 
 private:
@@ -43,11 +42,6 @@ private:
         view.each([&game_time](auto& t) { t.tick(game_time.delta); });
     }
 };
-
-template<typename Archive>
-void serialize(Archive& ar, timer& value) {
-    ar.member(M(value.duration));
-}
 
 } // namespace motor
 

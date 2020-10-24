@@ -124,3 +124,19 @@ prototypes:def({
   tmp78 = { sprite = "core/resources/tmp/generic-rpg-ui-inventario.png" },
   tmp79 = { sprite = "core/resources/tmp/generic-rpg-ui-text-box.png" },
 })
+
+prototypes:def({
+  tstmap1 = {
+    map = {
+      tile_size = {x=16, y=16},
+      chunk_size = {x=8, y=8},
+    },
+    tile_set = {
+      "core/resources/tmp/generic-rpg-tile01.png",
+      "core/resources/tmp/generic-rpg-tile02.png",
+      "core/resources/tmp/generic-rpg-tile03.png",
+      "core/resources/tmp/generic-rpg-tile04.png",
+      "core/resources/tmp/generic-rpg-tile05.png",
+    },
+  }
+})
