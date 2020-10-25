@@ -234,10 +234,10 @@ void sprite_plugin::render_batch(sg_image image,
                                  std::size_t count,
                                  std::size_t& base_element) {
     static std::array<glm::vec2, 4> corners = {
-        glm::vec2{-0.5f, 0.5f},
-        glm::vec2{0.5f, 0.5f},
-        glm::vec2{0.5f, -0.5f},
         glm::vec2{-0.5f, -0.5f},
+        glm::vec2{0.5f, -0.5f},
+        glm::vec2{0.5f, 0.5f},
+        glm::vec2{-0.5f, 0.5f},
     };
     std::array<vertex, 4> vertices;
     auto vbuf_info = sg_query_buffer_info(bindings.vertex_buffers[0]);

@@ -12,7 +12,6 @@ image::image(std::string_view name)
     : pixels{nullptr, nullptr} {
     auto path = filesystem::full_path(fmt::format("mods/{}", name));
     path.make_preferred();
-    stbi_set_flip_vertically_on_load(true);
     int w, h, n;
     auto data = stbi_load(std::data(path.string()), &w, &h, &n, 4);
     if (data) {

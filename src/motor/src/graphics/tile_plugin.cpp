@@ -190,10 +190,10 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
                                           const transform> view,
                                const entt::registry& registry) {
     static std::array<glm::vec2, 4> corners = {
-        glm::vec2{-0.5f, 0.5f},
-        glm::vec2{0.5f, 0.5f},
-        glm::vec2{0.5f, -0.5f},
         glm::vec2{-0.5f, -0.5f},
+        glm::vec2{0.5f, -0.5f},
+        glm::vec2{0.5f, 0.5f},
+        glm::vec2{-0.5f, 0.5f},
     };
     std::array<vertex, 4> vertices;
     std::array<glm::vec2, 4> rect;
