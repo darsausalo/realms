@@ -1,6 +1,8 @@
 #include "tile_plugin.hpp"
 #include "motor/app/app_builder.hpp"
+#include "motor/entity/map_region.hpp"
 #include "motor/resources/image_loader.hpp"
+#include <glm/common.hpp>
 
 namespace motor {
 
@@ -20,15 +22,8 @@ layout(location=2) in vec4 color0;
 out vec4 color;
 out vec2 uv;
 
-const vec2 positions[4] = vec2[](
-    vec2(0.5, -0.5),    // Right bottom
-    vec2(-0.5, -0.5),   // Left bottom
-    vec2(0.5, 0.5),     // Right top
-    vec2(-0.5, 0.5)     // Left top
-);
-
 void main() {
-    vec2 result_position = ((position - camera_position) * camera_zoom) + 0.5;
+    vec2 result_position = (((position + 0.5) - camera_position) * camera_zoom);
     gl_Position =
         vec4(((result_position / screen_size)) * vec2(2.0, 2.0), 0.0, 1.0);
 
@@ -188,13 +183,16 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
                                           const parent,
                                           const tile_chunk,
                                           const transform> view,
-                               const entt::registry& registry) {
+                               const entt::registry& registry,
+                               const screen& screen,
+                               const camera2d& camera) {
     static std::array<glm::vec2, 4> corners = {
         glm::vec2{-0.5f, -0.5f},
         glm::vec2{0.5f, -0.5f},
         glm::vec2{0.5f, 0.5f},
         glm::vec2{-0.5f, 0.5f},
     };
+
     std::array<vertex, 4> vertices;
     std::array<glm::vec2, 4> rect;
     std::size_t current_element{};
@@ -205,8 +203,22 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
         const auto& m = registry.get<map>(p.value);
         const auto& ts = registry.get<tile_set>(p.value);
 
+        glm::vec2 hs{
+            (screen.width + m.tile_size.x * 2) / 2.0f / camera.zoom,
+            (screen.height + m.tile_size.y * 2) / 2.0f / camera.zoom,
+        };
+        glm::vec2 org{camera.position - glm::vec2{tfm.value[3]}};
+
+        glm::uvec2 min{
+            glm::clamp(glm::ivec2{(org - hs) / m.tile_size} - glm::ivec2{1},
+                       glm::ivec2{0}, glm::ivec2{m.chunk_size})};
+        glm::uvec2 max{
+            glm::clamp(glm::ivec2{(org + hs) / m.tile_size} + glm::ivec2{1},
+                       glm::ivec2{0}, glm::ivec2{m.chunk_size})};
+
         std::size_t chunk_start{}, chunk_size{};
-        for (std::size_t i{}; i < tc.tiles.size(); ++i) {
+        for (auto&& coord : map_region{min, max}) {
+            auto i = coord.y * m.chunk_size.x + coord.x;
             auto t = tc.tiles[i];
             assert(t >= 0u && t < ts.tiles.size());
             if (t == 0u || ts.images[t].id == SG_INVALID_ID) {
@@ -227,13 +239,11 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
                 chunk_start = current_element;
             }
 
-            glm::vec2 coord{
-                i % m.chunk_size.x, m.chunk_size.y - i / m.chunk_size.y};
             for (std::size_t j{}; j < 4; ++j) {
                 vertices[j].position =
-                    tfm.value *
-                    glm::vec4(corners[j] * m.tile_size + coord * m.tile_size,
-                              0.0f, 1.0f);
+                    tfm.value * glm::vec4(corners[j] * m.tile_size +
+                                              glm::vec2{coord} * m.tile_size,
+                                          0.0f, 1.0f);
                 vertices[j].uv = ts.rects[t][j];
                 vertices[j].color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
             }

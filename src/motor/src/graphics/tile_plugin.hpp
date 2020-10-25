@@ -39,7 +39,9 @@ private:
                                  const parent,
                                  const tile_chunk,
                                  const transform> view,
-                      const entt::registry& registry);
+                      const entt::registry& registry,
+                      const screen& screen,
+                      const camera2d& camera);
     void render_tiles(const screen& screen, const camera2d& camera);
 };
 

@@ -60,6 +60,7 @@ set(HEADERS
 	"include/motor/entity/executor.hpp"
 	"include/motor/entity/transform.hpp"
 	"include/motor/entity/map.hpp"
+	"include/motor/entity/map_region.hpp"
 	"include/motor/entity/parent.hpp"
 
 	"src/entity/map_plugin.hpp"

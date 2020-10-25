@@ -23,7 +23,7 @@ out vec4 color;
 out vec2 uv;
 
 void main() {
-    vec2 result_position = ((position - camera_position) * camera_zoom) + 0.5;
+    vec2 result_position = (((position + 0.5) - camera_position) * camera_zoom);
     gl_Position =
         vec4(((result_position / screen_size)) * vec2(2.0, 2.0), 0.0, 1.0);
 

@@ -129,12 +129,12 @@ prototypes:def({
   tstmap1 = {
     map = {
       tile_size = {x=16, y=16},
-      chunk_size = {x=8, y=8},
+      chunk_size = {x=32, y=32},
     },
     tile_set = {
       "core/resources/tmp/generic-rpg-tile01.png",
       "core/resources/tmp/generic-rpg-anim-tile1.png",
-      "core/resources/tmp/generic-rpg-tile02.png",
+      "core/resources/tmp/generic-rpg-tile71.png",
       "core/resources/tmp/generic-rpg-tile03.png",
       "core/resources/tmp/generic-rpg-tile04.png",
       "core/resources/tmp/generic-rpg-tile05.png",

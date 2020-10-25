@@ -80,6 +80,7 @@ struct test_plugin {
             .connect<&test_plugin::emplace_transform>();
 
         registry.ctx<motor::camera2d>().zoom = 2.0f;
+        registry.ctx<motor::camera2d>().position = glm::vec2{64.0f};
     }
 
     static void emplace_transform(entt::registry& registry, entt::entity e) {
@@ -129,14 +130,19 @@ struct test_plugin {
                           map.tile_size.x, map.tile_size.y, map.chunk_size.x,
                           map.chunk_size.y, tile_set.tiles.size());
 
-            static constexpr const auto N = 3u;
+            static constexpr const auto N = 4u;
             for (std::size_t i{}; i < N; i++) {
                 const auto e = registry.create();
                 registry.emplace<motor::parent>(e, map_e);
                 auto& tfm =
                     registry.emplace<motor::transform>(e, glm::mat4{1.0f});
-                tfm.value[3].x = i * 20.0f;
-                tfm.value[3].y = i * -20.0f;
+                if (i == 3) {
+                    tfm.value[3].x = map.chunk_size.x * -map.tile_size.x;
+                    // tfm.value[3].y = map.chunk_size.y * -map.tile_size.y;
+                } else {
+                    tfm.value[3].x = i * 20.0f;
+                    tfm.value[3].y = i * -20.0f;
+                }
                 auto& tile_chunk = registry.emplace<motor::tile_chunk>(e);
                 spdlog::debug("add tile_chunk: e={}; layer={};", e, i);
                 tile_chunk.layer = i;
@@ -144,12 +150,12 @@ struct test_plugin {
                 const auto w = map.chunk_size.x;
                 const auto h = map.chunk_size.y;
                 for (std::size_t x{}; x < map.chunk_size.x; x++) {
+                    tile_chunk.tiles[x + (0) * w] = i + 1u;
                     if (i > 0u) {
-                        tile_chunk.tiles[x + (0) * w] = i + 1u;
+                        tile_chunk.tiles[x + (h - 1) * w] = i + 1u;
                     }
-                    tile_chunk.tiles[x + (h - 1) * w] = i + 1u;
                 }
-                if (i == 0u) {
+                /*if (i == 0u || i == 3u)*/ {
                     for (std::size_t y{}; y < map.chunk_size.y; y++) {
                         tile_chunk.tiles[(0) + y * w] = i + 1u;
                         tile_chunk.tiles[(w - 1) + y * w] = i + 1u;
