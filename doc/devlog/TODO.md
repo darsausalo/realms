@@ -37,6 +37,8 @@
     - [ ] move rect_packer to core
 - [ ] Stats
 - [ ] vcpkg
+    - [x] manifest
+    - [ ] registry
 
 - [ ] Motor ROADMAP
     - [ ] Merge config SAVE<-DATA

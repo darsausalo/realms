@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "frontier",
+    "version": "0.0.1",
+    "dependencies": [
+        "mimalloc",
+        "fmt",
+        "spdlog",
+        "nameof",
+        "nlohmann-json",
+        "sdl2",
+        "entt",
+        "sol2",
+        "efsw",
+        "glm",
+        "stb",
+        "sokol",
+        "glew",
+        "doctest"
+    ]
+}
