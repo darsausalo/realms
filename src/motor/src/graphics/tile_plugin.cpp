@@ -20,7 +20,7 @@ tile_plugin::tile_plugin(app_builder& app) {
 
 void tile_plugin::update_tilesets(
     entt::view<entt::exclude_t<>, const map, tile_set> view) {
-    for (auto&& [_, m, ts] : view.proxy()) {
+    for (auto&& [_, m, ts] : view.each()) {
         if (ts.tiles.empty()) {
             continue;
         }
@@ -89,7 +89,7 @@ void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
     sg_image chunk_image{};
 
     chunks.clear();
-    for (auto&& [_, p, tc, tfm] : view.proxy()) {
+    for (auto&& [_, p, tc, tfm] : view.each()) {
         const auto& m = registry.get<map>(p.value);
         const auto& ts = registry.get<tile_set>(p.value);
 

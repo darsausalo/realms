@@ -2,10 +2,13 @@
 #define MOTOR_APP_BUILDER_HPP
 
 #include "motor/app/app.hpp"
+#include <entt/core/hashed_string.hpp>
 #include <entt/core/type_info.hpp>
 #include <spdlog/spdlog.h>
 
 namespace motor {
+
+using namespace entt::literals;
 
 class app_builder {
     inline static constexpr auto default_stage = "update"_hs;

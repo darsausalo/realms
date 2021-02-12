@@ -8,6 +8,8 @@
 
 namespace {
 
+using namespace entt::literals;
+
 void ro_char_rw_int(entt::view<entt::exclude_t<>, int, const char>) {}
 void sync_point(entt::registry&) {}
 void empty() {}

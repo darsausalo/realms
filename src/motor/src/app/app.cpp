@@ -7,6 +7,8 @@
 
 namespace motor {
 
+using namespace entt::literals;
+
 app::app()
     : dispatcher{registry.set<entt::dispatcher>()}
     , prototypes{registry.set<prototype_registry>()} {

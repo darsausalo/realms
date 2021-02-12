@@ -2,7 +2,6 @@
 #define MOTOR_COMPONENTS_HPP
 
 #include "motor/core/lua_archive.hpp"
-#include "motor/core/utility.hpp"
 #include <entt/entity/registry.hpp>
 #include <unordered_map>
 
@@ -21,15 +20,16 @@ class component_registry {
     using clone_fn_type = void(const entt::registry&, entt::registry&);
 
     template<typename Component>
-    static void
-    transpire(entt::registry& reg, entt::entity e, lua_input_archive& ar) {
+    static void transpire(entt::registry& reg,
+                          entt::entity e,
+                          lua_input_archive& ar) {
         if constexpr (std::is_empty_v<Component>) {
             reg.template emplace_or_replace<Component>(e);
         } else {
             Component instance{};
             serialize(ar, instance);
-            reg.template emplace_or_replace<Component>(e,
-                                                       std::as_const(instance));
+            reg.template emplace_or_replace<Component>(
+                e, std::as_const(instance));
         }
     }
 
@@ -79,7 +79,7 @@ public:
              component_specifier Specifier = component_specifier::OVERRIDABLE>
     void define() noexcept {
         constexpr auto name = nameof::nameof_short_type<Component>();
-        auto name_id = entt::hashed_string::value(std::data(name));
+        auto name_id = entt::hashed_string::value(name.data(), name.size());
         constexpr auto type_id = entt::type_hash<Component>::value();
         transpire_functions[name_id] =
             &component_registry::transpire<Component>;

@@ -17,6 +17,8 @@
 
 namespace frontier {
 
+using namespace entt::literals;
+
 void quit_system(const motor::input_actions& input,
                  entt::dispatcher& dispatcher) {
     if (input.is_just_pressed("quit"_hs)) {

@@ -16,6 +16,8 @@
 
 namespace motor {
 
+using namespace entt::literals;
+
 class app_builder;
 
 class sprite_plugin {

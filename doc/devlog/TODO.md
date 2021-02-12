@@ -21,9 +21,9 @@
     - [x] TileMaps
         - [x] Render Inside Regions
 - [x] Rework Bootstrap: move to app, add startup_systems
-- [ ] Refactoring
+- [x] Refactoring
     - [x] use common types for spirte and tile plugins
-    - [ ] migrate to EnTT 3.6.0
+    - [x] migrate to EnTT 3.6.0
 - [ ] ImGui
 - [ ] Systems Scripting
 - [ ] Pathfinding (?)

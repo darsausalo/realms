@@ -59,14 +59,14 @@ static action_key parse_action_key(std::string_view text) {
     return {entt::hashed_string{std::data(key_name)}, key_modifiers};
 }
 
-static void
-parse_keymap(nlohmann::json config,
-             std::unordered_map<action_key, entt::id_type>& keymap) {
+static void parse_keymap(
+    nlohmann::json config,
+    std::unordered_map<action_key, entt::id_type>& keymap) {
     for (auto&& [key, value] : config.items()) {
         auto action_key = parse_action_key(key);
         auto action_name = value.at("action").get<std::string>();
-        keymap.insert_or_assign(action_key,
-                                entt::hashed_string{std::data(action_name)});
+        keymap.insert_or_assign(
+            action_key, entt::hashed_string{std::data(action_name)});
     }
 }
 
@@ -95,8 +95,8 @@ input_plugin::input_plugin(app_builder& app)
         spdlog::warn("invalid input config: {}", e.what());
     }
 
-    app.add_system_to_stage<&input_plugin::update_actions>("pre_event"_hs,
-                                                           *this);
+    app.add_system_to_stage<&input_plugin::update_actions>(
+        "pre_event"_hs, *this);
 }
 
 input_plugin::~input_plugin() { dispatcher.disconnect(*this); }
@@ -196,6 +196,8 @@ static const char* json_text = R"({
 }
 
 TEST_CASE("input_plugin: config") {
+    using namespace entt::literals;
+
     motor::parse_action_key("ctrl+shift+t");
 
     nlohmann::json j = nlohmann::json::parse(json_text);

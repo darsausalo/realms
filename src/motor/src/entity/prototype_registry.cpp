@@ -14,8 +14,8 @@ void prototype_registry::transpire(const sol::table& defs) {
             auto def_id = entt::hashed_string::value(std::data(def_name));
             auto def_e = get_or_create(def_id);
             auto def = value.as<sol::table>();
-            def.for_each([this, &def_e, &def_name](const auto& key,
-                                                   const auto& value) {
+            def.for_each([this, &def_e, &def_name](
+                             const auto& key, const auto& value) {
                 if (key.is<std::string>()) {
                     auto comp_name = key.as<std::string>();
                     if (comp_name == "tags" && value.is<sol::table>()) {
@@ -42,8 +42,8 @@ void prototype_registry::transpire(const sol::table& defs) {
                         return;
                     }
 
-                    components.transpire(reg, def_e, lua_input_archive{value},
-                                         comp_id);
+                    components.transpire(
+                        reg, def_e, lua_input_archive{value}, comp_id);
                 }
             });
         }
@@ -218,6 +218,7 @@ defs = {
 } // namespace motor::test::prototype_registry
 
 TEST_CASE("prototype_registry: transpire components") {
+    using namespace entt::literals;
     using namespace motor::test::prototype_registry;
 
     motor::prototype_registry prototypes;
@@ -318,6 +319,7 @@ TEST_CASE("prototype_registry: transpire components") {
 
 TEST_CASE("prototype_registry: ignore bad values") {
     using namespace motor::test::prototype_registry;
+    using namespace entt::literals;
 
     motor::prototype_registry prototypes;
 
