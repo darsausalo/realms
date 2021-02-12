@@ -21,11 +21,13 @@
     - [x] TileMaps
         - [x] Render Inside Regions
 - [x] Rework Bootstrap: move to app, add startup_systems
+- [ ] Refactoring
+    - [x] use common types for spirte and tile plugins
+    - [ ] migrate to EnTT 3.6.0
 - [ ] ImGui
 - [ ] Systems Scripting
 - [ ] Pathfinding (?)
 - [ ] Code review
-    - [ ] use common types for spirte and tile plugins
     - [ ] remove non-sense event parameters (e.c. receive_start(event::start))
     - [ ] add core/fwd.hpp with M macros
     - [ ] check prepare for entt::organizer

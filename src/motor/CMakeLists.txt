@@ -23,6 +23,7 @@ set(SOURCES
 	"src/graphics/sprite_plugin.cpp"
 	"src/graphics/tile_plugin.cpp"
 	"src/graphics/rect_packer.cpp"
+	"src/graphics/pipeline.cpp"
 
 	# app
 	"src/app/config_plugin.cpp"
@@ -87,6 +88,7 @@ set(HEADERS
 	"src/graphics/graphics_plugin.hpp"
 	"src/graphics/sprite_plugin.hpp"
 	"src/graphics/tile_plugin.hpp"
+	"src/graphics/pipeline.hpp"
 
 	# app
 	"include/motor/app/app.hpp"
