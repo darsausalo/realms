@@ -30,6 +30,11 @@ struct window_config {
     bool vsync;
 };
 
+struct window_context {
+    SDL_Window* window;
+    SDL_GLContext gl_ctx;
+};
+
 class window_plugin {
 public:
     window_plugin(app_builder& app);

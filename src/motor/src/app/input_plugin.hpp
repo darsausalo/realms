@@ -60,6 +60,8 @@ private:
     bool handle_ui_mouse_motion(const event::mouse_motion_input& e);
     bool handle_ui_mouse_wheel(const event::mouse_wheel_input& e);
 
+    void receive_text_input(const event::text_input& e);
+
     void receive_keyboard_input(const event::keyboard_input& e);
     void receive_mouse_button_input(const event::mouse_button_input& e);
     void receive_mouse_motion_input(const event::mouse_motion_input& e);

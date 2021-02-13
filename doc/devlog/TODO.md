@@ -24,7 +24,10 @@
 - [x] Refactoring
     - [x] use common types for spirte and tile plugins
     - [x] migrate to EnTT 3.6.0
-- [ ] ImGui
+- [ ] Gui
+    - [x] integrate ImGui
+    - [ ] scripting
+    - [ ] data binding
 - [ ] Systems Scripting
 - [ ] Pathfinding (?)
 - [ ] Code review

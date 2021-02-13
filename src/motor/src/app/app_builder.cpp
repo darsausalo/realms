@@ -5,6 +5,7 @@
 #include "app/window_plugin.hpp"
 #include "entity/map_plugin.hpp"
 #include "graphics/graphics_plugin.hpp"
+#include "gui/gui_plugin.hpp"
 #include "mods/mods_plugin.hpp"
 #include "motor/core/input.hpp"
 #include <spdlog/spdlog.h>
@@ -34,6 +35,7 @@ app_builder& app_builder::add_default_plugins(int argc, const char* argv[]) {
         .add_plugin<input_plugin>()
         .add_plugin<mods_plugin>()
         .add_plugin<graphics_plugin>()
+        .add_plugin<gui_plugin>()
         .add_system<&print_debug_info>("post_frame"_hs);
 }
 

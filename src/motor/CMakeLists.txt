@@ -32,6 +32,9 @@ set(SOURCES
 	"src/app/app_builder.cpp"
 	"src/app/app.cpp"
 
+	# gui
+	"src/gui/gui_plugin.cpp"
+
 	# platform
 	"src/platform/backward.cpp"
 	"src/platform/platform.cpp"
@@ -90,6 +93,9 @@ set(HEADERS
 	"src/graphics/tile_plugin.hpp"
 	"src/graphics/pipeline.hpp"
 
+	# gui
+	"src/gui/gui_plugin.hpp"
+
 	# app
 	"include/motor/app/app.hpp"
 	"include/motor/app/app_builder.hpp"
@@ -127,6 +133,7 @@ target_link_libraries(motor PRIVATE
 	efsw::efsw
 	SDL2::SDL2
 	GLEW::GLEW
+	imgui::imgui
 	sol2::sol2
 	${LUA_LIBRARIES}
 )

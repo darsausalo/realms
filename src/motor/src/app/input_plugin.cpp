@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
+#include <imgui.h>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <string_view>
@@ -77,6 +78,8 @@ input_plugin::input_plugin(app_builder& app)
     , actions{app.registry().set<input_actions>()} {
     dispatcher.sink<event::keyboard_input>()
         .connect<&input_plugin::receive_keyboard_input>(*this);
+    dispatcher.sink<event::text_input>()
+        .connect<&input_plugin::receive_text_input>(*this);
     dispatcher.sink<event::mouse_button_input>()
         .connect<&input_plugin::receive_mouse_button_input>(*this);
     dispatcher.sink<event::mouse_motion_input>()
@@ -104,23 +107,49 @@ input_plugin::~input_plugin() { dispatcher.disconnect(*this); }
 void input_plugin::update_actions() { actions.update(); }
 
 bool input_plugin::handle_ui_keyboard(const event::keyboard_input& e) {
-    // TODO: use ImGui
+    auto& io = ImGui::GetIO();
+    if (io.WantCaptureKeyboard) {
+        auto key = e.scan_code;
+        IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+        io.KeysDown[key] = e.pressed || e.repeat;
+        io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+        io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+        io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+        io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+        return true;
+    }
     return false;
 }
 
 bool input_plugin::handle_ui_mouse_button(const event::mouse_button_input& e) {
-    // TODO: use ImGui
-    return false;
+    return ImGui::GetIO().WantCaptureMouse;
 }
 
 bool input_plugin::handle_ui_mouse_motion(const event::mouse_motion_input& e) {
-    // TODO: use ImGui
-    return false;
+    return ImGui::GetIO().WantCaptureMouse;
 }
 
 bool input_plugin::handle_ui_mouse_wheel(const event::mouse_wheel_input& e) {
-    // TODO: use ImGui
+    auto& io = ImGui::GetIO();
+    if (io.WantCaptureMouse) {
+        if (e.x > 0)
+            io.MouseWheelH += 1;
+        if (e.x < 0)
+            io.MouseWheelH -= 1;
+        if (e.y > 0)
+            io.MouseWheel += 1;
+        if (e.y < 0)
+            io.MouseWheel -= 1;
+        return true;
+    }
     return false;
+}
+
+void input_plugin::receive_text_input(const event::text_input& e) {
+    auto& io = ImGui::GetIO();
+    if (io.WantCaptureKeyboard) {
+        io.AddInputCharactersUTF8(std::data(e.text));
+    }
 }
 
 void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {

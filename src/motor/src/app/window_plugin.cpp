@@ -54,10 +54,10 @@ window_plugin::window_plugin(app_builder& app)
         spdlog::warn("invalid window config: {}", e.what());
     }
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
-                        SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(
+        SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_GL_SetAttribute(
+        SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -79,11 +79,13 @@ window_plugin::window_plugin(app_builder& app)
 
     SDL_GL_GetDrawableSize(window, &screen.width, &screen.height);
 
-    app.add_system_to_stage<&window_plugin::update_position>("pre_frame"_hs,
-                                                             *this);
+    app.registry().set<window_context>(window, ctx);
+
+    app.add_system_to_stage<&window_plugin::update_position>(
+        "pre_frame"_hs, *this);
     app.add_system_to_stage<&window_plugin::poll_events>("event"_hs, *this);
-    app.add_system_to_stage<&window_plugin::swap_buffers>("post_frame"_hs,
-                                                          *this);
+    app.add_system_to_stage<&window_plugin::swap_buffers>(
+        "post_frame"_hs, *this);
 
     // TODO: poll_events should be sync point
 }
@@ -137,6 +139,9 @@ void window_plugin::poll_events() {
                  sdl_event.type == SDL_KEYDOWN && !sdl_event.key.repeat,
                  sdl_event.type == SDL_KEYUP,
                  static_cast<bool>(sdl_event.key.repeat)});
+            break;
+        case SDL_TEXTINPUT:
+            dispatcher.enqueue<event::text_input>({sdl_event.text.text});
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:

@@ -2,6 +2,7 @@
 #define MOTOR_EVENTS_HPP
 
 #include <cstdint>
+#include <string>
 
 namespace motor::event {
 
@@ -17,6 +18,10 @@ struct keyboard_input {
     bool pressed;
     bool released;
     bool repeat;
+};
+
+struct text_input {
+    std::string text;
 };
 
 struct mouse_button_input {
