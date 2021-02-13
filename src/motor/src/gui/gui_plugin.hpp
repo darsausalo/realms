@@ -3,10 +3,16 @@
 
 #include "motor/graphics/screen.hpp"
 #include <SDL.h>
+#include <string>
 
 namespace motor {
 
 class app_builder;
+
+struct gui_config {
+    std::string default_font;
+    std::size_t default_font_size;
+};
 
 class gui_plugin {
 public:
@@ -15,11 +21,11 @@ public:
 
 private:
     screen& screen;
-
-    void handle_input();
-    void draw();
+    gui_config config;
 
     SDL_Window* window;
+
+    void draw();
 };
 
 } // namespace motor

@@ -18,6 +18,10 @@
     "graphics": {
         "max_texture_size": 8192
     },
+    "gui": {
+        "default_font": "Cuprum-Regular.ttf",
+        "default_font_size": 18
+    },
     "input": {
         "keymap": {
             "ctrl+q": { "action": "quit" },

@@ -120,6 +120,7 @@ target_compile_definitions(motor PRIVATE
 	-DMOTOR_PROJECT_TITLE="${PROJECT_TITLE}"
 	-DMOTOR_TEST_BASE_DIR="${CMAKE_CURRENT_BINARY_DIR}"
 	-DMOTOR_TEST_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/data/mods/core"
+	-DIMGUI_ENABLE_FREETYPE
 )
 target_include_directories(motor PRIVATE
 	${STB_INCLUDE_DIRS}

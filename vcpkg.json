@@ -19,7 +19,7 @@
         "doctest",
         {
            "name": "imgui",
-            "features": ["opengl3-glew-binding", "sdl2-binding"]
+            "features": ["opengl3-glew-binding", "sdl2-binding", "freetype"]
         }
     ]
 }
