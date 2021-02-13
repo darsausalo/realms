@@ -116,7 +116,24 @@ bool input_plugin::handle_ui_keyboard(const event::keyboard_input& e) {
         io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
         io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
         io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
-        return true;
+        auto not_propagate = true;
+        if ((io.KeyCtrl || io.KeyShift || io.KeyAlt || io.KeySuper) &&
+            e.scan_code != SDL_SCANCODE_LCTRL &&
+            e.scan_code != SDL_SCANCODE_RCTRL &&
+            e.scan_code != SDL_SCANCODE_LSHIFT &&
+            e.scan_code != SDL_SCANCODE_RSHIFT &&
+            e.scan_code != SDL_SCANCODE_LALT &&
+            e.scan_code != SDL_SCANCODE_RALT &&
+            e.scan_code != SDL_SCANCODE_LGUI &&
+            e.scan_code != SDL_SCANCODE_RGUI) {
+            const auto is_imgui_shortcut_key =
+                io.ConfigMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
+            auto name = std::toupper(e.key_code);
+            not_propagate = is_imgui_shortcut_key &&
+                            (name == 'Z' || name == 'Y' || name == 'C' ||
+                             name == 'V' || name == 'X' || name == 'A');
+        }
+        return not_propagate;
     }
     return false;
 }
