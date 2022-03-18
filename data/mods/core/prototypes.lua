@@ -43,8 +43,7 @@ prototypes:def({
     health = {
       max = 400,
       value = 3
-    },
-    timer = "b"
+    }
   }
 })
 
