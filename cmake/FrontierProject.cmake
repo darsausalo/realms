@@ -1,12 +1,12 @@
-# C++17 support
-set(CMAKE_CXX_STANDARD 17)
+# C++20 support
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setup vcpkg
 set(VCPKG_TARGET_ARCHITECTURE x64)
 set(VCPKG_CRT_LINKAGE dynamic)
 
-find_package(mimalloc 1.6 CONFIG REQUIRED)
+find_package(mimalloc CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(nameof CONFIG REQUIRED)
@@ -18,6 +18,7 @@ find_package(efsw CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
+find_path(ATOMIC_QUEUE_INCLUDE_DIRS "atomic_queue/atomic_queue.h")
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_path(SOKOL_INCLUDE_DIRS "sokol_gfx.h")
 

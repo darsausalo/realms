@@ -12,14 +12,16 @@
         "entt",
         "sol2",
         "efsw",
+        "atomic-queue",
         "glm",
         "stb",
         "sokol",
         "glew",
         "doctest",
         {
-           "name": "imgui",
-            "features": ["opengl3-glew-binding", "sdl2-binding", "freetype"]
+            "name": "imgui",
+            "features": [ "opengl3-binding", "sdl2-binding", "freetype" ]
         }
-    ]
+    ],
+    "builtin-baseline": "83bc451982951fb2a7fc19d75ae1ac9504816471"
 }

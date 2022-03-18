@@ -37,7 +37,7 @@ private:
         last_point = now;
     }
 
-    void update_timer(entt::view<entt::exclude_t<>, timer> view,
+    void update_timer(entt::view<entt::get_t<timer>> view,
                       const time& game_time) {
         view.each([&game_time](auto& t) { t.tick(game_time.delta); });
     }

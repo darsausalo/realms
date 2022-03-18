@@ -1,6 +1,5 @@
 #include "file_watcher.hpp"
 #include "core/internal_events.hpp"
-#include "motor/core/events.hpp"
 #include "motor/core/filesystem.hpp"
 #include <entt/signal/dispatcher.hpp>
 #include <spdlog/spdlog.h>
@@ -30,6 +29,16 @@ void file_watcher::watch_directory(const std::filesystem::path& path) {
     }
 }
 
+void file_watcher::propogate_events() {
+    while (true) {
+        std::unique_ptr<event::file_changed> e;
+        if (!queue.try_pop(e)) {
+            break;
+        }
+        dispatcher.enqueue<event::file_changed>(*e);
+    }
+}
+
 void file_watcher::handleFileAction(efsw::WatchID watch_id,
                                     const std::string& dir,
                                     const std::string& filename,
@@ -39,8 +48,8 @@ void file_watcher::handleFileAction(efsw::WatchID watch_id,
     if (auto it = paths.find(watch_id); it != paths.end()) {
         root_path = it->second;
     } else {
-        spdlog::error("failed to handle file watch: watch ID {} not found",
-                      watch_id);
+        spdlog::error(
+            "failed to handle file watch: watch ID {} not found", watch_id);
         return;
     }
 
@@ -69,8 +78,8 @@ void file_watcher::handleFileAction(efsw::WatchID watch_id,
         break;
     }
 
-    dispatcher.enqueue<event::file_changed>(
-        {f_action, path.generic_string(), fullpath});
+    queue.push(std::make_unique<file_changed_type>(
+        f_action, path.generic_string(), fullpath));
 }
 
 } // namespace motor

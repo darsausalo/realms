@@ -27,12 +27,12 @@ void quit_system(const motor::input_actions& input,
 }
 
 void test_system(
-    entt::view<entt::exclude_t<>, motor::timer, position, health> view) {
+    entt::view<entt::get_t<motor::timer, position, const health>> view) {
     view.each([](auto& t, auto& p, auto& h) {
         if (t.finished) {
             t.reset();
-            p.x += 1;
-            p.y += 1;
+            //p.x += 1;
+            //p.y += 1;
             spdlog::debug("p = {},{}", p.x, p.y);
             spdlog::debug("h = {},{}", h.max, h.value);
         }
@@ -40,8 +40,7 @@ void test_system(
 }
 
 void test2_system(
-    entt::view<entt::exclude_t<>, const motor::timer, const motor::sprite>
-        view) {
+    entt::view<entt::get_t<const motor::timer, const motor::sprite>> view) {
     view.each([](const auto& t, const auto& s) {
         if (t.finished) {
             spdlog::debug("sprite");
@@ -50,7 +49,7 @@ void test2_system(
 }
 
 void update_transforms(
-    entt::view<entt::exclude_t<>, const position, motor::transform> view) {
+    entt::view<entt::get_t<const position, motor::transform>> view) {
     view.each([](const auto& p, auto& tfm) {
         tfm.value[3] = glm::vec4{p.x, p.y, 0.0f, 1.0f};
     });
@@ -66,11 +65,12 @@ struct test_plugin {
         app.define_component<position, motor::component_specifier::FINAL>()
             .define_component<velocity>()
             .define_component<health>()
+            .define_component<"enemy"_hs>()
             .add_system<&quit_system>()
             .add_system<&update_transforms>()
             .add_system<&test_plugin::update_anim>(*this)
-            /*.add_system<&test2_system>()
-            .add_system<&test_system>()*/
+            /*.add_system<&test2_system>()*/
+            .add_system<&test_system>()
             ;
 
         app.dispatcher()
@@ -90,14 +90,23 @@ struct test_plugin {
     }
 
     void receive_start(const motor::event::start&) {
+#ifdef ENTT_USE_ATOMIC
+        spdlog::warn("USE_ATOMIC");
+#endif // ENTT_USE_ATOMIC
+
+
         auto e = prototypes.spawn(registry, "soldier2"_hs);
         registry.replace<position>(e, -100.0f, -100.0f);
         std::string info{"spawned soldier2 with:\n"};
-        registry.visit(e, [&info](auto&& type_info) {
-            info += "  ";
-            info += type_info.name();
-            info += "\n";
-        });
+        for (auto&& [_, storage] : registry.storage()) {
+            if (storage.contains(e)) {
+                info += "  ";
+                // TODO: maybe remove component_registry?!
+                // and just use storage.type().name()?
+                info += storage.type().name();
+                info += "\n";
+            }
+        }
         e = prototypes.spawn(registry, "soldier2"_hs);
         registry.replace<position>(e, 100.0f, 100.0f);
         spdlog::debug(info);
@@ -107,11 +116,13 @@ struct test_plugin {
             spdlog::error("failed to spawn gabe");
         } else {
             info = "spawned gabe with:\n";
-            registry.visit(e, [&info](auto&& type_info) {
-                info += "  ";
-                info += type_info.name();
-                info += "\n";
-            });
+            for (auto&& [_, storage] : registry.storage()) {
+                if (storage.contains(e)) {
+                    info += "  ";
+                    info += storage.type().name();
+                    info += "\n";
+                }
+            }
             spdlog::debug(info);
         }
 
@@ -120,11 +131,13 @@ struct test_plugin {
             spdlog::error("failed to spawn tstmap");
         } else {
             info = "spawned tstmap with:\n";
-            registry.visit(map_e, [&info](auto&& type_info) {
-                info += "  ";
-                info += type_info.name();
-                info += "\n";
-            });
+            for (auto&& [_, storage] : registry.storage()) {
+                if (storage.contains(map_e)) {
+                    info += "  ";
+                    info += storage.type().name();
+                    info += "\n";
+                }
+            }
             spdlog::debug(info);
             auto map = registry.get<motor::map>(map_e);
             auto tile_set = registry.get<motor::tile_set>(map_e);
@@ -146,7 +159,7 @@ struct test_plugin {
                     tfm.value[3].y = i * -20.0f;
                 }
                 auto& tile_chunk = registry.emplace<motor::tile_chunk>(e);
-                spdlog::debug("add tile_chunk: e={}; layer={};", e, i);
+                spdlog::debug("add tile_chunk: e={}; layer={};", entt::to_integral(e), i);
                 tile_chunk.layer = i;
                 tile_chunk.tiles.resize(map.chunk_size.x * map.chunk_size.y);
                 const auto w = map.chunk_size.x;
@@ -169,7 +182,7 @@ struct test_plugin {
 
     motor::timer timer{0.1f};
 
-    void update_anim(entt::view<entt::exclude_t<>, motor::sprite_sheet> view,
+    void update_anim(entt::view<entt::get_t<motor::sprite_sheet>> view,
                      const motor::time& time) {
         timer.tick(time.delta);
         if (timer.finished) {

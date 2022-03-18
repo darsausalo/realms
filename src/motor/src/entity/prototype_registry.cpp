@@ -24,9 +24,8 @@ void prototype_registry::transpire(const sol::table& defs) {
                                 std::data(tag.as<std::string>()));
 
                             if (components.is_defined(comp_id)) {
-                                components.transpire(reg, def_e,
-                                                     lua_input_archive{tag},
-                                                     comp_id);
+                                lua_input_archive ar{tag};
+                                components.transpire(reg, def_e, ar, comp_id);
                             }
                         }
                         return;
@@ -42,8 +41,8 @@ void prototype_registry::transpire(const sol::table& defs) {
                         return;
                     }
 
-                    components.transpire(
-                        reg, def_e, lua_input_archive{value}, comp_id);
+                    lua_input_archive ar{value};
+                    components.transpire(reg, def_e, ar, comp_id);
                 }
             });
         }
@@ -249,36 +248,36 @@ TEST_CASE("prototype_registry: transpire components") {
     CHECK((e3 != entt::null));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 1);
-    CHECK(reg.has<position>(e1));
+    CHECK(reg.all_of<position>(e1));
     CHECK(reg.get<position>(e1).x == 101);
     CHECK(reg.get<position>(e1).y == 201);
-    CHECK(reg.has<timer>(e1));
+    CHECK(reg.all_of<timer>(e1));
     CHECK(reg.get<timer>(e1).duration == 1001);
-    CHECK(reg.has<health>(e1));
+    CHECK(reg.all_of<health>(e1));
     CHECK(reg.get<health>(e1).max == 101);
-    CHECK(reg.has<entt::tag<"enemy"_hs>>(e1));
-    CHECK(reg.has<tag1>(e1));
+    CHECK(reg.all_of<entt::tag<"enemy"_hs>>(e1));
+    CHECK(reg.all_of<tag1>(e1));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e2)) == 2);
-    CHECK(reg.has<position>(e2));
+    CHECK(reg.all_of<position>(e2));
     CHECK(reg.get<position>(e2).x == 102);
     CHECK(reg.get<position>(e2).y == 202);
-    CHECK(reg.has<health>(e2));
+    CHECK(reg.all_of<health>(e2));
     CHECK(reg.get<health>(e2).max == 102);
-    CHECK(reg.has<tag1>(e2));
+    CHECK(reg.all_of<tag1>(e2));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e3)) == 3);
-    CHECK(reg.has<position>(e3));
+    CHECK(reg.all_of<position>(e3));
     CHECK(reg.get<position>(e3).x == 103);
     CHECK(reg.get<position>(e3).y == 203);
-    CHECK(reg.has<timer>(e3));
+    CHECK(reg.all_of<timer>(e3));
     CHECK(reg.get<timer>(e3).duration == 1003);
-    CHECK(reg.has<sprite>(e3));
+    CHECK(reg.all_of<sprite>(e3));
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_1.png");
-    CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
+    CHECK(reg.all_of<entt::tag<"enemy"_hs>>(e3));
 
     reg.remove<timer>(e3);
-    CHECK(!reg.has<timer>(e3));
+    CHECK(!reg.all_of<timer>(e3));
 
     {
         sol::state lua{};
@@ -289,32 +288,32 @@ TEST_CASE("prototype_registry: transpire components") {
     prototypes.respawn(reg);
 
     CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 1);
-    CHECK(reg.has<position>(e1));
+    CHECK(reg.all_of<position>(e1));
     CHECK(reg.get<position>(e1).x == 111);
     CHECK(reg.get<position>(e1).y == 201);
-    CHECK(reg.has<timer>(e1));
+    CHECK(reg.all_of<timer>(e1));
     CHECK(reg.get<timer>(e1).duration == 1001);
-    CHECK(reg.has<health>(e1));
+    CHECK(reg.all_of<health>(e1));
     CHECK(reg.get<health>(e1).max == 111);
-    CHECK(reg.has<entt::tag<"enemy"_hs>>(e1));
-    CHECK(reg.has<tag1>(e1));
+    CHECK(reg.all_of<entt::tag<"enemy"_hs>>(e1));
+    CHECK(reg.all_of<tag1>(e1));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e2)) == 2);
-    CHECK(reg.has<position>(e2));
+    CHECK(reg.all_of<position>(e2));
     CHECK(reg.get<position>(e2).x == 112);
     CHECK(reg.get<position>(e2).y == 202);
-    CHECK(reg.has<health>(e2));
+    CHECK(reg.all_of<health>(e2));
     CHECK(reg.get<health>(e2).max == 112);
-    CHECK(reg.has<tag1>(e2));
+    CHECK(reg.all_of<tag1>(e2));
 
     CHECK(static_cast<int32_t>(reg.get<id>(e3)) == 3);
-    CHECK(reg.has<position>(e3));
+    CHECK(reg.all_of<position>(e3));
     CHECK(reg.get<position>(e3).x == 113);
     CHECK(reg.get<position>(e3).y == 203);
-    CHECK(!reg.has<timer>(e3));
-    CHECK(reg.has<sprite>(e3));
+    CHECK(!reg.all_of<timer>(e3));
+    CHECK(reg.all_of<sprite>(e3));
     CHECK(reg.get<sprite>(e3).ref == "/assets/sprite_2.png");
-    CHECK(reg.has<entt::tag<"enemy"_hs>>(e3));
+    CHECK(reg.all_of<entt::tag<"enemy"_hs>>(e3));
 }
 
 TEST_CASE("prototype_registry: ignore bad values") {
@@ -344,13 +343,13 @@ TEST_CASE("prototype_registry: ignore bad values") {
 
     CHECK((e1 != entt::null));
     CHECK(static_cast<int32_t>(reg.get<id>(e1)) == 0);
-    CHECK(reg.has<position>(e1));
+    CHECK(reg.all_of<position>(e1));
     CHECK(reg.get<position>(e1).x == 0);
     CHECK(reg.get<position>(e1).y == 0);
-    CHECK(reg.has<timer>(e1));
+    CHECK(reg.all_of<timer>(e1));
     CHECK(reg.get<timer>(e1).duration == 0);
-    CHECK(reg.has<health>(e1));
+    CHECK(reg.all_of<health>(e1));
     CHECK(reg.get<health>(e1).max == 0);
-    CHECK(!reg.has<entt::tag<"enemy"_hs>>(e1));
-    CHECK(!reg.has<tag1>(e1));
+    CHECK(!reg.all_of<entt::tag<"enemy"_hs>>(e1));
+    CHECK(!reg.all_of<tag1>(e1));
 }

@@ -17,7 +17,6 @@ class component_registry {
                                const entt::entity,
                                entt::registry&,
                                const entt::entity);
-    using clone_fn_type = void(const entt::registry&, entt::registry&);
 
     template<typename Component>
     static void transpire(entt::registry& reg,
@@ -51,26 +50,13 @@ class component_registry {
                       entt::registry& to,
                       const entt::entity dst) {
         if constexpr (std::is_empty_v<Component>) {
-            if (to.template has<Component>(dst)) {
+            if (to.template all_of<Component>(dst)) {
                 to.template emplace_or_replace<Component>(dst);
             }
         } else {
-            if (to.template has<Component>(dst)) {
+            if (to.template all_of<Component>(dst)) {
                 to.emplace_or_replace<Component>(dst, from.get<Component>(src));
             }
-        }
-    }
-
-    template<typename Component>
-    static void clone(const entt::registry& from, entt::registry& to) {
-        const auto* data = from.data<Component>();
-        const auto size = from.size<Component>();
-
-        if constexpr (std::is_empty_v<Component>) {
-            to.insert<Component>(data, data + size);
-        } else {
-            const auto* raw = from.raw<Component>();
-            to.insert<Component>(data, data + size, raw, raw + size);
         }
     }
 
@@ -84,7 +70,6 @@ public:
         transpire_functions[name_id] =
             &component_registry::transpire<Component>;
         stamp_functions[type_id] = &component_registry::stamp<Component>;
-        clone_functions[type_id] = &component_registry::clone<Component>;
         patch_functions[type_id] = &component_registry::patch<Component>;
         specifiers[type_id] = Specifier;
     }
@@ -97,7 +82,6 @@ public:
         transpire_functions[name_id] =
             &component_registry::transpire<entt::tag<Value>>;
         stamp_functions[type_id] = &component_registry::stamp<entt::tag<Value>>;
-        clone_functions[type_id] = &component_registry::clone<entt::tag<Value>>;
         patch_functions[type_id] = &component_registry::patch<entt::tag<Value>>;
         specifiers[type_id] = Specifier;
     }
@@ -117,26 +101,27 @@ public:
                const entt::entity src,
                entt::registry& to,
                const entt::entity dst) noexcept {
-        from.visit(src, [this, &from, &to, src, dst](const auto type) {
-            stamp_functions[type.hash()](from, src, to, dst);
-        });
+        for (auto&& [type, storage] : from.storage()) {
+            if (storage.contains(src)) {
+                stamp_functions[type](from, src, to, dst);
+            }
+        }
     }
 
     void patch(const entt::registry& from,
                const entt::entity src,
                entt::registry& to,
                const entt::entity dst) noexcept {
-        from.visit(src, [this, &from, &to, src, dst](const auto type) {
-            if (specifiers[type.hash()] == component_specifier::OVERRIDABLE) {
-                patch_functions[type.hash()](from, src, to, dst);
+        for (auto&& [type, storage] : from.storage()) {
+            if (storage.contains(src) && specifiers[type] == component_specifier::OVERRIDABLE) {
+                patch_functions[type](from, src, to, dst);
             }
-        });
+        }
     }
 
 private:
     std::unordered_map<entt::id_type, transpire_fn_type*> transpire_functions{};
     std::unordered_map<entt::id_type, stamp_fn_type*> stamp_functions{};
-    std::unordered_map<entt::id_type, clone_fn_type*> clone_functions{};
     std::unordered_map<entt::id_type, stamp_fn_type*> patch_functions{};
     std::unordered_map<entt::id_type, component_specifier> specifiers{};
 };

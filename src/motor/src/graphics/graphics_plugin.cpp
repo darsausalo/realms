@@ -42,7 +42,8 @@ graphics_plugin::graphics_plugin(app_builder& app)
             "failed to initialize OpenGL: {}", glewGetErrorString(err)));
     }
 
-    sg_setup(&sg_desc{});
+    sg_desc sg{};
+    sg_setup(&sg);
     assert(sg_isvalid());
 
     app.add_startup_system<&graphics_plugin::build_atlases>(*this)

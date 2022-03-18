@@ -9,10 +9,13 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
+#include <string_view>
 
 namespace motor {
 
-static constexpr char* core_name = "core";
+using namespace std::literals;
+
+static constexpr auto core_name = "core"sv;
 
 static void sort_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
     std::vector<std::vector<std::size_t>> all_dependencies;
@@ -92,7 +95,7 @@ void from_json(const nlohmann::json& j, mod_manifest& m) {
 }
 
 static void load_mods(std::vector<mod>& mods, std::vector<mod>& broken_mods) {
-    auto& mods_path = filesystem::data() / "mods";
+    auto mods_path = filesystem::data() / "mods";
 
     if (!std::filesystem::exists(mods_path)) {
         throw std::runtime_error(
@@ -170,7 +173,8 @@ mods_plugin::mods_plugin(app_builder& app)
     dispatcher.sink<event::file_changed>()
         .connect<&mods_plugin::receive_file_changed>(*this);
 
-    app.add_startup_system<&mods_plugin::load_prototypes>(*this);
+    app.add_startup_system<&mods_plugin::load_prototypes>(*this)
+        .add_system_to_stage<&file_watcher::propogate_events>("pre_frame"_hs, watcher);
 }
 
 void mods_plugin::load_prototypes() {
@@ -214,11 +218,11 @@ void mods_plugin::start_watch_mods() {
 }
 
 void mods_plugin::receive_file_changed(const event::file_changed& e) {
-    spdlog::debug("file changed: {}", e.path.string());
-    if (e.path.string().rfind("prototype", 0) == 0) {
+    std::string path{e.path.generic_string()};
+    spdlog::debug("file changed: {}", path);
+    if (path.starts_with("prototype") && path.ends_with(".lua")) {
         load_prototypes();
         prototypes.respawn(registry);
-        dispatcher.enqueue<event::respawn>(); // TODO: REMOVE?!!!
     }
 }
 

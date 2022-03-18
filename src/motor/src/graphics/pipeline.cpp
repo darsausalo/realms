@@ -47,12 +47,12 @@ void main() {
 } // namespace
 
 void init_pipeline(sg_pipeline& pipeline, sg_bindings& bindings) {
-    sg_buffer_desc vbuf_desc{};
-    vbuf_desc.size = max_vertices * sizeof(vertex);
-    vbuf_desc.type = SG_BUFFERTYPE_VERTEXBUFFER;
-    vbuf_desc.usage = SG_USAGE_STREAM;
-    vbuf_desc.size = max_vertices * sizeof(vertex);
-    bindings.vertex_buffers[0] = sg_make_buffer(vbuf_desc);
+    sg_buffer_desc vbuf_desc{
+        .size = max_vertices * sizeof(vertex),
+        .type = SG_BUFFERTYPE_VERTEXBUFFER,
+        .usage = SG_USAGE_STREAM,
+    };
+    bindings.vertex_buffers[0] = sg_make_buffer(&vbuf_desc);
 
     std::vector<std::uint16_t> indices;
     indices.resize(max_indices);
@@ -65,11 +65,12 @@ void init_pipeline(sg_pipeline& pipeline, sg_bindings& bindings) {
         indices[(i * 6) + 5] = (i * 4) + 3;
     }
 
-    sg_buffer_desc ibuf_desc{};
-    ibuf_desc.size = indices.size() * sizeof(std::uint16_t);
-    ibuf_desc.type = SG_BUFFERTYPE_INDEXBUFFER;
-    ibuf_desc.content = std::data(indices);
-    bindings.index_buffer = sg_make_buffer(ibuf_desc);
+    sg_buffer_desc ibuf_desc{
+        .size = static_cast<int>(indices.size() * sizeof(std::uint16_t)),
+        .type = SG_BUFFERTYPE_INDEXBUFFER,
+        .content = std::data(indices),
+    };
+    bindings.index_buffer = sg_make_buffer(&ibuf_desc);
 
     sg_shader_desc shd_desc{};
     auto& ub = shd_desc.vs.uniform_blocks[0];

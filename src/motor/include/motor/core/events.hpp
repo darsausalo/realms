@@ -10,8 +10,6 @@ struct start {};
 
 struct quit {};
 
-struct respawn {};
-
 struct keyboard_input {
     std::uint16_t scan_code;
     std::uint16_t key_code;

@@ -2,7 +2,9 @@
 
 namespace backward {
 
+#ifdef MOTOR_SIGNAL_HANDLING
 SignalHandling sh;
+#endif // MOTOR_SIGNAL_HANDLING
 
 std::string report_path;
 #ifdef BACKWARD_SYSTEM_WINDOWS

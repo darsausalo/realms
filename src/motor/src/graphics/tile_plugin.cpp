@@ -19,7 +19,7 @@ tile_plugin::tile_plugin(app_builder& app) {
 }
 
 void tile_plugin::update_tilesets(
-    entt::view<entt::exclude_t<>, const map, tile_set> view) {
+    entt::view<entt::get_t<const map, tile_set>> view) {
     for (auto&& [_, m, ts] : view.each()) {
         if (ts.tiles.empty()) {
             continue;
@@ -69,10 +69,10 @@ void tile_plugin::update_tilesets(
     }
 }
 
-void tile_plugin::update_tiles(entt::view<entt::exclude_t<>,
+void tile_plugin::update_tiles(entt::view<entt::get_t<
                                           const parent,
                                           const tile_chunk,
-                                          const transform> view,
+                                          const transform>> view,
                                const entt::registry& registry,
                                const screen& screen,
                                const camera2d& camera) {
@@ -173,7 +173,7 @@ void tile_plugin::render_tiles(const screen& screen, const camera2d& camera) {
 
     for (auto&& chunk : chunks) {
         bindings.fs_images[0] = chunk.image;
-        sg_apply_bindings(bindings);
+        sg_apply_bindings(&bindings);
         sg_draw(chunk.start_element, chunk.element_count, 1);
     }
 }

@@ -14,7 +14,7 @@
 - [x] Refine Sytem Stages (System Groups)
 - [x] Rework Architecture based on entt::organizer: plugins, scheduler, etc.
 - [x] Resources
-- [ ] Graphics
+- [x] Graphics
     - [x] sprite_sheet update by index
     - [x] sg_buffer rewinding? (no yet!)
     - [x] prepare_atlases - alloc sg_image atlases before sprites and sprite_sheets peparation
@@ -24,11 +24,18 @@
 - [x] Refactoring
     - [x] use common types for spirte and tile plugins
     - [x] migrate to EnTT 3.6.0
+    - [x] migrate to EnTT 3.9.0
+    - [ ] make console output to Immediate Window (for VS)
+    - [ ] CMake: use glob for sources
+- [ ] Fixes
+    - [ ] fix issue catched by test "prototype_registry: ignore bad values"
+    - [ ] src/motor/include/motor/core/progress.hpp(20): warning C4834: discarding return value of function with 'nodiscard' attribute
 - [ ] Gui
     - [x] integrate ImGui
+    - [ ] input handling
     - [ ] scripting
     - [ ] data binding
-- [ ] Systems Scripting
+- [ ] Systems Scripting (?)
 - [ ] Pathfinding (?)
 - [ ] Code review
     - [ ] remove non-sense event parameters (e.c. receive_start(event::start))
@@ -41,6 +48,8 @@
 - [ ] Stats
 - [ ] vcpkg
     - [x] manifest
+    - [ ] lock to versions
+    - [ ] revise packages (sokol, entt)
     - [ ] registry
 
 - [ ] Motor ROADMAP

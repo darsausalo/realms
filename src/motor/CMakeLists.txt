@@ -122,10 +122,13 @@ target_compile_definitions(motor PRIVATE
 	-DMOTOR_TEST_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/data/mods/core"
 	-DIMGUI_ENABLE_FREETYPE
 )
+target_compile_definitions(motor PUBLIC
+	-DENTT_USE_ATOMIC)
 target_include_directories(motor PRIVATE
 	${STB_INCLUDE_DIRS}
 	${SOKOL_INCLUDE_DIRS}
 	${LUA_INCLUDE_DIR}
+	${ATOMIC_QUEUE_INCLUDE_DIRS}
 )
 target_link_libraries(motor PRIVATE
 	mimalloc
@@ -140,9 +143,9 @@ target_link_libraries(motor PRIVATE
 )
 target_link_libraries(motor PUBLIC
 	nameof::nameof
-	fmt::fmt
+#	fmt::fmt
 	spdlog::spdlog
-	glm
+	glm::glm
 	EnTT::EnTT
 )
 add_backward(motor)

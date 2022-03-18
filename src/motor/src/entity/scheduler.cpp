@@ -10,12 +10,12 @@ namespace {
 
 using namespace entt::literals;
 
-void ro_char_rw_int(entt::view<entt::exclude_t<>, int, const char>) {}
+void ro_char_rw_int(entt::view<entt::get_t<int, const char>>) {}
 void sync_point(entt::registry&) {}
 void empty() {}
 
 struct clazz {
-    void rw_int(entt::view<entt::exclude_t<>, int>) {}
+    void rw_int(entt::view<entt::get_t<int>>) {}
 };
 
 } // namespace

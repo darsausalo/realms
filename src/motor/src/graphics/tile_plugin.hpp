@@ -34,11 +34,11 @@ private:
     std::vector<chunk_data> chunks{};
 
     void update_tilesets(
-        entt::view<entt::exclude_t<>, const map, tile_set> view);
-    void update_tiles(entt::view<entt::exclude_t<>,
+        entt::view<entt::get_t<const map, tile_set>> view);
+    void update_tiles(entt::view<entt::get_t<
                                  const parent,
                                  const tile_chunk,
-                                 const transform> view,
+                                 const transform>> view,
                       const entt::registry& registry,
                       const screen& screen,
                       const camera2d& camera);

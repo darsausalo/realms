@@ -25,7 +25,7 @@ gui_plugin::gui_plugin(app_builder& app)
         spdlog::warn("invalid gui config: {}", e.what());
     }
 
-    auto& fonts_path =
+    auto fonts_path =
         filesystem::data() / "mods" / "core" / "resources" / "fonts";
 
     IMGUI_CHECKVERSION();
@@ -34,6 +34,7 @@ gui_plugin::gui_plugin(app_builder& app)
     io.IniFilename = nullptr;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.KeyMap[ImGuiKey_Space] = SDL_SCANCODE_SPACE;
 
     ImGui::StyleColorsDark();
 

@@ -3,6 +3,7 @@
 
 #include "motor/resources/image.hpp"
 #include "motor/resources/resources.hpp"
+#include <entt/core/hashed_string.hpp>
 #include <entt/resource/handle.hpp>
 #include <entt/resource/loader.hpp>
 #include <string_view>

@@ -27,7 +27,7 @@ sprite_plugin::sprite_plugin(app_builder& app) {
 }
 
 void sprite_plugin::prepare_sprites(
-    entt::view<entt::exclude_t<sg_image>, sprite> view,
+    entt::view<entt::get_t<sprite>, entt::exclude_t<sg_image>> view,
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
         if (s.image->valid()) {
@@ -40,7 +40,7 @@ void sprite_plugin::prepare_sprites(
 }
 
 void sprite_plugin::prepare_sprite_sheets(
-    entt::view<entt::exclude_t<sg_image>, sprite_sheet> view,
+    entt::view<entt::get_t<sprite_sheet>, entt::exclude_t<sg_image>> view,
     entt::registry& registry) {
     view.each([&registry](auto e, auto& s) {
         if (s.image->valid()) {
@@ -54,7 +54,7 @@ void sprite_plugin::prepare_sprite_sheets(
 }
 
 void sprite_plugin::update_sprite_sheets(
-    entt::view<entt::exclude_t<>, const sprite_sheet, image_region> view) {
+    entt::view<entt::get_t<const sprite_sheet, image_region>> view) {
     view.each([](auto e, auto& s, auto& r) {
         auto column = s.index % s.columns;
         auto row = (s.index / s.columns) % s.rows;
@@ -63,10 +63,8 @@ void sprite_plugin::update_sprite_sheets(
 }
 
 void sprite_plugin::emplace_sprites(
-    entt::view<entt::exclude_t<entt::tag<"hidden"_hs>>,
-               const sg_image,
-               const transform,
-               const image_region> view) {
+    entt::view<entt::get_t<const sg_image, const transform, const image_region>,
+               entt::exclude_t<entt::tag<"hidden"_hs>>> view) {
     sprites.clear();
     view.each([this](const auto& image, const auto& tfm, const auto& r) {
         sprites.push_back({
@@ -146,7 +144,7 @@ void sprite_plugin::render_batch(sg_image image,
                              vertices.size() * sizeof(vertex));
         }
         bindings.fs_images[0] = image;
-        sg_apply_bindings(bindings);
+        sg_apply_bindings(&bindings);
         sg_draw(base_element, batch_size * 6, 1);
         base_element += batch_size * 6;
 
