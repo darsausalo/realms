@@ -17,7 +17,7 @@ prototypes:def({
     base = {"@infantry", "@with_sprite"},
     health = {
       max = 400,
-      value = 5
+      value = 2
     },
     timer = {duration = 1},
     tag = "enemy"

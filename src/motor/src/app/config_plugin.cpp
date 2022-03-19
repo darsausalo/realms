@@ -9,6 +9,8 @@
 #include <fstream>
 #include <mimalloc.h>
 #include <spdlog/cfg/env.h>
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #define SDL_MAIN_HANDLED
@@ -45,8 +47,9 @@ inline void from_json(const nlohmann::json& j, log_level& e) {
     e = (it != std::end(log_levels)) ? it->first : log_levels[2].first;
 }
 
-static void
-add_option(nlohmann::json& j, std::string_view key, std::string_view value) {
+static void add_option(nlohmann::json& j,
+                       std::string_view key,
+                       std::string_view value) {
     auto n = key.find_first_of('.');
     if (n != std::string_view::npos && n) {
         auto k = std::string(key.substr(0, n));
@@ -62,6 +65,15 @@ add_option(nlohmann::json& j, std::string_view key, std::string_view value) {
 config_plugin::config_plugin(const arg_list& args, app_builder& app)
     : config{app.registry().ctx_or_set<nlohmann::json>()} {
     platform::setup_crash_handling(SDL_GetBasePath());
+
+    auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+    spdlog::sinks_init_list sinks_list({stdout_sink});
+#if defined(_WIN32)
+    auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_st>();
+    sinks_list = spdlog::sinks_init_list({stdout_sink, msvc_sink});
+#endif // defined(_WIN32)
+
+    spdlog::set_default_logger(std::make_shared<spdlog::logger>("mtr", sinks_list));
 
     nlohmann::json cli_config{};
     std::string key;
