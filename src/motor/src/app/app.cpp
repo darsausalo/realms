@@ -37,6 +37,9 @@ app_builder& app::build() {
         .add_stage("pre_render"_hs)
         .add_stage("render"_hs)
         .add_stage("post_render"_hs)
+        .add_stage("pre_gui"_hs)
+        .add_stage("gui"_hs)
+        .add_stage("post_gui"_hs)
         .add_stage("post_frame"_hs);
 
     return builder;

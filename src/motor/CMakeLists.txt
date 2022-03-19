@@ -29,16 +29,16 @@ target_link_libraries(motor PRIVATE
 	efsw::efsw
 	SDL2::SDL2
 	GLEW::GLEW
-	imgui::imgui
 	sol2::sol2
 	${LUA_LIBRARIES}
 )
 target_link_libraries(motor PUBLIC
 	nameof::nameof
-#	fmt::fmt
+	fmt::fmt
 	spdlog::spdlog
 	glm::glm
 	EnTT::EnTT
+	imgui::imgui
 )
 add_backward(motor)
 

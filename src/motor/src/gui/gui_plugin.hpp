@@ -25,7 +25,8 @@ private:
 
     SDL_Window* window;
 
-    void draw();
+    void begin_frame();
+    void end_frame();
 };
 
 } // namespace motor

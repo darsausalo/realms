@@ -61,7 +61,8 @@ gui_plugin::gui_plugin(app_builder& app)
         }
     }
 
-    app.add_system_to_stage<&gui_plugin::draw>("render"_hs, *this);
+    app.add_system_to_stage<&gui_plugin::begin_frame>("pre_gui"_hs, *this)
+        .add_system_to_stage<&gui_plugin::end_frame>("post_gui"_hs, *this);
 }
 
 gui_plugin::~gui_plugin() {
@@ -72,14 +73,13 @@ gui_plugin::~gui_plugin() {
 
 static bool show_demo_window = true;
 
-void gui_plugin::draw() {
+void gui_plugin::begin_frame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(window);
     ImGui::NewFrame();
+}
 
-    if (show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
-
+void gui_plugin::end_frame() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

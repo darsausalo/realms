@@ -14,6 +14,7 @@
 #include <motor/graphics/tile_chunk.hpp>
 #include <motor/graphics/tile_set.hpp>
 #include <spdlog/spdlog.h>
+#include <imgui.h>
 
 namespace frontier {
 
@@ -26,13 +27,20 @@ void quit_system(const motor::input_actions& input,
     }
 }
 
+void test_gui_system() {
+    static bool show_demo_window = true;
+
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
+}
+
 void test_system(
     entt::view<entt::get_t<motor::timer, position, const health>> view) {
     view.each([](auto& t, auto& p, auto& h) {
         if (t.finished) {
             t.reset();
-            //p.x += 1;
-            //p.y += 1;
+            // p.x += 1;
+            // p.y += 1;
             spdlog::debug("p = {},{}", p.x, p.y);
             spdlog::debug("h = {},{}", h.max, h.value);
         }
@@ -71,7 +79,7 @@ struct test_plugin {
             .add_system<&test_plugin::update_anim>(*this)
             /*.add_system<&test2_system>()*/
             .add_system<&test_system>()
-            ;
+            .add_system_to_stage<&test_gui_system>("gui"_hs);
 
         app.dispatcher()
             .sink<motor::event::start>()
@@ -90,11 +98,6 @@ struct test_plugin {
     }
 
     void receive_start(const motor::event::start&) {
-#ifdef ENTT_USE_ATOMIC
-        spdlog::warn("USE_ATOMIC");
-#endif // ENTT_USE_ATOMIC
-
-
         auto e = prototypes.spawn(registry, "soldier2"_hs);
         registry.replace<position>(e, -100.0f, -100.0f);
         std::string info{"spawned soldier2 with:\n"};
@@ -159,7 +162,8 @@ struct test_plugin {
                     tfm.value[3].y = i * -20.0f;
                 }
                 auto& tile_chunk = registry.emplace<motor::tile_chunk>(e);
-                spdlog::debug("add tile_chunk: e={}; layer={};", entt::to_integral(e), i);
+                spdlog::debug(
+                    "add tile_chunk: e={}; layer={};", entt::to_integral(e), i);
                 tile_chunk.layer = i;
                 tile_chunk.tiles.resize(map.chunk_size.x * map.chunk_size.y);
                 const auto w = map.chunk_size.x;

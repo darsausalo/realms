@@ -188,7 +188,7 @@ void mods_plugin::load_prototypes() {
 
     sol::optional<sol::table> maybe_prototypes = lua["prototypes"];
     if (maybe_prototypes) {
-        auto prototypes_table = maybe_prototypes.value();
+        const auto& prototypes_table = maybe_prototypes.value();
         try {
             sol::function inherits = prototypes_table["inherits"];
             if (inherits != sol::lua_nil) {
