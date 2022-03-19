@@ -17,7 +17,7 @@ public:
     void update(int32_t v) noexcept { value.store(value); }
 
     void update(std::string_view s) {
-        std::unique_lock{mutex};
+        std::unique_lock lock{mutex};
         status = s;
     }
 
