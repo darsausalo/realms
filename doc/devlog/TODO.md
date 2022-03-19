@@ -25,11 +25,11 @@
     - [x] use common types for spirte and tile plugins
     - [x] migrate to EnTT 3.6.0
     - [x] migrate to EnTT 3.9.0
-    - [ ] make console output to Immediate Window (for VS)
-    - [ ] CMake: use glob for sources
-- [ ] Fixes
-    - [ ] fix issue catched by test "prototype_registry: ignore bad values"
-    - [ ] src/motor/include/motor/core/progress.hpp(20): warning C4834: discarding return value of function with 'nodiscard' attribute
+    - [x] make console output to Immediate Window (for VS)
+    - [x] CMake: use glob for sources
+- [x] Fixes
+    - [x] fix issue catched by test "prototype_registry: ignore bad values"
+    - [x] src/motor/include/motor/core/progress.hpp(20): warning C4834: discarding return value of function with 'nodiscard' attribute
 - [ ] Gui
     - [x] integrate ImGui
     - [ ] input handling

@@ -20,6 +20,10 @@ void prototype_registry::transpire(const sol::table& defs) {
                     auto comp_name = key.as<std::string>();
                     if (comp_name == "tags" && value.is<sol::table>()) {
                         for (auto&& [_, tag] : value.as<sol::table>()) {
+                            if (!tag.is<std::string>()) {
+                                continue;
+                            }
+
                             auto comp_id = entt::hashed_string::value(
                                 std::data(tag.as<std::string>()));
 

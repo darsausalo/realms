@@ -87,11 +87,11 @@ public:
     template<typename T>
     void load_value(T& value) {
         if (current_member) {
-            value = current_member.as<T>();
+            value = current_member.is<T>() ? current_member.as<T>() : T{};
         } else {
             auto current_value = node_stack.back();
             if (current_value && !current_value.is<sol::table>()) {
-                value = current_value.as<T>();
+                value = current_member.is<T>() ? current_member.as<T>() : T{};
             } else {
                 value = T{};
             }
