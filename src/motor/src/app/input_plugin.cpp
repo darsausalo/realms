@@ -78,8 +78,6 @@ input_plugin::input_plugin(app_builder& app)
     , actions{app.registry().set<input_actions>()} {
     dispatcher.sink<event::keyboard_input>()
         .connect<&input_plugin::receive_keyboard_input>(*this);
-    dispatcher.sink<event::text_input>()
-        .connect<&input_plugin::receive_text_input>(*this);
     dispatcher.sink<event::mouse_button_input>()
         .connect<&input_plugin::receive_mouse_button_input>(*this);
     dispatcher.sink<event::mouse_motion_input>()
@@ -111,7 +109,6 @@ bool input_plugin::handle_ui_keyboard(const event::keyboard_input& e) {
     if (io.WantCaptureKeyboard) {
         auto key = e.scan_code;
         IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-        io.KeysDown[key] = e.pressed || e.repeat;
         io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
         io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
         io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
@@ -160,13 +157,6 @@ bool input_plugin::handle_ui_mouse_wheel(const event::mouse_wheel_input& e) {
         return true;
     }
     return false;
-}
-
-void input_plugin::receive_text_input(const event::text_input& e) {
-    auto& io = ImGui::GetIO();
-    if (io.WantCaptureKeyboard) {
-        io.AddInputCharactersUTF8(std::data(e.text));
-    }
 }
 
 void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {

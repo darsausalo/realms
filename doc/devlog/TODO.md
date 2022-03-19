@@ -32,7 +32,7 @@
     - [x] src/motor/include/motor/core/progress.hpp(20): warning C4834: discarding return value of function with 'nodiscard' attribute
 - [ ] Gui
     - [x] integrate ImGui
-    - [ ] input handling
+    - [x] input handling
     - [ ] scripting
     - [ ] data binding
 - [ ] Systems Scripting (?)
@@ -45,7 +45,6 @@
     - [ ] noexcept, ctors, dtors etc
     - [ ] use constexpr in serialize
     - [ ] move rect_packer to core
-- [ ] Stats
 - [ ] vcpkg
     - [x] manifest
     - [ ] lock to versions
@@ -53,6 +52,7 @@
     - [ ] registry
 
 - [ ] Motor ROADMAP
+    - [ ] Profiler
     - [ ] Merge config SAVE<-DATA
     - [ ] Make the atlases creation during multiple frames
     - [ ] Cache the atlases

@@ -34,7 +34,6 @@ gui_plugin::gui_plugin(app_builder& app)
     io.IniFilename = nullptr;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.KeyMap[ImGuiKey_Space] = SDL_SCANCODE_SPACE;
 
     ImGui::StyleColorsDark();
 
