@@ -13,6 +13,11 @@ struct velocity {
     float dy;
 };
 
+struct acceleration {
+    float x;
+    float y;
+};
+
 struct health {
     int max;
     int value;

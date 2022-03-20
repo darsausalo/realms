@@ -1,4 +1,5 @@
 #include "game_plugin.hpp"
+#include "components/registration.hpp"
 #include "events.hpp"
 #include <entt/signal/dispatcher.hpp>
 #include <imgui.h>
@@ -14,6 +15,8 @@ game_plugin::game_plugin(motor::app_builder& app)
     : registry{app.registry()}
     , screen{app.registry().ctx<motor::screen>()}
     , dispatcher{app.dispatcher()} {
+    register_components(app);
+
     dispatcher.sink<event::start_game>().connect<&game_plugin::enter>(*this);
     dispatcher.sink<event::start_entry>().connect<&game_plugin::exit>(*this);
 

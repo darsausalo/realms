@@ -1,0 +1,35 @@
+{
+    "logging": {
+        "level": "trace"
+    },
+    "window": {
+        "fullscreen": false,
+        "monitor": "default",
+        "vsync": true,
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "size": {
+            "height": 768,
+            "width": 1280
+        }
+    },
+    "graphics": {
+        "max_texture_size": 8192
+    },
+    "gui": {
+        "default_font": "Cuprum-Regular.ttf",
+        "default_font_size": 18
+    },
+    "input": {
+        "keymap": {
+            "ctrl+q": { "action": "quit" },
+            "mbl": { "action": "select" },
+            "mbr": { "action": "command" }
+        },
+        "axismap": {
+            "wasd": { "axis": "move" }
+        }
+    }
+}

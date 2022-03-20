@@ -39,7 +39,9 @@ void to_json(nlohmann::json& j, const graphics_config& c) {
 }
 
 void from_json(const nlohmann::json& j, graphics_config& c) {
-    j.at("clear_color").get_to(c.clear_color);
+    if (j.contains("clear_color")) {
+        j.at("clear_color").get_to(c.clear_color);
+    }
     j.at("max_texture_size").get_to(c.max_texture_size);
 }
 

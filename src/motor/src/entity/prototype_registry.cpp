@@ -35,13 +35,20 @@ void prototype_registry::transpire(const sol::table& defs) {
                         return;
                     }
 
+                    auto is_tag = comp_name == "tag" || comp_name == "tags";
                     auto comp_id =
-                        comp_name == "tag" || comp_name == "tags"
+                        is_tag
                             ? entt::hashed_string::value(
                                   std::data(value.as<std::string>()))
                             : entt::hashed_string::value(std::data(comp_name));
                     if (!components.is_defined(comp_id)) {
-                        spdlog::warn("component '{}' not defined", comp_name);
+                        if (is_tag) {
+                            spdlog::warn("tag '{}' is not defined",
+                                         value.as<std::string>());
+                        } else {
+                            spdlog::warn(
+                                "component '{}' is not defined", comp_name);
+                        }
                         return;
                     }
 

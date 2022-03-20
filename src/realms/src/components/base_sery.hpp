@@ -19,6 +19,12 @@ void serialize(Archive& ar, velocity& value) {
 }
 
 template<typename Archive>
+void serialize(Archive& ar, acceleration& value) {
+    ar.member(M(value.x));
+    ar.member(M(value.y));
+}
+
+template<typename Archive>
 void serialize(Archive& ar, health& value) {
     ar.member(M(value.max));
     ar.member(M(value.value));

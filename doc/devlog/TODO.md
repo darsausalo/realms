@@ -41,6 +41,7 @@
     - [x] manifest
 
 - [ ] Motor ROADMAP
+    - [ ] prototype_registry: error-fail (?)
     - [ ] Profiler
     - [ ] Merge config SAVE<-DATA
     - [ ] Make the atlases creation during multiple frames
