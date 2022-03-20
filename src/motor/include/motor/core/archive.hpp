@@ -1,6 +1,7 @@
 #ifndef MOTOR_ARCHIVE_HPP
 #define MOTOR_ARCHIVE_HPP
 
+#include "fwd.hpp"
 #include "motor/core/type_traits.hpp"
 #include <nameof.hpp>
 #include <stdexcept>
@@ -9,25 +10,14 @@
 
 namespace motor {
 
-// member serialization macro
-// example:
-//
-//      template<typename Archive>
-//      void serialize(Archive& ar, position& p) {
-//          ar.member(M(p.x));
-//          ar.member(M(p.y));
-//      }
-//
-
-#define M(member) NAMEOF(member), member
-
 // errors
 
 class serialize_error : public std::runtime_error {
 public:
     serialize_error(const std::string& what_arg)
         : std::runtime_error(what_arg) {}
-    serialize_error(const char* what_arg) : std::runtime_error(what_arg) {}
+    serialize_error(const char* what_arg)
+        : std::runtime_error(what_arg) {}
 };
 
 // prologue and epilogue
@@ -64,7 +54,8 @@ public:
 protected:
     const archive_type* self;
 
-    output_archive(const archive_type* derived) noexcept : self{derived} {}
+    output_archive(const archive_type* derived) noexcept
+        : self{derived} {}
 
 private:
     template<typename T>
@@ -99,7 +90,8 @@ public:
     }
 
 protected:
-    input_archive(const archive_type* derived) noexcept : self{derived} {}
+    input_archive(const archive_type* derived) noexcept
+        : self{derived} {}
 
     template<typename T>
     void process(T& value) {

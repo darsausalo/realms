@@ -1,7 +1,7 @@
-#ifndef FRONTIER_COMPONENTS_H
-#define FRONTIER_COMPONENTS_H
+#ifndef REALMS_COMPONENTS_H
+#define REALMS_COMPONENTS_H
 
-namespace frontier {
+namespace realms {
 
 struct position {
     float x;
@@ -18,6 +18,6 @@ struct health {
     int value;
 };
 
-} // namespace frontier
+} // namespace realms
 
-#endif // FRONTIER_COMPONENTS_H
+#endif // REALMS_COMPONENTS_H

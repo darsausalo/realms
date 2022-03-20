@@ -1,2 +1,3 @@
 add_subdirectory(motor)
-add_subdirectory(frontier)
+add_subdirectory(realms)
+add_subdirectory(sandbox)

@@ -1,5 +1,4 @@
-#include "components/serialization.hpp"
-#include "frontier/components/base.hpp"
+#include "components.hpp"
 #include <imgui.h>
 #include <motor/app/app.hpp>
 #include <motor/app/app_builder.hpp>
@@ -16,7 +15,7 @@
 #include <motor/graphics/tile_set.hpp>
 #include <spdlog/spdlog.h>
 
-namespace frontier {
+namespace sandbox {
 
 using namespace entt::literals;
 
@@ -221,12 +220,12 @@ struct test_plugin {
     }
 };
 
-} // namespace frontier
+} // namespace sandbox
 
 int main(int argc, char const* argv[]) {
     motor::app::build()
         .add_default_plugins(argc, argv)
-        .add_plugin<frontier::test_plugin>()
+        .add_plugin<sandbox::test_plugin>()
         .run();
 
     return 0;

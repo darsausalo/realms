@@ -35,15 +35,8 @@
     - [x] input handling
     - [x] add gui stages
 - [x] Add input axis
-- [ ] Add 'sandbox'
-- [ ] Rename 'frontier' -> 'realms'
-- [ ] Code review
-    - [ ] add core/fwd.hpp with M macros
-    - [ ] check prepare for entt::organizer
-    - [ ] fwd.hpp
-    - [ ] noexcept, ctors, dtors etc
-    - [ ] use constexpr in serialize
-    - [ ] move rect_packer to core
+- [x] Add 'sandbox'
+- [x] Rename 'frontier' -> 'realms'
 - [x] vcpkg
     - [x] manifest
 
@@ -61,3 +54,10 @@
     - [ ] Gui data binding (?)
     - [ ] Systems Scripting (?)
     - [ ] Pathfinding (?)
+    - [ ] Code review
+        - [ ] add core/fwd.hpp with M macros
+        - [ ] check prepare for entt::organizer
+        - [ ] fwd.hpp
+        - [ ] noexcept, ctors, dtors etc
+        - [ ] use constexpr in serialize
+        - [ ] move rect_packer to core

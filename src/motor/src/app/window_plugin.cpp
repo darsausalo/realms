@@ -68,7 +68,7 @@ window_plugin::window_plugin(app_builder& app)
         config.position.x != 0 ? config.position.x : SDL_WINDOWPOS_UNDEFINED;
     int y =
         config.position.y != 0 ? config.position.y : SDL_WINDOWPOS_UNDEFINED;
-    window = SDL_CreateWindow("frontier", x, y, config.size.width,
+    window = SDL_CreateWindow(MOTOR_PROJECT_TITLE, x, y, config.size.width,
                               config.size.height, SDL_WINDOW_OPENGL);
     if (!window) {
         throw std::runtime_error(
@@ -113,6 +113,7 @@ void window_plugin::update_position() {
     if (w != config.size.width || h != config.size.height) {
         config.size.width = w;
         config.size.height = h;
+        SDL_GL_GetDrawableSize(window, &screen.width, &screen.height);
         modified = true;
     }
 

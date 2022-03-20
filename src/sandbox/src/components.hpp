@@ -1,10 +1,24 @@
-#ifndef FRONTIER_COMPONENTS_SERIALIZATION_HPP
-#define FRONTIER_COMPONENTS_SERIALIZATION_HPP
+#ifndef SANDBOX_COMPONENTS_H
+#define SANDBOX_COMPONENTS_H
 
-#include "frontier/components/base.hpp"
 #include <motor/core/archive.hpp>
 
-namespace frontier {
+namespace sandbox {
+
+struct position {
+    float x;
+    float y;
+};
+
+struct velocity {
+    float dx;
+    float dy;
+};
+
+struct health {
+    int max;
+    int value;
+};
 
 template<typename Archive>
 void serialize(Archive& ar, position& value) {
@@ -24,6 +38,6 @@ void serialize(Archive& ar, health& value) {
     ar.member(M(value.value));
 }
 
-} // namespace frontier
+} // namespace sandbox
 
-#endif // FRONTIER_COMPONENTS_SERIALIZATION_HPP
+#endif // SANDBOX_COMPONENTS_H
