@@ -27,6 +27,9 @@
             "ctrl+q": { "action": "quit" },
             "mbl": { "action": "select" },
             "mbr": { "action": "command" }
+        },
+        "axismap": {
+            "wasd": { "axis": "move" }
         }
     }
 }

@@ -71,8 +71,6 @@ gui_plugin::~gui_plugin() {
     ImGui::DestroyContext();
 }
 
-static bool show_demo_window = true;
-
 void gui_plugin::begin_frame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(window);

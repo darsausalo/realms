@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <entt/core/hashed_string.hpp>
+#include <glm/vec2.hpp>
 #include <unordered_map>
 
 namespace motor {
@@ -57,6 +58,23 @@ private:
     std::unordered_map<entt::id_type, bool> pressed;
     std::unordered_map<entt::id_type, bool> just_pressed;
     std::unordered_map<entt::id_type, bool> just_released;
+};
+
+class input_axises {
+public:
+    [[nodiscard]] glm::vec2 get_value(entt::id_type name_id) const {
+        if (auto it = values.find(name_id); it != values.cend()) {
+            return it->second;
+        }
+        return {};
+    }
+
+    void set_value(entt::id_type name_id, const glm::vec2& value) {
+        values[name_id] = value;
+    }
+
+private:
+    std::unordered_map<entt::id_type, glm::vec2> values;
 };
 
 } // namespace motor

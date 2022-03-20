@@ -71,11 +71,35 @@ static void parse_keymap(
     }
 }
 
+static void parse_axismap(nlohmann::json config,
+                          std::vector<axis_binding>& axismap) {
+    for (auto&& [key, value] : config.items()) {
+        std::string axis_key = key;
+        auto axis_name = value.at("axis").get<std::string>();
+
+        if (axis_key.size() == 4) {
+            axis_binding binding{
+                entt::hashed_string::value(
+                    std::data(axis_name), axis_name.size()),
+                static_cast<uint16_t>(axis_key[0]),
+                static_cast<uint16_t>(axis_key[1]),
+                static_cast<uint16_t>(axis_key[2]),
+                static_cast<uint16_t>(axis_key[3]),
+            };
+            axismap.push_back(binding);
+        } else {
+            // TODO: parse gamepad axis
+            spdlog::error("invalid axis key: {}", axis_key);
+        }
+    }
+}
+
 input_plugin::input_plugin(app_builder& app)
     : dispatcher{app.dispatcher()}
     , jconfig{app.registry().ctx_or_set<nlohmann::json>()}
     , pointer_position{app.registry().set<cursor_position>()}
-    , actions{app.registry().set<input_actions>()} {
+    , actions{app.registry().set<input_actions>()}
+    , axises(app.registry().set<input_axises>()) {
     dispatcher.sink<event::keyboard_input>()
         .connect<&input_plugin::receive_keyboard_input>(*this);
     dispatcher.sink<event::mouse_button_input>()
@@ -91,18 +115,48 @@ input_plugin::input_plugin(app_builder& app)
         if (jconfig.contains("input") &&
             jconfig.at("input").contains("keymap")) {
             parse_keymap(jconfig.at("input").at("keymap"), keymap);
+            parse_axismap(jconfig.at("input").at("axismap"), axismap);
         }
     } catch (nlohmann::json::exception& e) {
         spdlog::warn("invalid input config: {}", e.what());
     }
 
-    app.add_system_to_stage<&input_plugin::update_actions>(
-        "pre_event"_hs, *this);
+    app.add_system_to_stage<&input_plugin::reset>("pre_event"_hs, *this)
+        .add_system_to_stage<&input_plugin::update>("event"_hs, *this);
 }
 
 input_plugin::~input_plugin() { dispatcher.disconnect(*this); }
 
-void input_plugin::update_actions() { actions.update(); }
+void input_plugin::reset() {
+    for (auto& [_, value] : keystates) {
+        value.reset();
+    }
+
+    actions.update();
+}
+
+void input_plugin::update() {
+    for (auto&& axis_binding : axismap) {
+        float x{}, y{};
+        if (auto it = keystates.find(axis_binding.keys[0]);
+            it != keystates.cend()) {
+            y += it->second.state ? 1.0f : 0.0f;
+        }
+        if (auto it = keystates.find(axis_binding.keys[1]);
+            it != keystates.cend()) {
+            x -= it->second.state ? 1.0f : 0.0f;
+        }
+        if (auto it = keystates.find(axis_binding.keys[2]);
+            it != keystates.cend()) {
+            y -= it->second.state ? 1.0f : 0.0f;
+        }
+        if (auto it = keystates.find(axis_binding.keys[3]);
+            it != keystates.cend()) {
+            x += it->second.state ? 1.0f : 0.0f;
+        }
+        axises.set_value(axis_binding.action, {x, y});
+    }
+}
 
 bool input_plugin::handle_ui_keyboard(const event::keyboard_input& e) {
     auto& io = ImGui::GetIO();
@@ -171,6 +225,14 @@ void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {
                 actions.release(it->second);
             }
         }
+        if (auto it = keystates.find(e.key_code); it == keystates.cend()) {
+            keystates[e.key_code] = {};
+        }
+        if (e.pressed) {
+            keystates[e.key_code].down();
+        } else {
+            keystates[e.key_code].up();
+        }
     }
 }
 
@@ -229,9 +291,14 @@ static const char* json_text = R"({
     "MWd": { "action": "action8" }
 })";
 
-}
+static const char* axismap_text = R"({
+    "wasd": { "axis": "move1" },
+    "RQPO": { "axis": "look1" }
+})";
 
-TEST_CASE("input_plugin: config") {
+} // namespace
+
+TEST_CASE("input_plugin: parse keymap") {
     using namespace entt::literals;
 
     motor::parse_action_key("ctrl+shift+t");
@@ -249,4 +316,35 @@ TEST_CASE("input_plugin: config") {
     CHECK(keymap[{motor::MBR, 0}] == "action6"_hs);
     CHECK(keymap[{motor::MWU, 0}] == "action7"_hs);
     CHECK(keymap[{motor::MWD, 0}] == "action8"_hs);
+}
+
+TEST_CASE("input_plugin: parse axismap") {
+    using namespace entt::literals;
+
+    nlohmann::json j = nlohmann::json::parse(axismap_text);
+
+    std::vector<motor::axis_binding> axismap;
+    parse_axismap(j, axismap);
+
+    {
+        auto it = std::find_if(axismap.cbegin(), axismap.cend(), [](auto&& it) {
+            return it.action == "move1"_hs;
+        });
+        CHECK(it != axismap.cend());
+        CHECK(it->keys[0] == 'w');
+        CHECK(it->keys[1] == 'a');
+        CHECK(it->keys[2] == 's');
+        CHECK(it->keys[3] == 'd');
+    }
+
+    {
+        auto it = std::find_if(axismap.cbegin(), axismap.cend(), [](auto&& it) {
+            return it.action == "look1"_hs;
+        });
+        CHECK(it != axismap.cend());
+        CHECK(it->keys[0] == 'R');
+        CHECK(it->keys[1] == 'Q');
+        CHECK(it->keys[2] == 'P');
+        CHECK(it->keys[3] == 'O');
+    }
 }

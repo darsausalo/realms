@@ -18,18 +18,35 @@
 
 namespace motor {
 
+void to_json(nlohmann::json& j, const glm::vec4& c) {
+    j = nlohmann::json{
+        {"r", c.r},
+        {"g", c.g},
+        {"b", c.b},
+        {"a", c.a},
+    };
+}
+
+void from_json(const nlohmann::json& j, clear_color& c) {
+    j.at("r").get_to(c.r);
+    j.at("g").get_to(c.g);
+    j.at("b").get_to(c.b);
+    j.at("a").get_to(c.a);
+}
+
 void to_json(nlohmann::json& j, const graphics_config& c) {
     j = nlohmann::json{{"max_texture_size", c.max_texture_size}};
 }
 
 void from_json(const nlohmann::json& j, graphics_config& c) {
+    j.at("clear_color").get_to(c.clear_color);
     j.at("max_texture_size").get_to(c.max_texture_size);
 }
 
 graphics_plugin::graphics_plugin(app_builder& app)
     : screen{app.registry().ctx<motor::screen>()}
     , jconfig{app.registry().ctx<nlohmann::json>()}
-    , config{8 * 1024} {
+    , config{} {
     try {
         jconfig.at("graphics").get_to(config);
     } catch (nlohmann::json::exception& e) {
@@ -117,7 +134,9 @@ void graphics_plugin::dump_atlases(const entt::registry& registry) {
 
 void graphics_plugin::pre_render() {
     sg_pass_action pass_action{};
-    pass_action.colors[0] = {SG_ACTION_CLEAR, {0.4f, 0.6f, 0.9f, 1.0f}};
+    pass_action.colors[0] = {SG_ACTION_CLEAR,
+                             {config.clear_color.r, config.clear_color.g,
+                              config.clear_color.b, config.clear_color.a}};
 
     sg_begin_default_pass(&pass_action, screen.width, screen.height);
 }

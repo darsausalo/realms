@@ -12,8 +12,16 @@ namespace motor {
 class app_builder;
 class image_atlas;
 
+struct clear_color {
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
 struct graphics_config {
-    std::uint32_t max_texture_size;
+    clear_color clear_color{0.0f, 0.0f, 0.0f, 1.0f};
+    std::uint32_t max_texture_size{1024};
 };
 
 class graphics_plugin {

@@ -1,5 +1,6 @@
 #include "components/serialization.hpp"
 #include "frontier/components/base.hpp"
+#include <imgui.h>
 #include <motor/app/app.hpp>
 #include <motor/app/app_builder.hpp>
 #include <motor/core/events.hpp>
@@ -14,7 +15,6 @@
 #include <motor/graphics/tile_chunk.hpp>
 #include <motor/graphics/tile_set.hpp>
 #include <spdlog/spdlog.h>
-#include <imgui.h>
 
 namespace frontier {
 
@@ -27,8 +27,15 @@ void quit_system(const motor::input_actions& input,
     }
 }
 
-void test_gui_system() {
+void test_gui_system(const motor::input_axises& input) {
     static bool show_demo_window = true;
+
+    auto val = input.get_value("move"_hs);
+
+    ImGui::SetNextWindowPos({0, 0});
+    ImGui::Begin("Test window", nullptr, ImGuiWindowFlags_NoDecoration);
+    ImGui::Text(std::data(fmt::format("X={}; Y={}", val[0], val[1])));
+    ImGui::End();
 
     if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
@@ -42,7 +49,7 @@ void test_system(
             // p.x += 1;
             // p.y += 1;
             spdlog::debug("p = {},{}", p.x, p.y);
-            spdlog::debug("h = {},{}", h.max, h.value);
+            spdlog::debug("health = {},{}", h.max, h.value);
         }
     });
 }
@@ -54,6 +61,21 @@ void test2_system(
             spdlog::debug("sprite");
         }
     });
+}
+
+void test3_system(const entt::registry& registry) {
+    entt::basic_view direct{registry.storage<position>(),
+                            registry.storage<position>("additional_pos"_hs)};
+    static bool changed = false;
+
+    if (changed)
+        return;
+
+    changed = direct.size_hint() > 0;
+
+    for (auto&& [_, p1, p2] : direct.each()) {
+        spdlog::debug("p1 = {},{}; p2 = {},{}", p1.x, p1.y, p2.x, p2.y);
+    }
 }
 
 void update_transforms(
@@ -77,8 +99,9 @@ struct test_plugin {
             .add_system<&quit_system>()
             .add_system<&update_transforms>()
             .add_system<&test_plugin::update_anim>(*this)
-            /*.add_system<&test2_system>()*/
-            .add_system<&test_system>()
+            //.add_system<&test2_system>()
+            //.add_system<&test_system>()
+            .add_system<&test3_system>()
             .add_system_to_stage<&test_gui_system>("gui"_hs);
 
         app.dispatcher()
@@ -100,14 +123,15 @@ struct test_plugin {
     void receive_start(const motor::event::start&) {
         auto e = prototypes.spawn(registry, "soldier2"_hs);
         registry.replace<position>(e, -100.0f, -100.0f);
+        registry.storage<position>("additional_pos"_hs).emplace(e, position{201.0f, 302.0f});
         std::string info{"spawned soldier2 with:\n"};
         for (auto&& [_, storage] : registry.storage()) {
             if (storage.contains(e)) {
                 info += "  ";
-                // TODO: maybe remove component_registry?!
-                // and just use storage.type().name()?
                 info += storage.type().name();
-                info += "\n";
+                info += "(type_index=";
+                info += entt::to_integral(storage.type().index());
+                info += ")\n";
             }
         }
         e = prototypes.spawn(registry, "soldier2"_hs);
@@ -115,6 +139,7 @@ struct test_plugin {
         spdlog::debug(info);
 
         e = prototypes.spawn(registry, "gabe"_hs);
+        registry.storage<position>("additional_pos"_hs).emplace(e, position{452.0f, 563.0f});
         if (e == entt::null) {
             spdlog::error("failed to spawn gabe");
         } else {

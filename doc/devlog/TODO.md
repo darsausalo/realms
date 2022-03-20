@@ -30,26 +30,22 @@
 - [x] Fixes
     - [x] fix issue catched by test "prototype_registry: ignore bad values"
     - [x] src/motor/include/motor/core/progress.hpp(20): warning C4834: discarding return value of function with 'nodiscard' attribute
-- [ ] Gui
+- [x] Gui
     - [x] integrate ImGui
     - [x] input handling
-    - [ ] scripting
-    - [ ] data binding
-- [ ] Systems Scripting (?)
-- [ ] Pathfinding (?)
+    - [x] add gui stages
+- [x] Add input axis
+- [ ] Add 'sandbox'
+- [ ] Rename 'frontier' -> 'realms'
 - [ ] Code review
-    - [ ] remove non-sense event parameters (e.c. receive_start(event::start))
     - [ ] add core/fwd.hpp with M macros
     - [ ] check prepare for entt::organizer
     - [ ] fwd.hpp
     - [ ] noexcept, ctors, dtors etc
     - [ ] use constexpr in serialize
     - [ ] move rect_packer to core
-- [ ] vcpkg
+- [x] vcpkg
     - [x] manifest
-    - [ ] lock to versions
-    - [ ] revise packages (sokol, entt)
-    - [ ] registry
 
 - [ ] Motor ROADMAP
     - [ ] Profiler
@@ -61,3 +57,7 @@
     - [ ] Move SOKOL_IMPLEMENTED, STB_IMPLEMENTED to CMake
     - [ ] Audio
     - [ ] i18n
+    - [ ] Gui scripting (?)
+    - [ ] Gui data binding (?)
+    - [ ] Systems Scripting (?)
+    - [ ] Pathfinding (?)
