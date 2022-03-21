@@ -54,51 +54,40 @@ public:
     }
 
     template<auto Candidate, typename... Req>
-    app_builder& add_system_to_stage(entt::id_type stage,
-                                     const char* name = nullptr) {
-        app.scheduler.add_system_to_stage<Candidate, Req...>(stage, name);
+    app_builder&
+    add_system_to_stage(entt::id_type stage,
+                        const entt::id_type label = entt::id_type{},
+                        const char* name = nullptr) {
+        app.scheduler.add_system_to_stage<Candidate, Req...>(
+            stage, label, name);
         return *this;
     }
 
     template<auto Candidate, typename... Req, typename Type>
-    app_builder& add_system_to_stage(entt::id_type stage,
-                                     Type& value_or_instance,
-                                     const char* name = nullptr) {
+    app_builder&
+    add_system_to_stage(entt::id_type stage,
+                        Type& value_or_instance,
+                        const entt::id_type label = entt::id_type{},
+                        const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Candidate, Req..., Type>(
-            stage, value_or_instance, name);
-        return *this;
-    }
-
-    template<typename... Req>
-    app_builder& add_system_to_stage(entt::id_type stage,
-                                     function_type* func,
-                                     const void* payload = nullptr,
-                                     const char* name = nullptr) {
-        app.scheduler.add_system_to_stage<Req...>(stage, func, payload, name);
+            stage, value_or_instance, label, name);
         return *this;
     }
 
     template<auto Candidate, typename... Req>
-    app_builder& add_system(const char* name = nullptr) {
+    app_builder& add_system(const entt::id_type label = entt::id_type{},
+                            const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Candidate, Req...>(
-            default_stage, name);
+            default_stage, label, name);
         return *this;
     }
 
     template<auto Candidate, typename... Req, typename Type>
     app_builder& add_system(Type& value_or_instance,
+                            const entt::id_type label = entt::id_type{},
                             const char* name = nullptr) {
         app.scheduler.add_system_to_stage<Candidate, Req..., Type>(
-            default_stage, value_or_instance, name);
-        return *this;
-    }
-
-    template<typename... Req>
-    app_builder& add_system(function_type* func,
-                            const void* payload = nullptr,
-                            const char* name = nullptr) {
-        app.scheduler.add_system_to_stage<Req...>(
-            default_stage, func, payload, name);
+            default_stage, value_or_instance, label, name);
         return *this;
     }
 
@@ -113,14 +102,6 @@ public:
                                     const char* name = nullptr) {
         app.scheduler.add_startup_system<Candidate, Req..., Type>(
             value_or_instance, name);
-        return *this;
-    }
-
-    template<typename... Req>
-    app_builder& add_startup_system(function_type* func,
-                                    const void* payload = nullptr,
-                                    const char* name = nullptr) {
-        app.scheduler.add_startup_system<Req...>(func, payload, name);
         return *this;
     }
 

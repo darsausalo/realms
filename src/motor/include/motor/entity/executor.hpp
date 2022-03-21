@@ -6,7 +6,7 @@
 namespace motor {
 
 class executor {
-    using system = entt::organizer::vertex;
+    using system = std::pair<entt::organizer::vertex, entt::id_type>;
 
 public:
     executor(scheduler& scheduler) {
@@ -15,10 +15,12 @@ public:
         });
     }
 
-    void run(entt::registry& registry) {
+    void run(entt::registry& registry, entt::id_type label = entt::id_type{}) {
         for (auto&& stage : stages) {
-            for (auto&& system : stage) {
-                system.callback()(system.data(), registry);
+            for (auto&& [v, l] : stage) {
+                if (l == entt::id_type{} || l == label) {
+                    v.callback()(v.data(), registry);
+                }
             }
         }
     }

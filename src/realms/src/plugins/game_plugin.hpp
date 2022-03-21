@@ -2,7 +2,6 @@
 #define REALMS_GAME_PLUGIN_HPP
 
 #include "../components/base.hpp"
-#include "game.hpp"
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <motor/app/fwd.hpp>
@@ -18,7 +17,7 @@ public:
 private:
     entt::registry& registry;
     entt::dispatcher& dispatcher;
-    game_context& game;
+    motor::app_state& app_state;
     const motor::screen& screen;
     motor::prototype_registry& prototypes;
 

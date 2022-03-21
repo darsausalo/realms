@@ -1,5 +1,6 @@
 #include "motor/app/app.hpp"
 #include "motor/app/app_builder.hpp"
+#include "motor/app/app_state.hpp"
 #include "motor/core/progress.hpp"
 #include "motor/entity/executor.hpp"
 #include "motor/entity/prototype_registry.hpp"
@@ -13,6 +14,7 @@ app::app()
     : dispatcher{registry.set<entt::dispatcher>()}
     , prototypes{registry.set<prototype_registry>()} {
     spdlog::set_level(spdlog::level::debug);
+    registry.set<app_state>();
 }
 
 app::~app() {
@@ -46,6 +48,8 @@ app_builder& app::build() {
 }
 
 void app::run() {
+    app_state& state = registry.ctx<app_state>();
+
     dispatcher.sink<event::quit>().connect<&app::request_quit>(*this);
 
     bool started{};
@@ -59,8 +63,9 @@ void app::run() {
         if (!started && startup_registry.ctx<progress>().is_completed()) {
             dispatcher.enqueue<event::start>();
             started = true;
+            state.state = "entry"_hs;
         }
-        executor.run(registry);
+        executor.run(registry, state.state);
     }
 }
 

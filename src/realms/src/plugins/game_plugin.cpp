@@ -8,6 +8,7 @@
 #include <glm/vec2.hpp>
 #include <imgui.h>
 #include <motor/app/app_builder.hpp>
+#include <motor/app/app_state.hpp>
 #include <motor/core/input.hpp>
 #include <motor/core/time.hpp>
 #include <motor/entity/transform.hpp>
@@ -30,20 +31,20 @@ void apply_player_input(
 game_plugin::game_plugin(motor::app_builder& app)
     : registry{app.registry()}
     , dispatcher{app.dispatcher()}
-    , game{app.registry().ctx_or_set<game_context>()}
+    , app_state{app.registry().ctx<motor::app_state>()}
     , screen{app.registry().ctx<motor::screen>()}
     , prototypes{app.registry().ctx<motor::prototype_registry>()} {
     dispatcher.sink<event::start_game>().connect<&game_plugin::enter>(*this);
 
     // TODO: move to player systems group
-    app.add_system<&apply_player_input>();
+    app.add_system<&apply_player_input>("game"_hs);
 
     register_components(app);
     register_systems(app);
 }
 
 void game_plugin::enter() {
-    game.state = "game"_hs;
+    app_state.state = "game"_hs;
 
     registry.clear();
 

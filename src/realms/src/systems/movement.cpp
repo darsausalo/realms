@@ -5,6 +5,8 @@
 
 namespace realms {
 
+using namespace entt::literals;
+
 void move(entt::view<entt::get_t<const velocity, position>> view,
           const motor::time& time) {
     for (auto&& [_, v, p] : view.each()) {
@@ -14,7 +16,7 @@ void move(entt::view<entt::get_t<const velocity, position>> view,
 }
 
 void register_movement(motor::app_builder& app) {
-    app.add_system<&move>();
+    app.add_system<&move>("game"_hs);
 }
 
 } // namespace realms

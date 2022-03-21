@@ -73,7 +73,8 @@ config_plugin::config_plugin(const arg_list& args, app_builder& app)
     sinks_list = spdlog::sinks_init_list({stdout_sink, msvc_sink});
 #endif // defined(_WIN32)
 
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>("mtr", sinks_list));
+    spdlog::set_default_logger(
+        std::make_shared<spdlog::logger>(MOTOR_PROJECT_NAME, sinks_list));
 
     nlohmann::json cli_config{};
     std::string key;

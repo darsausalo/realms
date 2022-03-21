@@ -40,26 +40,30 @@ public:
     }
 
     template<auto Candidate, typename... Req>
-    void add_system_to_stage(entt::id_type stage, const char* name = nullptr) {
+    void add_system_to_stage(entt::id_type stage,
+                             const entt::id_type label = entt::id_type{},
+                             const char* name = nullptr) {
         assert(stages.find(stage) != stages.end());
         stages[stage].emplace<Candidate, Req...>(name);
+        auto system_id =
+            entt::type_id<
+                std::integral_constant<decltype(Candidate), Candidate>>()
+                .index();
+        labels[stage].emplace(system_id, label);
     }
 
     template<auto Candidate, typename... Req, typename Type>
     void add_system_to_stage(entt::id_type stage,
                              Type& value_or_instance,
+                             const entt::id_type label = entt::id_type{},
                              const char* name = nullptr) {
         assert(stages.find(stage) != stages.end());
         stages[stage].emplace<Candidate, Req..., Type>(value_or_instance, name);
-    }
-
-    template<typename... Req>
-    void add_system_to_stage(entt::id_type stage,
-                             function_type* func,
-                             const void* payload = nullptr,
-                             const char* name = nullptr) {
-        assert(stages.find(stage) != stages.end());
-        stages[stage].emplace<Req...>(func, payload, name);
+        auto system_id =
+            entt::type_id<
+                std::integral_constant<decltype(Candidate), Candidate>>()
+                .index();
+        labels[stage].emplace(system_id, label);
     }
 
     template<auto Candidate, typename... Req>
@@ -74,13 +78,6 @@ public:
             value_or_instance, name);
     }
 
-    template<typename... Req>
-    void add_startup_system(function_type* func,
-                            const void* payload = nullptr,
-                            const char* name = nullptr) {
-        startup_systems.emplace<Req...>(func, payload, name);
-    }
-
     template<typename Func>
     void visit(Func func) const {
         for (auto&& stage : stage_order) {
@@ -90,9 +87,19 @@ public:
 
     std::vector<vertex> startup_graph() { return startup_systems.graph(); }
 
-    std::vector<vertex> graph(entt::id_type stage) {
+    std::vector<std::pair<vertex, entt::id_type>> graph(entt::id_type stage) {
         if (auto it = stages.find(stage); it != stages.end()) {
-            return it->second.graph();
+            auto adjacency_list = it->second.graph();
+            std::vector<std::pair<vertex, entt::id_type>> systems_list{};
+            systems_list.reserve(adjacency_list.size());
+
+            for (auto& v : adjacency_list) {
+                assert(labels.contains(stage) &&
+                       labels[stage].contains(v.info().index()));
+                systems_list.emplace_back(v, labels[stage][v.info().index()]);
+            }
+
+            return systems_list;
         }
         return {};
     }
@@ -100,6 +107,9 @@ public:
 private:
     entt::organizer startup_systems{};
     std::unordered_map<entt::id_type, entt::organizer> stages{};
+    std::unordered_map<entt::id_type,
+                       std::unordered_map<entt::id_type, entt::id_type>>
+        labels{};
     std::vector<entt::id_type> stage_order{};
 };
 

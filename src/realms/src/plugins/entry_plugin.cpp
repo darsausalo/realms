@@ -3,6 +3,7 @@
 #include <entt/signal/dispatcher.hpp>
 #include <imgui.h>
 #include <motor/app/app_builder.hpp>
+#include <motor/app/app_state.hpp>
 #include <motor/core/input.hpp>
 #include <motor/graphics/screen.hpp>
 
@@ -19,26 +20,23 @@ static void quit_system(const motor::input_actions& input,
 
 entry_plugin::entry_plugin(motor::app_builder& app)
     : registry{app.registry()}
-    , game{app.registry().set<game_context>("entry"_hs)}
+    , app_state{app.registry().ctx<motor::app_state>()}
     , dispatcher{app.dispatcher()}
     , screen{app.registry().ctx<motor::screen>()} {
     dispatcher.sink<event::start_entry>().connect<&entry_plugin::enter>(*this);
 
     app.add_system<&quit_system>()
-        .add_system_to_stage<&entry_plugin::update_gui>("gui"_hs, *this);
+        .add_system_to_stage<&entry_plugin::update_gui>(
+            "gui"_hs, *this, "entry"_hs);
 }
 
 void entry_plugin::enter() {
-    game.state = "entry"_hs;
+    app_state.state = "entry"_hs;
 
     registry.clear();
 }
 
 void entry_plugin::update_gui() {
-    if (game.state != "entry"_hs) {
-        return;
-    }
-
     static constexpr auto window_width = 220;
     static constexpr auto window_height = 160;
     static constexpr auto title_text = "Realms";

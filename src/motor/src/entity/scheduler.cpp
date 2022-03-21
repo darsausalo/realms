@@ -50,22 +50,39 @@ TEST_CASE("scheduler: systems") {
     clazz instance{};
 
     scheduler.add_stage("stage1"_hs);
+    scheduler.add_stage("stage2"_hs);
 
-    scheduler.add_system_to_stage<&ro_char_rw_int>("stage1"_hs, "t1");
-    scheduler.add_system_to_stage<&clazz::rw_int>("stage1"_hs, instance, "t2");
-    scheduler.add_system_to_stage<&sync_point>("stage1"_hs, "sync_point");
-    scheduler.add_system_to_stage<&empty>("stage1"_hs, "empty");
+    scheduler.add_system_to_stage<&ro_char_rw_int>(
+        "stage1"_hs, "default"_hs, "t1");
+    scheduler.add_system_to_stage<&clazz::rw_int>(
+        "stage1"_hs, instance, "entry"_hs, "t2");
+    scheduler.add_system_to_stage<&sync_point>(
+        "stage1"_hs, "game"_hs, "sync_point");
+    scheduler.add_system_to_stage<&empty>("stage1"_hs, "pause"_hs, "empty");
+    scheduler.add_system_to_stage<&empty>("stage2"_hs, "pause"_hs, "empty");
 
-    std::vector<std::string> systems;
+    std::vector<std::pair<std::string, entt::id_type>> systems;
 
     const auto graph = scheduler.graph("stage1"_hs);
 
-    for (auto&& v : graph) {
-        systems.push_back(v.name());
+    for (auto&& [v, l] : graph) {
+        systems.emplace_back(v.name(), l);
     }
 
-    CHECK(systems[0] == "t1");
-    CHECK(systems[1] == "t2");
-    CHECK(systems[2] == "sync_point");
-    CHECK(systems[3] == "empty");
+    CHECK(systems[0].first == "t1");
+    CHECK(systems[0].second == "default"_hs);
+    CHECK(systems[1].first == "t2");
+    CHECK(systems[1].second == "entry"_hs);
+    CHECK(systems[2].first == "sync_point");
+    CHECK(systems[2].second == "game"_hs);
+    CHECK(systems[3].first == "empty");
+    CHECK(systems[3].second == "pause"_hs);
+
+    systems.clear();
+    const auto graph2 = scheduler.graph("stage2"_hs);
+    for (auto&& [v, l] : graph2) {
+        systems.emplace_back(v.name(), l);
+    }
+    CHECK(systems[0].first == "empty");
+    CHECK(systems[0].second == "pause"_hs);
 }

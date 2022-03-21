@@ -5,6 +5,7 @@ namespace motor {
 
 class app;
 class app_builder;
+struct app_state;
 
 } // namespace motor
 

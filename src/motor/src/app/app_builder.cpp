@@ -36,7 +36,7 @@ app_builder& app_builder::add_default_plugins(int argc, const char* argv[]) {
         .add_plugin<mods_plugin>()
         .add_plugin<graphics_plugin>()
         .add_plugin<gui_plugin>()
-        .add_system<&print_debug_info>("post_frame"_hs);
+        .add_system_to_stage<&print_debug_info>("post_frame"_hs);
 }
 
 } // namespace motor

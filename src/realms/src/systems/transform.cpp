@@ -5,6 +5,8 @@
 
 namespace realms {
 
+using namespace entt::literals;
+
 void emplace_transform(entt::registry& registry, entt::entity e) {
     registry.emplace<motor::transform>(e, glm::mat4{1.0f});
 }
@@ -22,7 +24,7 @@ void apply_transform(
 void register_transforms(motor::app_builder& app) {
     app.registry().on_construct<position>().connect<&emplace_transform>();
 
-    app.add_system<&apply_transform>();
+    app.add_system<&apply_transform>("game"_hs);
 }
 
 } // namespace realms

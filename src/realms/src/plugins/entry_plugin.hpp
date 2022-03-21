@@ -1,7 +1,6 @@
 #ifndef REALMS_ENTRY_PLUGIN_HPP
 #define REALMS_ENTRY_PLUGIN_HPP
 
-#include "game.hpp"
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <motor/app/fwd.hpp>
@@ -16,7 +15,7 @@ public:
 private:
     entt::registry& registry;
     entt::dispatcher& dispatcher;
-    game_context& game;
+    motor::app_state& app_state;
     const motor::screen& screen;
 
     void enter();
