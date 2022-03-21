@@ -1,46 +1,49 @@
 #include "entry_plugin.hpp"
+#include "events.hpp"
+#include <entt/signal/dispatcher.hpp>
 #include <imgui.h>
 #include <motor/app/app_builder.hpp>
 #include <motor/core/input.hpp>
 #include <motor/graphics/screen.hpp>
-#include <entt/signal/dispatcher.hpp>
-#include "events.hpp"
 
 namespace realms {
 
 using namespace entt::literals;
 
-void quit_system(const motor::input_actions& input,
-                 entt::dispatcher& dispatcher) {
+static void quit_system(const motor::input_actions& input,
+                        entt::dispatcher& dispatcher) {
     if (input.is_just_pressed("quit"_hs)) {
         dispatcher.trigger<motor::event::quit>();
     }
 }
 
 entry_plugin::entry_plugin(motor::app_builder& app)
-    : screen{app.registry().ctx<motor::screen>()}
-    , dispatcher{app.dispatcher()} {
+    : registry{app.registry()}
+    , game{app.registry().set<game_context>("entry"_hs)}
+    , dispatcher{app.dispatcher()}
+    , screen{app.registry().ctx<motor::screen>()} {
     dispatcher.sink<event::start_entry>().connect<&entry_plugin::enter>(*this);
-    dispatcher.sink<event::start_game>().connect<&entry_plugin::exit>(*this);
 
     app.add_system<&quit_system>()
         .add_system_to_stage<&entry_plugin::update_gui>("gui"_hs, *this);
 }
 
-void entry_plugin::enter() { active = true; }
+void entry_plugin::enter() {
+    game.state = "entry"_hs;
 
-void entry_plugin::exit() { active = false; }
+    registry.clear();
+}
 
 void entry_plugin::update_gui() {
+    if (game.state != "entry"_hs) {
+        return;
+    }
+
     static constexpr auto window_width = 220;
     static constexpr auto window_height = 160;
     static constexpr auto title_text = "Realms";
     static constexpr auto button_text = "Start";
     static constexpr auto quit_text = "Quit";
-
-    if (!active) {
-        return;
-    }
 
     ImGui::SetNextWindowPos({(screen.width - window_width) * 0.5f,
                              (screen.height - window_height) * 0.5f});

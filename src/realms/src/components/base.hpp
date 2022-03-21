@@ -1,5 +1,5 @@
-#ifndef REALMS_COMPONENTS_H
-#define REALMS_COMPONENTS_H
+#ifndef REALMS_COMPONENTS_BASE_HPP
+#define REALMS_COMPONENTS_BASE_HPP
 
 namespace realms {
 
@@ -13,16 +13,10 @@ struct velocity {
     float dy;
 };
 
-struct acceleration {
-    float x;
-    float y;
-};
-
-struct health {
-    int max;
-    int value;
+struct speed {
+    float value;
 };
 
 } // namespace realms
 
-#endif // REALMS_COMPONENTS_H
+#endif // REALMS_COMPONENTS_BASE_HPP

@@ -1,6 +1,8 @@
 #ifndef REALMS_ENTRY_PLUGIN_HPP
 #define REALMS_ENTRY_PLUGIN_HPP
 
+#include "game.hpp"
+#include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <motor/app/fwd.hpp>
 #include <motor/graphics/fwd.hpp>
@@ -12,13 +14,12 @@ public:
     explicit entry_plugin(motor::app_builder& app);
 
 private:
-    bool active{true};
-
-    const motor::screen& screen;
+    entt::registry& registry;
     entt::dispatcher& dispatcher;
+    game_context& game;
+    const motor::screen& screen;
 
     void enter();
-    void exit();
 
     void update_gui();
 };

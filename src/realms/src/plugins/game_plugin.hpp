@@ -1,9 +1,12 @@
 #ifndef REALMS_GAME_PLUGIN_HPP
 #define REALMS_GAME_PLUGIN_HPP
 
+#include "../components/base.hpp"
+#include "game.hpp"
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <motor/app/fwd.hpp>
+#include <motor/entity/fwd.hpp>
 #include <motor/graphics/fwd.hpp>
 
 namespace realms {
@@ -13,17 +16,13 @@ public:
     explicit game_plugin(motor::app_builder& app);
 
 private:
-    bool active{false};
-
     entt::registry& registry;
-
-    const motor::screen& screen;
     entt::dispatcher& dispatcher;
+    game_context& game;
+    const motor::screen& screen;
+    motor::prototype_registry& prototypes;
 
     void enter();
-    void exit();
-
-    void update_gui();
 };
 
 } // namespace realms
