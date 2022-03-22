@@ -2,7 +2,8 @@
 #define MOTOR_INPUT_HPP
 
 #include <cstdint>
-#include <entt/core/hashed_string.hpp>
+#include <entt/core/fwd.hpp>
+#include <glm/common.hpp>
 #include <glm/vec2.hpp>
 #include <unordered_map>
 
@@ -69,8 +70,19 @@ public:
         return {};
     }
 
-    void set_value(entt::id_type name_id, const glm::vec2& value) {
-        values[name_id] = value;
+    void add_value(entt::id_type name_id, const glm::vec2& value) {
+        if (auto it = values.find(name_id); it == values.cend()) {
+            values[name_id] = {};
+        }
+        values[name_id] =
+            glm::clamp(values[name_id] + value, glm::vec2{-1.0f, -1.0f},
+                       glm::vec2{1.0f, 1.0f});
+    }
+
+    void reset() {
+        for (auto&& [_, value] : values) {
+            value = {};
+        }
     }
 
 private:

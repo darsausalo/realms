@@ -136,6 +136,7 @@ void input_plugin::reset() {
 }
 
 void input_plugin::update() {
+    axises.reset();
     for (auto&& axis_binding : axismap) {
         float x{}, y{};
         if (auto it = keystates.find(axis_binding.keys[0]);
@@ -154,7 +155,7 @@ void input_plugin::update() {
             it != keystates.cend()) {
             x += it->second.state ? 1.0f : 0.0f;
         }
-        axises.set_value(axis_binding.action, {x, y});
+        axises.add_value(axis_binding.action, {x, y});
     }
 }
 
@@ -224,9 +225,6 @@ void input_plugin::receive_keyboard_input(const event::keyboard_input& e) {
             } else {
                 actions.release(it->second);
             }
-        }
-        if (auto it = keystates.find(e.key_code); it == keystates.cend()) {
-            keystates[e.key_code] = {};
         }
         if (e.pressed) {
             keystates[e.key_code].down();
